@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.WebAdmin", "Firmness.WebAdmin\Firmness.WebAdmin.csproj", "{4703D597-975F-4FDE-A6AF-3C42F092BAA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Infrastructure", "Firmness.Infrastructure\Firmness.Infrastructure.csproj", "{AFBBC498-88A3-42F2-ABBD-69CD00CF7B34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Test", "Firmness.Test\Firmness.Test.csproj", "{E74754AB-19D6-4943-85DC-FFFC06B50E64}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4703D597-975F-4FDE-A6AF-3C42F092BAA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4703D597-975F-4FDE-A6AF-3C42F092BAA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4703D597-975F-4FDE-A6AF-3C42F092BAA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4703D597-975F-4FDE-A6AF-3C42F092BAA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFBBC498-88A3-42F2-ABBD-69CD00CF7B34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFBBC498-88A3-42F2-ABBD-69CD00CF7B34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFBBC498-88A3-42F2-ABBD-69CD00CF7B34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFBBC498-88A3-42F2-ABBD-69CD00CF7B34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E74754AB-19D6-4943-85DC-FFFC06B50E64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E74754AB-19D6-4943-85DC-FFFC06B50E64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E74754AB-19D6-4943-85DC-FFFC06B50E64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E74754AB-19D6-4943-85DC-FFFC06B50E64}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

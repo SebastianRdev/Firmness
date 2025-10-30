@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Firmness.Infrastructure.Data.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = null; // No usamos layout con sidebar
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Firmness Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center">
+
+    <div class="max-w-3xl mx-auto text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
+        @if (SignInManager.IsSignedIn(User))
+        {
+            var currentUser = await UserManager.GetUserAsync(User);
+            <h1 class="text-3xl font-bold text-gray-800 mb-3">
+                Welcome back, <span class="text-blue-600">@currentUser.FullName 👋</span>
+            </h1>
+            <p class="text-gray-600 text-lg mb-6">
+                This is your main landing page after signing in.  
+                From here, you can navigate to your dashboard, manage your products, clients, and sales.
+            </p>
+            <a href="/Dashboard" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2 rounded-lg transition">
+                Go to Dashboard
+            </a>
+        }
+        else
+        {
+            <h1 class="text-3xl font-bold text-gray-800 mb-3">Welcome to Firmness Admin</h1>
+            <p class="text-gray-600 text-lg mb-6">
+                This is a modern admin panel where you can manage products, clients, and sales efficiently.  
+                Please log in to get started.
+            </p>
+            <a href="/Account/Login" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2 rounded-lg transition">
+                Sign In
+            </a>
+        }
+    </div>
+
+    <footer class="mt-10 text-gray-500 text-sm">
+        &copy; 2025 Firmness Admin. All rights reserved.
+    </footer>
+
+</body>
+</html>
