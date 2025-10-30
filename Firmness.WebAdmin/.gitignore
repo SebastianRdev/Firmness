@@ -482,3 +482,11 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+Firmness.WebAdmin/wwwroot/lib/
+Firmness.WebAdmin/obj/
+Firmness.WebAdmin/bin/
+Firmness.Infrastructure/obj/
+Firmness.Infrastructure/bin/
+Firmness.Test/obj/
+Firmness.Test/bin/
