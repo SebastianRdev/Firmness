@@ -1,4 +1,4 @@
-namespace Firmness.Infrastructure.Data.Entities;
+namespace Firmness.Core.Entities;
 
 public class Product
 {

@@ -2,8 +2,7 @@ namespace Firmness.Infrastructure.Data;
 
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Firmness.Infrastructure.Data.Entities;
-using Firmness.Infrastructure.Data.Identity;
+using Firmness.Core.Entities;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
 {

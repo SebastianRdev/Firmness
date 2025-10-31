@@ -1,7 +1,7 @@
-namespace Firmness.Infrastructure.Data.Identity;
+namespace Firmness.Core.Entities;
 
 using Microsoft.AspNetCore.Identity;
-using Firmness.Infrastructure.Data.Entities;
+using Firmness.Core.Entities;
 
 public class ApplicationUser : IdentityUser
 {

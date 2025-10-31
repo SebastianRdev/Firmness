@@ -1,6 +1,6 @@
-namespace Firmness.Infrastructure.Data.Entities;
+namespace Firmness.Core.Entities;
 
-using Firmness.Infrastructure.Data.Identity;
+using Firmness.Core.Entities;
 
 public class LogActivity
 {

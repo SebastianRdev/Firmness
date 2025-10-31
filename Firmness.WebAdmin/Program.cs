@@ -1,11 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Firmness.Infrastructure.Data.Identity;
+using Firmness.Core.Entities;
 using Firmness.Infrastructure.Services.Identity;
 using Firmness.WebAdmin.Extensions;
 using Firmness.Infrastructure.Data;
 using Firmness.Infrastructure.Data.Seed;
 using DotNetEnv;
+using Firmness.Core.Interfaces;
+using Firmness.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,13 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>() // usa tu contexto actual - Le indica a Identity que guarde toda la información de usuarios en tu DB.
 .AddDefaultTokenProviders(); // Añade mecanismos para generar tokens (por ejemplo, para restablecer contraseñas, confirmar emails, etc)
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+// Unit of Work
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Servicios de autenticación (ya lo registras en Program.cs, pero puedes centralizarlo aquí)
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 

@@ -1,4 +1,4 @@
-namespace Firmness.Infrastructure.Data.Identity;
+namespace Firmness.Core.Entities;
 
 using Microsoft.AspNetCore.Identity;
 
