@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Firmness.Core.Entities;
+using Firmness.Domain.Entities;
 using Firmness.Infrastructure.Services.Identity;
 using Firmness.WebAdmin.Models;
 

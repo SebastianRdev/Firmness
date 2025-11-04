@@ -1,13 +1,16 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Firmness.Core.Entities;
+using Firmness.Domain.Entities;
 using Firmness.Infrastructure.Services.Identity;
 using Firmness.WebAdmin.Extensions;
 using Firmness.Infrastructure.Data;
 using Firmness.Infrastructure.Data.Seed;
 using DotNetEnv;
-using Firmness.Core.Interfaces;
 using Firmness.Infrastructure.Repositories;
+using Firmness.Application.Interfaces;
+using Firmness.Application.Services;
+using Firmness.Domain.Interfaces;
+using Firmness.Application.Mappings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,10 +28,20 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddDefaultTokenProviders(); // Añade mecanismos para generar tokens (por ejemplo, para restablecer contraseñas, confirmar emails, etc)
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// DbContext
+/*builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));*/
+
+// AutoMapper
+builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
+
+// Repositorio genérico
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-// Unit of Work
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Servicios de Application
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // Servicios de autenticación (ya lo registras en Program.cs, pero puedes centralizarlo aquí)
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -61,6 +74,7 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 
 

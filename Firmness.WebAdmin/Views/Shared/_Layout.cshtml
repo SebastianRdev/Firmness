@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using Firmness.Core.Entities;
+@using Firmness.Domain.Entities;
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
@@ -9,91 +9,43 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Firmness Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1773cf",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#111921",
+                    },
+                    fontFamily: { "display": ["Inter", "sans-serif"] },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24
+        }
+    </style>
 </head>
 
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+<div class="flex h-screen">
+    <!-- SideNavBar -->
+    <aside class="w-64 flex-shrink-0 bg-white dark:bg-gray-900/50 border-r border-gray-200 dark:border-gray-800 flex flex-col">
+        @await Html.PartialAsync("_Sidebar")
+    </aside>
 
-    <!-- Navbar -->
-    <header class="bg-white shadow-md w-full fixed top-0 left-0 z-50">
-        <nav class="flex justify-between items-center px-6 py-3">
-            <div class="flex items-center space-x-3">
-                <img src="https://cdn-icons-png.flaticon.com/512/5968/5968409.png" class="h-8 w-8" alt="Logo">
-                <a asp-controller="Dashboard" asp-action="Index" class="text-xl font-semibold text-blue-700">Firmness</a>
-            </div>
-
-            <div>
-                @if (SignInManager.IsSignedIn(User))
-                {
-                    var currentUser = await UserManager.GetUserAsync(User);
-                    <div class="flex items-center space-x-4">
-                        <span class="text-gray-700">👋 Hello, @currentUser.FullName</span>
-                        <form asp-controller="Account" asp-action="Logout" method="post" class="inline">
-                            <button 
-                                type="submit" 
-                                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-4 rounded-md transition">
-                                Logout
-                            </button>
-                        </form>
-                    </div>
-                }
-                else
-                {
-                    <a asp-controller="Account" asp-action="Login" class="text-blue-600 hover:text-blue-700 font-medium">
-                        Login
-                    </a>
-                }
-            </div>
-        </nav>
-    </header>
-
-    <!-- Main Layout -->
-    <div class="flex pt-[4rem]"> <!-- compensamos la altura del header -->
-        
-        <!-- Sidebar -->
-        <aside class="fixed top-[4rem] left-0 w-64 h-[calc(100vh-4rem)] bg-blue-800 text-white flex flex-col justify-between">
-            <div>
-                <div class="p-6 text-2xl font-bold border-b border-blue-500">
-                    Admin Panel
-                </div>
-
-                <nav class="mt-4 flex flex-col space-y-1">
-                    <a asp-controller="Dashboard" asp-action="Index" class="px-6 py-3 hover:bg-blue-600 transition flex items-center gap-2">
-                        🏠 Dashboard
-                    </a>
-                    <a asp-controller="Products" asp-action="Index" class="px-6 py-3 hover:bg-blue-600 transition flex items-center gap-2">
-                        📦 Products
-                    </a>
-                    <a asp-controller="Customers" asp-action="Index" class="px-6 py-3 hover:bg-blue-600 transition flex items-center gap-2">
-                        👥 Customers
-                    </a>
-                    <a asp-controller="Sales" asp-action="Index" class="px-6 py-3 hover:bg-blue-600 transition flex items-center gap-2">
-                        💰 Sales
-                    </a>
-                </nav>
-            </div>
-
-            <!-- Logged user info -->
-            @if (SignInManager.IsSignedIn(User))
-            {
-                var currentUser = await UserManager.GetUserAsync(User);
-                <div class="px-6 py-4 border-t border-blue-600 text-sm text-blue-100 bg-blue-900/30">
-                    <p class="font-semibold">@currentUser.FullName</p>
-                    <p class="text-xs opacity-80">@currentUser.Email</p>
-                </div>
-            }
-        </aside>
-
-        <!-- Main content -->
-        <main class="flex-1 ml-64 p-8 bg-gray-50 min-h-screen">
-            @RenderBody()
-        </main>
-    </div>
-
-    <!-- Footer -->
-    <footer class="bg-white border-t py-4 text-center text-gray-500 text-sm">
-        © 2025 Firmness Admin Dashboard. All rights reserved.
-    </footer>
-
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto p-6 md:p-8 space-y-6">
+        @RenderBody()
+    </main>
+</div>
 </body>
 </html>

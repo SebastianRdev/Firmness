@@ -1,7 +1,7 @@
 namespace Firmness.Infrastructure.Services.Identity;
 
 using Microsoft.AspNetCore.Identity;
-using Firmness.Core.Entities;
+using Domain.Entities;
 
 public class AuthService : IAuthService
 {

@@ -33,7 +33,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Firmness.Infrastructure\Firmness.Infrastructure.csproj" />
-      <ProjectReference Include="..\Firmness.Core\Firmness.Core.csproj" />
+      <ProjectReference Include="..\Firmness.Domain\Firmness.Domain.csproj" />
+      <ProjectReference Include="..\Firmness.Application\Firmness.Application.csproj" />
     </ItemGroup>
 
 </Project>

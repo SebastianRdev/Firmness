@@ -1,6 +1,6 @@
 namespace Firmness.Infrastructure.Repositories;
 
-using Firmness.Core.Interfaces;
+using Firmness.Domain.Interfaces;
 using Firmness.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -22,15 +22,36 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     public async Task<T?> GetByIdAsync(int id) =>
         await _dbSet.FindAsync(id);
 
-    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate) =>
-        await _dbSet.AsNoTracking().Where(predicate).ToListAsync();
+    public async Task<T> AddAsync(T entity)
+    {
+       await _dbSet.AddAsync(entity);
+       return entity;
+    }
+        
 
-    public async Task AddAsync(T entity) =>
-        await _dbSet.AddAsync(entity);
-
-    public void Update(T entity) =>
+    public Task UpdateAsync(T entity)
+    {
         _dbSet.Update(entity);
+        return Task.CompletedTask;
+    }
 
-    public void Delete(T entity) =>
-        _dbSet.Remove(entity);
+    public async Task DeleteAsync(int id)
+    {
+        var entity = await _dbSet.FindAsync(id);
+        if (entity != null)
+        {
+            _dbSet.Remove(entity);
+        }
+    }
+    
+    public async Task<bool> ExistsAsync(int id)
+    {
+        var entity = await _dbSet.FindAsync(id);
+        return entity != null;
+    }
+
+    public async Task<int> SaveChangesAsync()
+    {
+        return await _context.SaveChangesAsync();
+    }
 }

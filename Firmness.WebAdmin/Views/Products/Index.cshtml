@@ -1,0 +1,151 @@
+﻿@{
+ViewData["Title"] = "Product Management";
+}
+<main class="flex-1 flex flex-col h-screen overflow-y-auto">
+<div class="p-6 md:p-8 space-y-6">
+<!-- Page Heading -->
+<div class="flex flex-wrap items-center justify-between gap-4">
+<div class="flex min-w-72 flex-col gap-2">
+<h1 class="text-gray-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-tight">Product Management</h1>
+<p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Manage your inventory of construction supplies and vehicle rentals.</p>
+</div>
+<button class="flex items-center justify-center gap-2 min-w-[84px] cursor-pointer rounded-lg h-11 px-5 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90">
+<span class="material-symbols-outlined">add_circle</span>
+<span class="truncate">Create New Product</span>
+</button>
+</div>
+<!-- Search and Filter Bar -->
+<div class="flex flex-col md:flex-row gap-4">
+<div class="flex-grow">
+<label class="flex flex-col min-w-40 h-12 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-white dark:bg-background-dark border border-gray-300 dark:border-gray-700 focus-within:ring-2 focus-within:ring-primary">
+<div class="text-gray-400 dark:text-gray-500 flex items-center justify-center pl-4">
+<span class="material-symbols-outlined">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-800 dark:text-gray-200 focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 pl-2 text-base font-normal leading-normal" placeholder="Search by name or code..." value=""/>
+</div>
+</label>
+</div>
+<div class="relative">
+<select class="form-select w-full md:w-48 h-12 px-4 pr-10 text-gray-800 dark:text-gray-200 bg-white dark:bg-background-dark border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+<option>All Categories</option>
+<option>Tools</option>
+<option>Vehicles</option>
+<option>Materials</option>
+</select>
+</div>
+</div>
+<!-- Table Container -->
+<div class="bg-white dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+<div class="overflow-x-auto">
+<table class="min-w-full text-sm">
+<thead class="bg-gray-50 dark:bg-gray-800/50">
+<tr class="text-left">
+<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Nombre</th>
+<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Código</th>
+<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Categoría</th>
+<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Precio</th>
+<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Stock</th>
+<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Unidad de Medida</th>
+<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 text-center">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+<td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">Heavy-Duty Excavator</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">VHC-001</td>
+<td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">Vehicles</span></td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">$550.00</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">3</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">Day</td>
+<td class="px-6 py-4 whitespace-nowrap text-center">
+<div class="flex justify-center items-center gap-2">
+<button class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" title="View Details"><span class="material-symbols-outlined text-xl">visibility</span></button>
+<button class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" title="Edit"><span class="material-symbols-outlined text-xl">edit</span></button>
+<button class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" title="Delete"><span class="material-symbols-outlined text-xl">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+<td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">Concrete Mixer</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">TLS-002</td>
+<td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Tools</span></td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">$75.00</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">8</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">Day</td>
+<td class="px-6 py-4 whitespace-nowrap text-center">
+<div class="flex justify-center items-center gap-2">
+<button class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" title="View Details"><span class="material-symbols-outlined text-xl">visibility</span></button>
+<button class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" title="Edit"><span class="material-symbols-outlined text-xl">edit</span></button>
+<button class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" title="Delete"><span class="material-symbols-outlined text-xl">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+<td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">Steel Rebar</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">MTR-003</td>
+<td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300">Materials</span></td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">$12.50</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">5000</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">Meter</td>
+<td class="px-6 py-4 whitespace-nowrap text-center">
+<div class="flex justify-center items-center gap-2">
+<button class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" title="View Details"><span class="material-symbols-outlined text-xl">visibility</span></button>
+<button class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" title="Edit"><span class="material-symbols-outlined text-xl">edit</span></button>
+<button class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" title="Delete"><span class="material-symbols-outlined text-xl">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+<td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">Bulldozer D6</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">VHC-004</td>
+<td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">Vehicles</span></td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">$620.00</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">2</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">Day</td>
+<td class="px-6 py-4 whitespace-nowrap text-center">
+<div class="flex justify-center items-center gap-2">
+<button class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" title="View Details"><span class="material-symbols-outlined text-xl">visibility</span></button>
+<button class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" title="Edit"><span class="material-symbols-outlined text-xl">edit</span></button>
+<button class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" title="Delete"><span class="material-symbols-outlined text-xl">delete</span></button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+<td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">Safety Helmets</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">MTR-005</td>
+<td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300">Materials</span></td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">$25.00</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">150</td>
+<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">Unit</td>
+<td class="px-6 py-4 whitespace-nowrap text-center">
+<div class="flex justify-center items-center gap-2">
+<button class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" title="View Details"><span class="material-symbols-outlined text-xl">visibility</span></button>
+<button class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" title="Edit"><span class="material-symbols-outlined text-xl">edit</span></button>
+<button class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" title="Delete"><span class="material-symbols-outlined text-xl">delete</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-6 py-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
+<p class="text-sm text-gray-500 dark:text-gray-400">
+                      Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">20</span> results
+                    </p>
+<nav class="flex items-center gap-2">
+<button class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-xl">chevron_left</span>
+</button>
+<button class="flex items-center justify-center h-9 w-9 rounded-lg border border-primary bg-primary text-white text-sm font-medium">1</button>
+<button class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium">2</button>
+<button class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium">3</button>
+<button class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+<span class="material-symbols-outlined text-xl">chevron_right</span>
+</button>
+</nav>
+</div>
+</div>
+</div>
+</main>

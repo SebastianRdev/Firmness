@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Infrastructure", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Test", "Firmness.Test\Firmness.Test.csproj", "{E74754AB-19D6-4943-85DC-FFFC06B50E64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Core", "Firmness.Core\Firmness.Core.csproj", "{1B5D6F27-8EB6-4C66-9BBF-999F138A3E20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Domain", "Firmness.Domain\Firmness.Domain.csproj", "{1B5D6F27-8EB6-4C66-9BBF-999F138A3E20}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Firmness.Application", "Firmness.Application\Firmness.Application.csproj", "{127BDBE9-5AA0-468F-8D68-C2F8EC9D3CD9}"
 EndProject

@@ -1,7 +1,7 @@
 namespace Firmness.Infrastructure.Data.Seed;
 
 using Microsoft.AspNetCore.Identity;
-using Firmness.Core.Entities;
+using Domain.Entities;
 
 public static class AdminSeed
 {

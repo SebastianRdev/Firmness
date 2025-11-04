@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using Firmness.Core.Entities;
+using Firmness.Domain.Entities;
 
 namespace Firmness.Infrastructure.Data.Seed;
 
