@@ -20,8 +20,8 @@ public class ProductsController : Controller
         _mapper = mapper;
     }
 
-    // GET: /Products
-    public async Task<IActionResult> Index()
+    // GET: /Products?page=1
+    public async Task<IActionResult> Index(int page = 1)
     {
         var result = await _productService.GetAllAsync();
         
@@ -31,6 +31,7 @@ public class ProductsController : Controller
             return View(new List<ProductDto>());
         }
 
+        ViewData["CurrentPage"] = page;
         return View(result.Data);
     }
 
@@ -72,7 +73,7 @@ public class ProductsController : Controller
             return View(createDto);
         }
 
-        TempData["Success"] = $"Producto '{result.Data.Name}' creado exitosamente";
+        TempData["Success"] = $"Product '{result.Data.Name}' created successfully";
         return RedirectToAction(nameof(Index));
     }
 
@@ -99,7 +100,7 @@ public class ProductsController : Controller
     {
         if (id != updateDto.Id)
         {
-            TempData["Error"] = "ID no coincide";
+            TempData["Error"] = "ID does not match";
             return RedirectToAction(nameof(Index));
         }
 
@@ -116,7 +117,7 @@ public class ProductsController : Controller
             return View(updateDto);
         }
 
-        TempData["Success"] = $"Producto '{result.Data.Name}' actualizado exitosamente";
+        TempData["Success"] = $"Product '{{result.Data.Name}}' successfully updated";
         return RedirectToAction(nameof(Index));
     }
 
@@ -147,14 +148,14 @@ public class ProductsController : Controller
         }
         else
         {
-            TempData["Success"] = "Producto eliminado exitosamente";
+            TempData["Success"] = "Product successfully removed";
         }
 
         return RedirectToAction(nameof(Index));
     }
 
-    // GET: /Products/Search?term=cemento
-    public async Task<IActionResult> Search(string term)
+    // GET: /Products/Search?term=cemento&page=1
+    public async Task<IActionResult> Search(string term, int page = 1)
     {
         if (string.IsNullOrWhiteSpace(term))
         {
@@ -170,6 +171,7 @@ public class ProductsController : Controller
         }
 
         ViewData["SearchTerm"] = term;
+        ViewData["CurrentPage"] = page;
         return View("Index", result.Data);
     }
 }

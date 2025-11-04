@@ -1,7 +1,7 @@
 ﻿namespace Firmness.Application.Common;
 
 /// <summary>
-/// Resultado sin datos (para operaciones como Delete).
+/// Result with no data (for operations like Delete).
 /// </summary>
 public class Result
 {

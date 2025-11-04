@@ -1,151 +1,269 @@
-﻿@{
-ViewData["Title"] = "Product Management";
+﻿@* Views/Products/Index.cshtml *@
+@model IEnumerable<Firmness.Application.DTOs.Products.ProductDto>
+
+@{
+    ViewData["Title"] = "Product Management";
+    var searchTerm = ViewData["SearchTerm"] as string;
+    var productsList = Model.ToList();
+    
+    // Paginación (puedes parametrizarlo después)
+    int currentPage = ViewData["CurrentPage"] as int? ?? 1;
+    int pageSize = 10;
+    int totalProducts = productsList.Count;
+    int totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
+    
+    var pagedProducts = productsList
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
 }
+
 <main class="flex-1 flex flex-col h-screen overflow-y-auto">
-<div class="p-6 md:p-8 space-y-6">
-<!-- Page Heading -->
-<div class="flex flex-wrap items-center justify-between gap-4">
-<div class="flex min-w-72 flex-col gap-2">
-<h1 class="text-gray-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-tight">Product Management</h1>
-<p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Manage your inventory of construction supplies and vehicle rentals.</p>
-</div>
-<button class="flex items-center justify-center gap-2 min-w-[84px] cursor-pointer rounded-lg h-11 px-5 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90">
-<span class="material-symbols-outlined">add_circle</span>
-<span class="truncate">Create New Product</span>
-</button>
-</div>
-<!-- Search and Filter Bar -->
-<div class="flex flex-col md:flex-row gap-4">
-<div class="flex-grow">
-<label class="flex flex-col min-w-40 h-12 w-full">
-<div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-white dark:bg-background-dark border border-gray-300 dark:border-gray-700 focus-within:ring-2 focus-within:ring-primary">
-<div class="text-gray-400 dark:text-gray-500 flex items-center justify-center pl-4">
-<span class="material-symbols-outlined">search</span>
-</div>
-<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-800 dark:text-gray-200 focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 pl-2 text-base font-normal leading-normal" placeholder="Search by name or code..." value=""/>
-</div>
-</label>
-</div>
-<div class="relative">
-<select class="form-select w-full md:w-48 h-12 px-4 pr-10 text-gray-800 dark:text-gray-200 bg-white dark:bg-background-dark border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
-<option>All Categories</option>
-<option>Tools</option>
-<option>Vehicles</option>
-<option>Materials</option>
-</select>
-</div>
-</div>
-<!-- Table Container -->
-<div class="bg-white dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
-<div class="overflow-x-auto">
-<table class="min-w-full text-sm">
-<thead class="bg-gray-50 dark:bg-gray-800/50">
-<tr class="text-left">
-<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Nombre</th>
-<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Código</th>
-<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Categoría</th>
-<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Precio</th>
-<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Stock</th>
-<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Unidad de Medida</th>
-<th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 text-center">Acciones</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-gray-200 dark:divide-gray-800">
-<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-<td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">Heavy-Duty Excavator</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">VHC-001</td>
-<td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">Vehicles</span></td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">$550.00</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">3</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">Day</td>
-<td class="px-6 py-4 whitespace-nowrap text-center">
-<div class="flex justify-center items-center gap-2">
-<button class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" title="View Details"><span class="material-symbols-outlined text-xl">visibility</span></button>
-<button class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" title="Edit"><span class="material-symbols-outlined text-xl">edit</span></button>
-<button class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" title="Delete"><span class="material-symbols-outlined text-xl">delete</span></button>
-</div>
-</td>
-</tr>
-<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-<td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">Concrete Mixer</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">TLS-002</td>
-<td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Tools</span></td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">$75.00</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">8</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">Day</td>
-<td class="px-6 py-4 whitespace-nowrap text-center">
-<div class="flex justify-center items-center gap-2">
-<button class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" title="View Details"><span class="material-symbols-outlined text-xl">visibility</span></button>
-<button class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" title="Edit"><span class="material-symbols-outlined text-xl">edit</span></button>
-<button class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" title="Delete"><span class="material-symbols-outlined text-xl">delete</span></button>
-</div>
-</td>
-</tr>
-<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-<td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">Steel Rebar</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">MTR-003</td>
-<td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300">Materials</span></td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">$12.50</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">5000</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">Meter</td>
-<td class="px-6 py-4 whitespace-nowrap text-center">
-<div class="flex justify-center items-center gap-2">
-<button class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" title="View Details"><span class="material-symbols-outlined text-xl">visibility</span></button>
-<button class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" title="Edit"><span class="material-symbols-outlined text-xl">edit</span></button>
-<button class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" title="Delete"><span class="material-symbols-outlined text-xl">delete</span></button>
-</div>
-</td>
-</tr>
-<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-<td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">Bulldozer D6</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">VHC-004</td>
-<td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">Vehicles</span></td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">$620.00</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">2</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">Day</td>
-<td class="px-6 py-4 whitespace-nowrap text-center">
-<div class="flex justify-center items-center gap-2">
-<button class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" title="View Details"><span class="material-symbols-outlined text-xl">visibility</span></button>
-<button class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" title="Edit"><span class="material-symbols-outlined text-xl">edit</span></button>
-<button class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" title="Delete"><span class="material-symbols-outlined text-xl">delete</span></button>
-</div>
-</td>
-</tr>
-<tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-<td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">Safety Helmets</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">MTR-005</td>
-<td class="px-6 py-4 whitespace-nowrap"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300">Materials</span></td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">$25.00</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">150</td>
-<td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">Unit</td>
-<td class="px-6 py-4 whitespace-nowrap text-center">
-<div class="flex justify-center items-center gap-2">
-<button class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" title="View Details"><span class="material-symbols-outlined text-xl">visibility</span></button>
-<button class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" title="Edit"><span class="material-symbols-outlined text-xl">edit</span></button>
-<button class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" title="Delete"><span class="material-symbols-outlined text-xl">delete</span></button>
-</div>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<!-- Pagination -->
-<div class="px-6 py-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
-<p class="text-sm text-gray-500 dark:text-gray-400">
-                      Showing <span class="font-medium">1</span> to <span class="font-medium">5</span> of <span class="font-medium">20</span> results
+    <div class="p-6 md:p-8 space-y-6">
+        
+        <!-- Page Heading -->
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex min-w-72 flex-col gap-2">
+                <h1 class="text-gray-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-tight">Product Management</h1>
+                <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Manage your inventory of construction supplies and vehicle rentals.</p>
+            </div>
+            <a asp-controller="Products" asp-action="Create" class="flex items-center justify-center gap-2 min-w-[84px] cursor-pointer rounded-lg h-11 px-5 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90">
+                <span class="material-symbols-outlined">add_circle</span>
+                <span class="truncate">Create New Product</span>
+            </a>
+        </div>
+        
+        <!-- Notifications -->
+        <partial name="_Notifications" />
+        
+        <!-- Search and Filter Bar -->
+        <form asp-action="Search" method="get" class="flex flex-col md:flex-row gap-4">
+            <div class="flex-grow">
+                <label class="flex flex-col min-w-40 h-12 w-full">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-white dark:bg-background-dark border border-gray-300 dark:border-gray-700 focus-within:ring-2 focus-within:ring-primary">
+                        <div class="text-gray-400 dark:text-gray-500 flex items-center justify-center pl-4">
+                            <span class="material-symbols-outlined">search</span>
+                        </div>
+                        <input name="term" 
+                               value="@searchTerm"
+                               class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-800 dark:text-gray-200 focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 pl-2 text-base font-normal leading-normal" 
+                               placeholder="Search by name or code..."/>
+                    </div>
+                </label>
+            </div>
+            
+            <div class="flex gap-2">
+                <button type="submit" class="h-12 px-6 rounded-lg bg-gray-800 dark:bg-gray-700 text-white hover:bg-gray-900 dark:hover:bg-gray-600 font-medium">
+                    Search
+                </button>
+                @if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    <a asp-action="Index" class="h-12 px-6 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 font-medium flex items-center">
+                        Clear
+                    </a>
+                }
+            </div>
+        </form>
+
+        @if (!string.IsNullOrEmpty(searchTerm))
+        {
+            <div class="text-gray-600 dark:text-gray-400">
+                Showing results for: <strong class="text-gray-800 dark:text-gray-200">"@searchTerm"</strong>
+            </div>
+        }
+        
+        <!-- Table Container -->
+        <div class="bg-white dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+            @if (pagedProducts.Any())
+            {
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-gray-50 dark:bg-gray-800/50">
+                            <tr class="text-left">
+                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Name</th>
+                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Code</th>
+                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Category</th>
+                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Description</th>
+                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Price</th>
+                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Stock</th>
+                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Status</th>
+                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                            @foreach (var product in pagedProducts)
+                            {
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                        @product.Name
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                                        @product.Code
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                            @(GetCategoryColorClass(product.Category))">
+                                            @product.Category
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-500 dark:text-gray-400 max-w-xs truncate">
+                                        @(string.IsNullOrEmpty(product.Description) ? "-" : product.Description)
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-semibold">
+                                        @product.PriceFormatted
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="font-medium @GetStockColorClass(product.Stock)">
+                                            @product.Stock units
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if (product.IsActive)
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                                Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                                Inactive
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex justify-center items-center gap-2">
+                                            <a asp-action="Details" asp-route-id="@product.Id" 
+                                               class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" 
+                                               title="View Details">
+                                                <span class="material-symbols-outlined text-xl">visibility</span>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@product.Id" 
+                                               class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" 
+                                               title="Edit">
+                                                <span class="material-symbols-outlined text-xl">edit</span>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@product.Id" 
+                                               class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" 
+                                               title="Delete">
+                                                <span class="material-symbols-outlined text-xl">delete</span>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Showing 
+                        <span class="font-medium">@((currentPage - 1) * pageSize + 1)</span> 
+                        to 
+                        <span class="font-medium">@Math.Min(currentPage * pageSize, totalProducts)</span> 
+                        of 
+                        <span class="font-medium">@totalProducts</span> 
+                        results
                     </p>
-<nav class="flex items-center gap-2">
-<button class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50" disabled="">
-<span class="material-symbols-outlined text-xl">chevron_left</span>
-</button>
-<button class="flex items-center justify-center h-9 w-9 rounded-lg border border-primary bg-primary text-white text-sm font-medium">1</button>
-<button class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium">2</button>
-<button class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium">3</button>
-<button class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
-<span class="material-symbols-outlined text-xl">chevron_right</span>
-</button>
-</nav>
-</div>
-</div>
-</div>
+                    <nav class="flex items-center gap-2">
+                        @if (currentPage > 1)
+                        {
+                            <a asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-term="@searchTerm"
+                               class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                                <span class="material-symbols-outlined text-xl">chevron_left</span>
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 opacity-50 cursor-not-allowed" disabled>
+                                <span class="material-symbols-outlined text-xl">chevron_left</span>
+                            </button>
+                        }
+
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            if (i == currentPage)
+                            {
+                                <button class="flex items-center justify-center h-9 w-9 rounded-lg border border-primary bg-primary text-white text-sm font-medium">
+                                    @i
+                                </button>
+                            }
+                            else
+                            {
+                                <a asp-action="Index" asp-route-page="@i" asp-route-term="@searchTerm"
+                                   class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium">
+                                    @i
+                                </a>
+                            }
+                        }
+
+                        @if (currentPage < totalPages)
+                        {
+                            <a asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-term="@searchTerm"
+                               class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                                <span class="material-symbols-outlined text-xl">chevron_right</span>
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 opacity-50 cursor-not-allowed" disabled>
+                                <span class="material-symbols-outlined text-xl">chevron_right</span>
+                            </button>
+                        }
+                    </nav>
+                </div>
+            }
+            else
+            {
+                <!-- Empty State -->
+                <div class="text-center py-12">
+                    <div class="flex justify-center mb-4">
+                        <span class="material-symbols-outlined text-gray-400" style="font-size: 64px;">inventory_2</span>
+                    </div>
+                    <h3 class="mt-2 text-lg font-medium text-gray-900 dark:text-white">No products found</h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        @if (!string.IsNullOrEmpty(searchTerm))
+                        {
+                            <span>No products match your search. Try different keywords.</span>
+                        }
+                        else
+                        {
+                            <span>Get started by creating your first product.</span>
+                        }
+                    </p>
+                    <div class="mt-6">
+                        <a asp-action="Create" class="inline-flex items-center gap-2 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90">
+                            <span class="material-symbols-outlined text-xl">add_circle</span>
+                            New Product
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </main>
+
+@functions {
+    private string GetCategoryColorClass(string category)
+    {
+        return category?.ToLower() switch
+        {
+            var c when c.Contains("vehicle") || c.Contains("vehiculo") => "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+            var c when c.Contains("tool") || c.Contains("herramienta") => "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+            var c when c.Contains("material") => "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300",
+            _ => "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300"
+        };
+    }
+
+    private string GetStockColorClass(int stock)
+    {
+        return stock switch
+        {
+            > 10 => "text-green-600 dark:text-green-400",
+            > 0 => "text-yellow-600 dark:text-yellow-400",
+            _ => "text-red-600 dark:text-red-400"
+        };
+    }
+}

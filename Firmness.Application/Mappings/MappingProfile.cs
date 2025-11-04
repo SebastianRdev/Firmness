@@ -1,27 +1,27 @@
-﻿using AutoMapper;
+﻿namespace Firmness.Application.Mappings;
+
+using AutoMapper;
 using Firmness.Application.DTOs.Products;
 using Firmness.Domain.Entities;
 
-namespace Firmness.Application.Mappings;
-
 /// <summary>
-/// Configuración de mapeos entre entidades del dominio y DTOs.
-/// AutoMapper usa esta clase para saber cómo convertir objetos.
+/// Configuration of mappings between domain entities and DTOs.
+/// AutoMapper uses this class to learn how to convert objects.
 /// </summary>
 public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        // Product → ProductDto (para mostrar)
+        // Product → ProductDto (to show)
         CreateMap<Product, ProductDto>();
         
-        // CreateProductDto → Product (para crear)
+        // CreateProductDto → Product (to create)
         CreateMap<CreateProductDto, Product>()
             .ForMember(dest => dest.Id, opt => opt.Ignore()) // Id lo genera la BD
             .ForMember(dest => dest.CreatedAt, opt => opt.Ignore()) // Lo asigna el servicio
             .ForMember(dest => dest.IsActive, opt => opt.Ignore()); // Lo asigna el servicio
         
-        // UpdateProductDto → Product (para actualizar)
+        // UpdateProductDto → Product (to update)
         CreateMap<UpdateProductDto, Product>()
             .ForMember(dest => dest.CreatedAt, opt => opt.Ignore());
         CreateMap<ProductDto, UpdateProductDto>();

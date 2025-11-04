@@ -1,3 +1,15 @@
+@inject Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper<dynamic> HtmlHelper
+@{
+var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+string ActiveClass(string controller)
+{
+return currentController == controller ? "bg-primary/20 text-primary dark:bg-primary/30 dark:text-white"
+: "hover:bg-gray-100 dark:hover:bg-gray-800";
+}
+}
+
 <!DOCTYPE html>
 <html class="light" lang="en">
 <head>
@@ -45,19 +57,23 @@
         </div>
         <nav class="flex-grow p-4">
             <div class="flex flex-col gap-2">
-                <a asp-controller="Dashboard" asp-action="Index" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                <a asp-controller="Dashboard" asp-action="Index" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg @ActiveClass("Dashboard")">
                     <span class="material-symbols-outlined">dashboard</span>
                     <p class="text-sm font-medium">Dashboard</p>
                 </a>
-                <a asp-controller="Products" asp-action="Index" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                <a asp-controller="Products" asp-action="Index" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg @ActiveClass("Products")">
                     <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">inventory_2</span>
                     <p class="text-sm font-medium">Products</p>
                 </a>
-                <a asp-controller="Customer" asp-action="Index" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                <a asp-controller="Customers" asp-action="Index" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg @ActiveClass("Customers")">
                     <span class="material-symbols-outlined">group</span>
                     <p class="text-sm font-medium">Customers</p>
                 </a>
-                <a asp-controller="Sales" asp-action="Index" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
+                <a asp-controller="Sales" asp-action="Index" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg @ActiveClass("Sales")">
                     <span class="material-symbols-outlined">bar_chart</span>
                     <p class="text-sm font-medium">Sales</p>
                 </a>

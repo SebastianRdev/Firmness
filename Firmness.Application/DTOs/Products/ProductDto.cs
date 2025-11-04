@@ -1,8 +1,8 @@
 ﻿namespace Firmness.Application.DTOs.Products;
 
 /// <summary>
-/// DTO para mostrar información de un producto.
-/// Usado en: listados, detalles, respuestas de API.
+/// DTO to display product information.
+/// Used in: listings, details, API responses.
 /// </summary>
 public class ProductDto
 {
@@ -15,7 +15,7 @@ public class ProductDto
     public int Stock { get; set; }
     public bool IsActive { get; set; }
     
-    // Propiedad calculada para mostrar en la vista
+    // Calculated property to display in the view
     public string PriceFormatted => $"${Price:N0} COP";
-    public string StockStatus => Stock > 0 ? "Disponible" : "Agotado";
+    public string StockStatus => Stock > 0 ? "Available": "Out of stock";
 }

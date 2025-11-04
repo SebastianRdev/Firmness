@@ -2,39 +2,36 @@
 
 using System.ComponentModel.DataAnnotations;
 
-
 /// <summary>
-/// DTO para actualizar un producto existente.
-/// Usado en: formulario de edición.
+/// DTO to update an existing product.
+/// Used in: edit form.
 /// </summary>
 public class UpdateProductDto
 {
-    // Necesitas el Id para saber cuál producto actualizar
     public int Id { get; set; }
 
-    [Required(ErrorMessage = "El nombre es obligatorio")]
-    [StringLength(100, MinimumLength = 3, ErrorMessage = "El nombre debe tener entre 3 y 100 caracteres")]
+    [Required(ErrorMessage = "Name is required")]
+    [StringLength(100, MinimumLength = 3, ErrorMessage = "The name must be between 3 and 100 characters long")]
     public string Name { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "La categoría es obligatoria")]
-    [StringLength(50, ErrorMessage = "La categoría no puede exceder 50 caracteres")]
+    [Required(ErrorMessage = "Category is required")]
+    [StringLength(50, ErrorMessage = "The category cannot exceed 50 characters")]
     public string Category { get; set; } = string.Empty;
 
-    [StringLength(500, ErrorMessage = "La descripción no puede exceder 500 caracteres")]
+    [StringLength(500, ErrorMessage = "The description cannot exceed 500 characters")]
     public string Description { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "El código es obligatorio")]
-    [StringLength(20, ErrorMessage = "El código no puede exceder 20 caracteres")]
+    [Required(ErrorMessage = "Code is required")]
+    [StringLength(20, ErrorMessage = "The code cannot exceed 20 characters")]
     public string Code { get; set; } = string.Empty;
 
-    [Required(ErrorMessage = "El precio es obligatorio")]
-    [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a 0")]
+    [Required(ErrorMessage = "Price is required")]
+    [Range(0.01, double.MaxValue, ErrorMessage = "The price must be greater than 0")]
     public decimal Price { get; set; }
 
-    [Required(ErrorMessage = "El stock es obligatorio")]
-    [Range(0, int.MaxValue, ErrorMessage = "El stock no puede ser negativo")]
+    [Required(ErrorMessage = "Stock is required")]
+    [Range(0, int.MaxValue, ErrorMessage = "The stock cannot be negative")]
     public int Stock { get; set; }
-
-    // Permite activar/desactivar el producto
+    
     public bool IsActive { get; set; } = true;
 }

@@ -1,43 +1,42 @@
-﻿// Firmness.Application/Interfaces/IProductService.cs
+﻿namespace Firmness.Application.Interfaces;
+
 using Firmness.Application.DTOs.Products;
 using Firmness.Application.Common;
-
-namespace Firmness.Application.Interfaces;
 
 public interface IProductService
 {
     /// <summary>
-    /// Obtiene todos los productos del sistema.
+    /// It obtains all the products of the system.
     /// </summary>
     Task<ResultOft<IEnumerable<ProductDto>>> GetAllAsync();
 
     /// <summary>
-    /// Obtiene un producto por su ID.
+    /// You get a product by your ID.
     /// </summary>
     Task<ResultOft<ProductDto>> GetByIdAsync(int id);
 
     /// <summary>
-    /// Crea un nuevo producto.
+    /// Create a new product.
     /// </summary>
     Task<ResultOft<ProductDto>> CreateAsync(CreateProductDto createDto);
 
     /// <summary>
-    /// Actualiza un producto existente.
+    /// Update an existing product.
     /// </summary>
     Task<ResultOft<ProductDto>> UpdateAsync(UpdateProductDto updateDto);
 
     /// <summary>
-    /// Elimina un producto.
+    /// Delete a product.
     /// </summary>
     Task<Result> DeleteAsync(int id);
 
     /// <summary>
-    /// Busca productos por término.
+    /// Search for products by term.
     /// </summary>
     Task<ResultOft<IEnumerable<ProductDto>>> SearchAsync(string searchTerm);
 
     /// <summary>
-    /// Verifica si existe un producto.
+    /// Check if a product exists.
     /// </summary>
     Task<bool> ExistsAsync(int id);
 }
