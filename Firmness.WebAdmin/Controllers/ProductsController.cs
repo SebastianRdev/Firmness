@@ -1,29 +1,30 @@
-﻿using AutoMapper;
+﻿namespace Firmness.WebAdmin.Controllers;
+
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Firmness.Application.Interfaces;
 using Firmness.Application.DTOs.Products;
-
-namespace Firmness.WebAdmin.Controllers;
+using Firmness.WebAdmin.ApiClients;
 
 [Authorize(Roles = "Admin")]
 public class ProductsController : Controller
 {
-    private readonly IProductService _productService;
+    private readonly IProductApiClient _productApiClient;
     private readonly IMapper _mapper;
 
     public ProductsController(
-        IProductService productService,
+        IProductApiClient productApiClient,
         IMapper mapper)
     {
-        _productService = productService;
+        _productApiClient = productApiClient;
         _mapper = mapper;
     }
 
     // GET: /Products?page=1
     public async Task<IActionResult> Index(int page = 1)
     {
-        var result = await _productService.GetAllAsync();
+        var result = await _productApiClient.GetAllAsync();
         
         if (!result.IsSuccess)
         {
@@ -38,7 +39,7 @@ public class ProductsController : Controller
     // GET: /Products/Details/5
     public async Task<IActionResult> Details(int id)
     {
-        var result = await _productService.GetByIdAsync(id);
+        var result = await _productApiClient.GetByIdAsync(id);
         
         if (!result.IsSuccess)
         {
@@ -65,7 +66,7 @@ public class ProductsController : Controller
             return View(createDto);
         }
 
-        var result = await _productService.CreateAsync(createDto);
+        var result = await _productApiClient.CreateAsync(createDto);
         
         if (!result.IsSuccess)
         {
@@ -80,7 +81,7 @@ public class ProductsController : Controller
     // GET: /Products/Edit/5
     public async Task<IActionResult> Edit(int id)
     {
-        var result = await _productService.GetByIdAsync(id);
+        var result = await _productApiClient.GetByIdAsync(id);
         
         if (!result.IsSuccess)
         {
@@ -109,7 +110,7 @@ public class ProductsController : Controller
             return View(updateDto);
         }
 
-        var result = await _productService.UpdateAsync(updateDto);
+        var result = await _productApiClient.UpdateAsync(updateDto);
         
         if (!result.IsSuccess)
         {
@@ -124,7 +125,7 @@ public class ProductsController : Controller
     // GET: /Products/Delete/5
     public async Task<IActionResult> Delete(int id)
     {
-        var result = await _productService.GetByIdAsync(id);
+        var result = await _productApiClient.GetByIdAsync(id);
         
         if (!result.IsSuccess)
         {
@@ -140,7 +141,7 @@ public class ProductsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var result = await _productService.DeleteAsync(id);
+        var result = await _productApiClient.DeleteAsync(id);
         
         if (!result.IsSuccess)
         {
@@ -162,7 +163,7 @@ public class ProductsController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var result = await _productService.SearchAsync(term);
+        var result = await _productApiClient.SearchAsync(term);
         
         if (!result.IsSuccess)
         {

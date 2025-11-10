@@ -47,7 +47,17 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     public async Task<bool> ExistsAsync(int id)
     {
         var entity = await _dbSet.FindAsync(id);
-        return entity != null;
+        return await _dbSet.AnyAsync(e => EF.Property<int>(e, "Id") == id);
+    }
+    
+    public async Task<T?> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _dbSet.AsNoTracking().FirstOrDefaultAsync(predicate);
+    }
+
+    public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _dbSet.AsNoTracking().Where(predicate).ToListAsync();
     }
 
     public async Task<int> SaveChangesAsync()

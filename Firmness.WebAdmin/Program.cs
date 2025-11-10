@@ -11,6 +11,7 @@ using Firmness.Application.Interfaces;
 using Firmness.Application.Services;
 using Firmness.Domain.Interfaces;
 using Firmness.Application.Mappings;
+using Firmness.WebAdmin.ApiClients;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,7 +55,14 @@ builder.Services.AddControllersWithViews();
 // Add database
 builder.Services.AddDatabase(builder.Configuration);
 
-
+// ========================================
+// HttpClient para consumir la API
+// ========================================
+builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:5000/api/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 
 var app = builder.Build();
 
