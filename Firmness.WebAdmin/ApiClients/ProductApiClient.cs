@@ -7,8 +7,8 @@ using Firmness.Application.DTOs.Products;
 using Firmness.Application.Common;
 
 /// <summary>
-/// Implementación del cliente HTTP para productos.
-/// Maneja la comunicación con la API REST.
+/// Implementation of HTTP client for products.
+/// Handles communication with the REST API.
 /// </summary>
 public class ProductApiClient : IProductApiClient
 {
@@ -86,6 +86,7 @@ public class ProductApiClient : IProductApiClient
         }
     }
 
+    // CREATE
     public async Task<ResultOft<ProductDto>> CreateAsync(CreateProductDto createDto)
     {
         try
@@ -94,7 +95,6 @@ public class ProductApiClient : IProductApiClient
 
             if (!response.IsSuccessStatusCode)
             {
-                // La API devuelve { "error": "mensaje" }
                 var errorResponse = await response.Content.ReadFromJsonAsync<ApiErrorResponse>();
                 _logger.LogWarning("API rejected product creation: {Error}", errorResponse?.Error);
                 return ResultOft<ProductDto>.Failure(errorResponse?.Error ?? "Error creating product");
@@ -117,6 +117,7 @@ public class ProductApiClient : IProductApiClient
         }
     }
 
+    // UPDATE
     public async Task<ResultOft<ProductDto>> UpdateAsync(UpdateProductDto updateDto)
     {
         try
@@ -151,10 +152,8 @@ public class ProductApiClient : IProductApiClient
             return ResultOft<ProductDto>.Failure("Unexpected error. Please try again.");
         }
     }
-
-    // ========================================
+    
     // DELETE
-    // ========================================
     public async Task<Result> DeleteAsync(int id)
     {
         try
@@ -215,9 +214,8 @@ public class ProductApiClient : IProductApiClient
         }
     }
 
-    // ========================================
+    
     // HELPER CLASS (errores de la API)
-    // ========================================
     private class ApiErrorResponse
     {
         public string? Error { get; set; }

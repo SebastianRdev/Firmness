@@ -17,16 +17,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 Env.Load();
 
-// Le dice al framework que usara Identity con tu clase ApplicationUser y roles (IdentityRole)
+// Tells the framework to use Identity with your ApplicationUser class and roles (IdentityRole)
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
-    // Opciones básicas de seguridad (puedes ajustarlas luego)
+    // Basic security options
     options.Password.RequiredLength = 6;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
 })
-.AddEntityFrameworkStores<ApplicationDbContext>() // usa tu contexto actual - Le indica a Identity que guarde toda la información de usuarios en tu DB.
-.AddDefaultTokenProviders(); // Añade mecanismos para generar tokens (por ejemplo, para restablecer contraseñas, confirmar emails, etc)
+.AddEntityFrameworkStores<ApplicationDbContext>() // Use your current context - Tells Identity to store all user information in your DB.
+.AddDefaultTokenProviders(); // Add mechanisms to generate tokens (e.g., to reset passwords, confirm emails, etc.)
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
@@ -41,10 +41,10 @@ builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 
-// Servicios de Application
+// Application Services
 builder.Services.AddScoped<IProductService, ProductService>();
 
-// Servicios de autenticación (ya lo registras en Program.cs, pero puedes centralizarlo aquí)
+// Authentication services (you already register this in Program.cs, but you can centralize it here)
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 
@@ -55,16 +55,24 @@ builder.Services.AddControllersWithViews();
 // Add database
 builder.Services.AddDatabase(builder.Configuration);
 
-// ========================================
-// HttpClient para consumir la API
-// ========================================
+// Consume the API
+var apiBase = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:5264/api/";
+
 builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(client =>
 {
-    client.BaseAddress = new Uri("https://localhost:5000/api/");
+    client.BaseAddress = new Uri(apiBase);
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
+builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBase);
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -73,6 +81,8 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -84,13 +94,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
-
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// --- Seeding y pruebas de conexión ---
+// --- Seeding and connection testing ---
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

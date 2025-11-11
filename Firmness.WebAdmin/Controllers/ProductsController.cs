@@ -1,4 +1,6 @@
-﻿namespace Firmness.WebAdmin.Controllers;
+﻿
+
+namespace Firmness.WebAdmin.Controllers;
 
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -6,18 +8,24 @@ using Microsoft.AspNetCore.Authorization;
 using Firmness.Application.Interfaces;
 using Firmness.Application.DTOs.Products;
 using Firmness.WebAdmin.ApiClients;
+using Firmness.WebAdmin.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 
 [Authorize(Roles = "Admin")]
 public class ProductsController : Controller
 {
     private readonly IProductApiClient _productApiClient;
+    private readonly ICategoryApiClient _categoryApiClient;
     private readonly IMapper _mapper;
 
     public ProductsController(
         IProductApiClient productApiClient,
+        ICategoryApiClient categoryApiClient,
         IMapper mapper)
     {
         _productApiClient = productApiClient;
+        _categoryApiClient = categoryApiClient;
         _mapper = mapper;
     }
 
@@ -50,28 +58,76 @@ public class ProductsController : Controller
         return View(result.Data);
     }
 
-    // GET: /Products/Create
-    public IActionResult Create()
+    [HttpGet]
+    public async Task<IActionResult> Create()
     {
-        return View();
+        var result = await _categoryApiClient.GetAllAsync();
+        
+        if (!result.IsSuccess || result.Data == null)
+        {
+            TempData["Error"] = "Could not load categories.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var viewModel = new CreateProductViewModel
+        {
+            Categories = result.Data.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            })
+        };
+
+        return View(viewModel);
     }
+
 
     // POST: /Products/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CreateProductDto createDto)
+    public async Task<IActionResult> Create(CreateProductViewModel model)
     {
         if (!ModelState.IsValid)
         {
-            return View(createDto);
-        }
+            // If validation fails, reload the categories
+            var categories = await _categoryApiClient.GetAllAsync();
+            
+            model.Categories = categories.Data.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name
+            });
 
-        var result = await _productApiClient.CreateAsync(createDto);
+            return View(model);
+        }
+        
+        // Map ViewModel -> DTO expected by the API
+        var dto = new CreateProductDto
+        {
+            Name = model.Name,
+            Price = model.Price,
+            CategoryId = model.CategoryId,
+            Code = model.Code,
+            Description = model.Description,
+            Stock = model.Stock
+        };
+
+        var result = await _productApiClient.CreateAsync(dto);
         
         if (!result.IsSuccess)
         {
-            TempData["Error"] = result.ErrorMessage;
-            return View(createDto);
+            // If there is an error, we reload the categories so that the dropdown is not empty.
+            var categoryResult = await _categoryApiClient.GetAllAsync();
+            model.Categories = categoryResult.IsSuccess && categoryResult.Data != null
+                ? categoryResult.Data.Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                })
+                : Enumerable.Empty<SelectListItem>();
+
+            ModelState.AddModelError(string.Empty, result.ErrorMessage);
+            return View(model);
         }
 
         TempData["Success"] = $"Product '{result.Data.Name}' created successfully";
@@ -118,7 +174,7 @@ public class ProductsController : Controller
             return View(updateDto);
         }
 
-        TempData["Success"] = $"Product '{{result.Data.Name}}' successfully updated";
+        TempData["Success"] = $"Product '{result.Data.Name}' successfully updated";
         return RedirectToAction(nameof(Index));
     }
 

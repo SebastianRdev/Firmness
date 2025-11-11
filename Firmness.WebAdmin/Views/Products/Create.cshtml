@@ -1,72 +1,83 @@
-﻿@{
-ViewData["Title"] = "Create Product";
+﻿@model Firmness.WebAdmin.Models.CreateProductViewModel
+
+@{
+    ViewData["Title"] = "Create Product";
 }
+
 <main class="flex-1 p-6 sm:p-8 lg:p-12">
-<div class="max-w-4xl mx-auto">
-    
-    <!-- PageHeading -->
-    <div class="flex flex-wrap justify-between items-center gap-3 mb-8">
-        <h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Create New Product</h1>
-    </div>
- 
-    
-    <!-- Form Container -->
-    <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm p-6 md:p-8">
-        <form action="#" class="space-y-6" method="POST">
-            <!-- Form Fields Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="max-w-4xl mx-auto">
+        
+        <!-- Page Heading -->
+        <div class="flex flex-wrap justify-between items-center gap-3 mb-8">
+            <h1 class="text-slate-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-[-0.033em]">Create New Product</h1>
+        </div>
+        
+        <!-- Form Container -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm p-6 md:p-8">
+            <form asp-action="Create" method="post" class="space-y-6">
                 
-                <!-- Name -->
-                <label class="flex flex-col">
-                <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Name</p>
-                <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal" placeholder="Ej. Martillo Demoledor" value="Martillo Demoledor Eléctrico"/>
-                </label>
-                <!-- Code -->
-                <label class="flex flex-col">
-                    <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Code</p>
-                    <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal" placeholder="Ej. Martillo Demoledor" value="Martillo Demoledor Eléctrico"/>
-                </label>
+                <!-- Form Fields Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     
-                <!-- Category -->
-                <div class="flex flex-col">
-                    <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Category</p>
-                    <div class="relative">
-                        <select class="form-select appearance-none w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal">
-                        <option>Herramientas Eléctricas</option>
-                        <option>Andamios</option>
-                        <option>Equipo Pesado</option>
-                        </select>
-                        <span class="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">expand_more</span>
+                    <!-- Name -->
+                    <label class="flex flex-col">
+                        <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Name</p>
+                        <input asp-for="Name" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal" placeholder="Ej. Martillo Demoledor"/>
+                        <span asp-validation-for="Name" class="text-red-500 text-sm mt-1"></span>
+                    </label>
+                    
+                    <!-- Code -->
+                    <label class="flex flex-col">
+                        <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Code</p>
+                        <input asp-for="Code" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal" placeholder="Ej. MDE-001"/>
+                        <span asp-validation-for="Code" class="text-red-500 text-sm mt-1"></span>
+                    </label>
+                    
+                    <!-- Category -->
+                    <div class="flex flex-col">
+                        <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Category</p>
+                        <div class="relative">
+                            <select asp-for="CategoryId"
+                                    asp-items="Model.Categories"
+                                    class="form-select appearance-none w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal">
+                                <option value="">Select category...</option>
+                            </select>
+                            <span class="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">expand_more</span>
+                        </div>
+                        <span asp-validation-for="CategoryId" class="text-red-500 text-sm mt-1"></span>
                     </div>
+                    
+                    <!-- Price -->
+                    <label class="flex flex-col">
+                        <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Price</p>
+                        <input asp-for="Price" type="number" step="0.01" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal" placeholder="0.00"/>
+                        <span asp-validation-for="Price" class="text-red-500 text-sm mt-1"></span>
+                    </label>
+                    
+                    <!-- Stock -->
+                    <label class="flex flex-col">
+                        <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Stock</p>
+                        <input asp-for="Stock" type="number" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal" placeholder="0"/>
+                        <span asp-validation-for="Stock" class="text-red-500 text-sm mt-1"></span>
+                    </label>
                 </div>
-            
-                <!-- Price -->
-                <label class="flex flex-col">
-                <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Price</p>
-                <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-red-700 dark:text-red-400 focus:outline-0 focus:ring-2 focus:ring-red-500/50 border border-red-500 bg-red-500/10 h-12 placeholder:text-red-400 dark:placeholder:text-red-500/70 px-4 text-base font-normal leading-normal" placeholder="0.00" value=""/>
-                </label>
-                <!-- Stock -->
-                <label class="flex flex-col">
-                <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Stock</p>
-                <input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal" placeholder="0" value="15"/>
-                </label>
-            </div>
-            
-            <!-- Description -->
-            <div class="flex flex-col">
-                <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Description</p>
-                <textarea class="form-textarea w-full min-h-32 resize-y rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark placeholder:text-slate-400 dark:placeholder:text-slate-500 p-4 text-base font-normal leading-normal" placeholder="Añade una descripción detallada del producto..."></textarea>
-            </div>
-            
-            <!-- Form Actions -->
-            <div class="flex items-center justify-end gap-4 pt-4 border-t border-slate-200 dark:border-slate-800">
-                <button class="px-6 py-2.5 rounded-lg text-base font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700" type="button">Cancel</button>
-                <button class="flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-base font-semibold text-white bg-primary hover:bg-primary/90" type="submit">
-                <span class="material-symbols-outlined">save</span>
-                <span>Save</span>
-                </button>
-            </div>
-        </form>
+                
+                <!-- Description -->
+                <div class="flex flex-col">
+                    <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Description</p>
+                    <textarea asp-for="Description" class="form-textarea w-full min-h-32 resize-y rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark placeholder:text-slate-400 dark:placeholder:text-slate-500 p-4 text-base font-normal leading-normal" placeholder="Añade una descripción detallada del producto..."></textarea>
+                    <span asp-validation-for="Description" class="text-red-500 text-sm mt-1"></span>
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="flex items-center justify-end gap-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+                    <a asp-action="Index" class="px-6 py-2.5 rounded-lg text-base font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700">Cancel</a>
+                    <button type="submit" class="flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg text-base font-semibold text-white bg-primary hover:bg-primary/90">
+                        <span class="material-symbols-outlined">save</span>
+                        <span>Save</span>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 </main>

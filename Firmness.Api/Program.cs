@@ -8,6 +8,7 @@ using Firmness.Infrastructure.Data;
 using Firmness.Infrastructure.Repositories;
 using Firmness.Application.Interfaces;
 using Firmness.Application.Services;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,12 +71,20 @@ builder.Services.AddControllers()
 // 7. SWAGGER
 // ========================================
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    { 
+        Title = "Firmness API", 
+        Version = "v1" 
+    });
+});
 
 // ========================================
 // 8. BUILD
 // ========================================
 var app = builder.Build();
+
 
 // ========================================
 // 9. MIDDLEWARE
@@ -85,6 +94,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Firmness API v1");
         c.RoutePrefix = string.Empty; // Swagger en la raíz
     });
 }
