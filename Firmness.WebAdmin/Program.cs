@@ -64,7 +64,7 @@ builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(client =>
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
-builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(client =>
+builder.Services.AddHttpClient<ICategoryApiClient, CategoryApiClient>(client =>
 {
     client.BaseAddress = new Uri(apiBase);
     client.Timeout = TimeSpan.FromSeconds(30);
