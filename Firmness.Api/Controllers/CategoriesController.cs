@@ -2,34 +2,34 @@ namespace Firmness.API.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using Firmness.Application.Interfaces;
-using Firmness.Application.DTOs.Products;
+using Firmness.Application.DTOs.Categories;
 using Firmness.Application.Common;
 
 
 /// <summary>
-/// Manages products in the inventory
+/// Manages categories in the inventory
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class CategoryController : ControllerBase
+public class CategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
-    private readonly ILogger<ProductsController> _logger;
+    private readonly ILogger<CategoriesController> _logger;
 
-    public CategoryController(ICategoryService categoryService, ILogger<ProductsController> logger)
+    public CategoriesController(ICategoryService categoryService, ILogger<CategoriesController> logger)
     {
         _categoryService = categoryService;
         _logger = logger;
     }      
     
     /// <summary>
-    /// Retrieves all products from the inventory
+    /// Retrieves all categories from the inventory
     /// </summary>
-    /// <returns>A list of all products</returns>
-    /// <response code="200">Returns the list of products</response>
-    /// <response code="400">If there was an error loading the products</response>
+    /// <returns>A list of all categories</returns>
+    /// <response code="200">Returns the list of categories</response>
+    /// <response code="400">If there was an error loading the categories</response>
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<ProductDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<CategoryDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAll()
     {
@@ -44,7 +44,7 @@ public class CategoryController : ControllerBase
     
     
     
-    // ========== HELPERS (sin documentar, son privados) ==========
+    // ========== HELPERS (undocumented, are private) ==========
 
     private IActionResult MapResultToActionResult<T>(ResultOft<T> result)
     {

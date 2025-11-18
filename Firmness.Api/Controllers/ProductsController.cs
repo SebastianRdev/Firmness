@@ -150,7 +150,7 @@ public class ProductsController : ControllerBase
         return MapResultToActionResult(result);
     }
 
-    // ========== HELPERS (sin documentar, son privados) ==========
+    // ========== HELPERS (undocumented, are private) ==========
 
     private IActionResult MapResultToActionResult<T>(ResultOft<T> result)
     {

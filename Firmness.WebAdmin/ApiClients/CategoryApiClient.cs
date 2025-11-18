@@ -1,5 +1,3 @@
-using Firmness.Application.DTOs.Categories;
-
 namespace Firmness.WebAdmin.ApiClients;
 
 using System.Net.Http;

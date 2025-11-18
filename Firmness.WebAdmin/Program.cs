@@ -30,10 +30,6 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-// DbContext
-/*builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));*/
-
 // AutoMapper
 builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
 
@@ -43,6 +39,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 
 // Application Services
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 // Authentication services (you already register this in Program.cs, but you can centralize it here)
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -62,12 +59,26 @@ builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(client =>
 {
     client.BaseAddress = new Uri(apiBase);
     client.Timeout = TimeSpan.FromSeconds(30);
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    // Crea un nuevo HttpClientHandler para desactivar la validación SSL en desarrollo
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator; // Desactiva la validación SSL
+    return handler;
 });
 
 builder.Services.AddHttpClient<ICategoryApiClient, CategoryApiClient>(client =>
 {
     client.BaseAddress = new Uri(apiBase);
     client.Timeout = TimeSpan.FromSeconds(30);
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    // Crea un nuevo HttpClientHandler para desactivar la validación SSL en desarrollo
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator; // Desactiva la validación SSL
+    return handler;
 });
 
 var app = builder.Build();

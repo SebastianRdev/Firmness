@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using DotNetEnv;
 
+using System.Net;
 using Firmness.Domain.Entities;
 using Firmness.Domain.Interfaces;
 using Firmness.Infrastructure.Data;
@@ -26,9 +27,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString)
 );
 
-// ========================================
-// 3. CONFIGURAR IDENTITY (por si acaso)
-// ========================================
+// CONFIGURAR IDENTITY (por si acaso)
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
     options.Password.RequiredLength = 6;
@@ -38,9 +37,7 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// ========================================
-// 4. CONFIGURAR CORS (CRÍTICO)
-// ========================================
+// CONFIGURAR CORS (CRÍTICO)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -51,25 +48,20 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ========================================
-// 5. REGISTRAR SERVICIOS
-// ========================================
+// REGISTRAR SERVICIOS
 builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
-// ========================================
-// 6. CONFIGURAR CONTROLLERS
-// ========================================
+// CONFIGURAR CONTROLLERS
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
 
-// ========================================
-// 7. SWAGGER
-// ========================================
+// SWAGGER
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -80,15 +72,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// ========================================
-// 8. BUILD
-// ========================================
+ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+
+// BUILD
 var app = builder.Build();
 
 
-// ========================================
-// 9. MIDDLEWARE
-// ========================================
+// MIDDLEWARE
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -100,13 +90,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAll"); // ← IMPORTANTE: Antes de UseAuthorization
+app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 
-// ========================================
 // 10. TEST DE CONEXIÓN
-// ========================================
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

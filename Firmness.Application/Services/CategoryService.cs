@@ -12,9 +12,9 @@ using Microsoft.Extensions.Logging;
 /// Provides business logic operations for managing categories,
 /// including creation, retrieval, updating, deletion, and searching.
 /// </summary>
-public class CategoryService
+public class CategoryService : ICategoryService
 {
-    private readonly IGenericRepository<Product> _categoryRepository;
+    private readonly IGenericRepository<Category> _categoryRepository;
     private readonly IMapper _mapper;
     private readonly ILogger<CategoryService> _logger;
 
@@ -25,7 +25,7 @@ public class CategoryService
     /// <param name="mapper">The AutoMapper instance used for object mapping.</param>
     /// <param name="logger">The logger used to record application events and errors.</param>
     public CategoryService(
-        IGenericRepository<Product> categoryRepository,
+        IGenericRepository<Category> categoryRepository,
         IMapper mapper,
         ILogger<CategoryService> logger)
     {
@@ -54,5 +54,35 @@ public class CategoryService
             _logger.LogError(ex, "Error retrieving all categories");
             return ResultOft<IEnumerable<CategoryDto>>.Failure("Error loading categories. Please try again.");
         }
+    }
+
+    public Task<ResultOft<CategoryDto>> GetByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ResultOft<CategoryDto>> CreateAsync(CreateCategoryDto createDto)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ResultOft<CategoryDto>> UpdateAsync(UpdateCategoryDto updateDto)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Result> DeleteAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ResultOft<IEnumerable<CategoryDto>>> SearchAsync(string searchTerm)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> ExistsAsync(int id)
+    {
+        throw new NotImplementedException();
     }
 }
