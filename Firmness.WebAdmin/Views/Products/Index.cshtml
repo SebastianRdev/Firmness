@@ -1,12 +1,11 @@
-﻿@* Views/Products/Index.cshtml *@
-@model IEnumerable<Firmness.Application.DTOs.Products.ProductDto>
+﻿@model IEnumerable<Firmness.WebAdmin.Models.ProductViewModel>
 
 @{
     ViewData["Title"] = "Product Management";
     var searchTerm = ViewData["SearchTerm"] as string;
     var productsList = Model.ToList();
     
-    // Paginación (puedes parametrizarlo después)
+    // Pagination (you can configure this later)
     int currentPage = ViewData["CurrentPage"] as int? ?? 1;
     int pageSize = 10;
     int totalProducts = productsList.Count;

@@ -13,17 +13,23 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa718861-3f03-42ed-8f2e-7c9249f445db" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/CategoriesController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Mappings/WebMappingProfile.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Models/CategoryViewModel.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Models/CreateCategoryViewModel.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Models/EditCategoryViewModel.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Models/ProductViewModel.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Categories/Create.cshtml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Categories/Edit.cshtml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Categories/Index.cshtml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Firmness/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Firmness/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.Api/Controllers/CategoryController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/Controllers/CategoriesController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.Api/Controllers/ProductsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/Controllers/ProductsController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.Api/Firmness.Api.http" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/Firmness.Api.https" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.Api/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.Api/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/appsettings.Development.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.Application/DTOs/Categories/CategoryDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/DTOs/Categories/CategoryDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.Application/Interfaces/ICategoryService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/Interfaces/ICategoryService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Application/DTOs/Products/ProductDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/DTOs/Products/ProductDto.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.Application/Services/CategoryService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/Services/CategoryService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/CategoryApiClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/CategoryApiClient.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/ProductsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/ProductsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Models/EditProductViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Models/EditProductViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Products/Edit.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Products/Edit.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Products/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Products/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Shared/_Sidebar.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Shared/_Sidebar.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,8 +62,17 @@
     <setting file="file://$PROJECT_DIR$/Firmness.Infrastructure/Data/ApplicationDbContextFactory.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/CategoryApiClient.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/ICategoryApiClient.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Controllers/CategoriesController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Mappings/WebMappingProfile.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Models/CategoryViewModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Models/CreateCategoryViewModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Models/CreateProductViewModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Models/EditCategoryViewModel.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Models/EditProductViewModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Models/ProductViewModel.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Views/Categories/Create.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Views/Categories/Edit.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Views/Categories/Index.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -189,7 +204,7 @@
       <workItem from="1762798593869" duration="2275000" />
       <workItem from="1762809460302" duration="12202000" />
       <workItem from="1763479232876" duration="5340000" />
-      <workItem from="1763484711934" duration="1042000" />
+      <workItem from="1763484711934" duration="4000000" />
     </task>
     <servers />
   </component>

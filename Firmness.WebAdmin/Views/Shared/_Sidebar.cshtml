@@ -67,6 +67,11 @@ return currentController == controller ? "bg-primary/20 text-primary dark:bg-pri
                     <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">inventory_2</span>
                     <p class="text-sm font-medium">Products</p>
                 </a>
+                <a asp-controller="Categories" asp-action="Index" 
+                   class="flex items-center gap-3 px-3 py-2 rounded-lg @ActiveClass("Categories")">
+                    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">inventory_2</span>
+                    <p class="text-sm font-medium">Categories</p>
+                </a>
                 <a asp-controller="Customers" asp-action="Index" 
                    class="flex items-center gap-3 px-3 py-2 rounded-lg @ActiveClass("Customers")">
                     <span class="material-symbols-outlined">group</span>

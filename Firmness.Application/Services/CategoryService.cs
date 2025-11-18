@@ -61,9 +61,29 @@ public class CategoryService : ICategoryService
         throw new NotImplementedException();
     }
 
-    public Task<ResultOft<CategoryDto>> CreateAsync(CreateCategoryDto createDto)
+    public async Task<ResultOft<CategoryDto>> CreateAsync(CreateCategoryDto createDto)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var allCategories = await _categoryRepository.GetAllAsync();
+
+            // Map and assign automatic values
+            var category = _mapper.Map<Category>(createDto);
+
+            // Save
+            await _categoryRepository.AddAsync(category);
+            await _categoryRepository.SaveChangesAsync();
+
+            // Return succesfully result
+            var dto = _mapper.Map<CategoryDto>(category);
+            _logger.LogInformation("Product '{ProductName}' created with ID {ProductId}", category.Name, category.Id);
+            return ResultOft<CategoryDto>.Success(dto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating product");
+            return ResultOft<CategoryDto>.Failure("Error creating product. Please try again.");
+        }
     }
 
     public Task<ResultOft<CategoryDto>> UpdateAsync(UpdateCategoryDto updateDto)

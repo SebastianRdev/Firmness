@@ -1,6 +1,4 @@
-﻿
-
-namespace Firmness.WebAdmin.Controllers;
+﻿namespace Firmness.WebAdmin.Controllers;
 
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -37,11 +35,13 @@ public class ProductsController : Controller
         if (!result.IsSuccess)
         {
             TempData["Error"] = result.ErrorMessage;
-            return View(new List<ProductDto>());
+            return View(new List<ProductViewModel>());
         }
 
+        var viewModels = _mapper.Map<List<ProductViewModel>>(result.Data);
+
         ViewData["CurrentPage"] = page;
-        return View(result.Data);
+        return View(viewModels);
     }
 
     // GET: /Products/Details/5
@@ -229,6 +229,6 @@ public class ProductsController : Controller
 
         ViewData["SearchTerm"] = term;
         ViewData["CurrentPage"] = page;
-        return View("Index", result.Data);
+        return View("Index", _mapper.Map<List<ProductViewModel>>(result.Data));
     }
 }
