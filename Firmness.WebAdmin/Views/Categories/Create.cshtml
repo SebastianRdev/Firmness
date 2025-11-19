@@ -15,14 +15,14 @@
         <!-- Form Container -->
         <div class="bg-white dark:bg-slate-900 rounded-xl shadow-sm p-6 md:p-8">
             <form asp-action="Create" method="post" class="space-y-6">
-                
+                @Html.AntiForgeryToken()
                 <!-- Form Fields Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     
                     <!-- Name -->
                     <label class="flex flex-col">
                         <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Name</p>
-                        <input asp-for="Name" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal" placeholder="Ej. Martillo Demoledor"/>
+                        <input asp-for="Name" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal"/>
                         <span asp-validation-for="Name" class="text-red-500 text-sm mt-1"></span>
                     </label>
                 </div>

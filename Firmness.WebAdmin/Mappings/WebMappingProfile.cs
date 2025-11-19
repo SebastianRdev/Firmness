@@ -11,5 +11,7 @@ public class WebMappingProfile : Profile
     {
         CreateMap<ProductDto, ProductViewModel>();
         CreateMap<CategoryDto, CategoryViewModel>();
+
+        CreateMap<EditProductViewModel, UpdateProductDto>();
     }
 }

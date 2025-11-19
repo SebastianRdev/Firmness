@@ -41,6 +41,12 @@ public class CategoriesController : Controller
         return View(viewModels);
     }
 
+    // GET: /Categories/Create
+    [HttpGet]
+    public IActionResult Create()
+    {
+        return View();
+    }
 
     // POST: /Categories/Create
     [HttpPost]

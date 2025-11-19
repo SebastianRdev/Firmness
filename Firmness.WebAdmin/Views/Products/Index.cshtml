@@ -70,6 +70,28 @@
                 Showing results for: <strong class="text-gray-800 dark:text-gray-200">"@searchTerm"</strong>
             </div>
         }
+
+        <!-- Modal de Confirmación -->
+        <div id="deleteModal" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 hidden">
+            <div class="bg-white dark:bg-background-dark rounded-xl shadow-lg w-full max-w-md">
+                <div class="p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/50">
+                            <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-3xl">warning</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Delete Product</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Are you sure you want to delete '<span id="productName"></span>'? This action cannot be undone.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl flex justify-end gap-3">
+                    <button class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600" data-bs-dismiss="modal" id="cancelDeleteBtn">Cancel</button>
+                    <button class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+
         
         <!-- Table Container -->
         <div class="bg-white dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
@@ -78,79 +100,78 @@
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-sm">
                         <thead class="bg-gray-50 dark:bg-gray-800/50">
-                            <tr class="text-left">
-                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Name</th>
-                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Code</th>
-                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Category</th>
-                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Description</th>
-                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Price</th>
-                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Stock</th>
-                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Status</th>
-                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 text-center">Actions</th>
-                            </tr>
+                        <tr class="text-left">
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Name</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Code</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Category</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Description</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Price</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Stock</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Status</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 text-center">Actions</th>
+                        </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
-                            @foreach (var product in pagedProducts)
-                            {
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
-                                        @product.Name
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
-                                        @product.Code
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                            @(GetCategoryColorClass(product.Category))">
-                                            @product.Category
+                        @foreach (var product in pagedProducts)
+                        {
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @product.Name
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-500 dark:text-gray-400">
+                                    @product.Code
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" >
+                                        @product.Category
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-gray-500 dark:text-gray-400 max-w-xs truncate">
+                                    @(string.IsNullOrEmpty(product.Description) ? "-" : product.Description)
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-semibold">
+                                    @product.PriceFormatted
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <span class="font-medium">
+                                        @product.Stock units
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if (product.IsActive)
+                                    {
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                                            Active
                                         </span>
-                                    </td>
-                                    <td class="px-6 py-4 text-gray-500 dark:text-gray-400 max-w-xs truncate">
-                                        @(string.IsNullOrEmpty(product.Description) ? "-" : product.Description)
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-semibold">
-                                        @product.PriceFormatted
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="font-medium @GetStockColorClass(product.Stock)">
-                                            @product.Stock units
+                                    }
+                                    else
+                                    {
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                                            Inactive
                                         </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if (product.IsActive)
-                                        {
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                                                Active
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
-                                                Inactive
-                                            </span>
-                                        }
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <div class="flex justify-center items-center gap-2">
-                                            <a asp-action="Details" asp-route-id="@product.Id" 
-                                               class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" 
-                                               title="View Details">
-                                                <span class="material-symbols-outlined text-xl">visibility</span>
-                                            </a>
-                                            <a asp-action="Edit" asp-route-id="@product.Id" 
-                                               class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" 
-                                               title="Edit">
-                                                <span class="material-symbols-outlined text-xl">edit</span>
-                                            </a>
-                                            <a asp-action="Delete" asp-route-id="@product.Id" 
-                                               class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" 
-                                               title="Delete">
-                                                <span class="material-symbols-outlined text-xl">delete</span>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
+                                    }
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex justify-center items-center gap-2">
+                                        <a asp-action="Details" asp-route-id="@product.Id" 
+                                           class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" 
+                                           title="View Details">
+                                            <span class="material-symbols-outlined text-xl">visibility</span>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@product.Id" 
+                                           class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" 
+                                           title="Edit">
+                                            <span class="material-symbols-outlined text-xl">edit</span>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@product.Id" 
+                                           class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" 
+                                           title="Delete">
+                                            <span class="material-symbols-outlined text-xl">delete</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
                         </tbody>
                     </table>
                 </div>
@@ -244,25 +265,64 @@
     </div>
 </main>
 
-@functions {
-    private string GetCategoryColorClass(string category)
-    {
-        return category?.ToLower() switch
-        {
-            var c when c.Contains("vehicle") || c.Contains("vehiculo") => "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-            var c when c.Contains("tool") || c.Contains("herramienta") => "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-            var c when c.Contains("material") => "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300",
-            _ => "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300"
+
+<!-- JavaScript para manejar el modal -->
+<script>
+    // Mostrar el modal y configurar el producto a eliminar
+    function showDeleteModal(button) {
+        var productId = button.getAttribute("data-id");
+        var productName = button.getAttribute("data-name");
+
+        // Mostrar el nombre del producto en el modal
+        document.getElementById("productName").textContent = productName;
+
+        // Guardar el ID del producto para la acción de eliminación
+        var deleteBtn = document.getElementById("confirmDeleteBtn");
+        deleteBtn.onclick = function() {
+            deleteProduct(productId);
         };
+
+        // Mostrar el modal
+        var modal = document.getElementById('deleteModal');
+        modal.classList.remove('hidden');  // Mostrar el modal
     }
 
-    private string GetStockColorClass(int stock)
-    {
-        return stock switch
-        {
-            > 10 => "text-green-600 dark:text-green-400",
-            > 0 => "text-yellow-600 dark:text-yellow-400",
-            _ => "text-red-600 dark:text-red-400"
-        };
+    // Cerrar el modal
+    function closeDeleteModal() {
+        var modal = document.getElementById('deleteModal');
+        modal.classList.add('hidden');  // Ocultar el modal
     }
-}
+
+    // Llamar al API para eliminar el producto
+    async function deleteProduct(id) {
+        try {
+            // Obtener el token CSRF con JavaScript puro
+            var csrfToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            const response = await fetch(`/Products/${id}`, {
+                method: 'DELETE',  // Método HTTP DELETE
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': csrfToken // Usar el token CSRF obtenido
+                }
+            });
+
+            if (response.ok) {
+                // Si la eliminación es exitosa, ocultamos el modal y eliminamos el producto de la vista
+                var myModal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                myModal.hide();
+                document.querySelector(`[data-id='${id}']`).closest('tr').remove();  // Eliminar la fila de la tabla
+
+                alert('Product deleted successfully!');
+            } else {
+                const errorData = await response.json();
+                alert(`Error deleting product: ${errorData.error}`);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while deleting the product.');
+        }
+    }
+
+
+</script>

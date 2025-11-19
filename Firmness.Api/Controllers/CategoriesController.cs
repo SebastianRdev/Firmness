@@ -36,6 +36,58 @@ public class CategoriesController : ControllerBase
         var result = await _categoryService.GetAllAsync();
         return MapResultToActionResult(result);
     }
+    /// <summary>
+    /// Retrieves a specific category by its ID
+    /// </summary>
+    /// <param name="id">The category ID</param>
+    /// <returns>The category details</returns>
+    /// <response code="200">Returns the category</response>
+    /// <response code="404">If the category is not found</response>
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var result = await _categoryService.GetByIdAsync(id);
+        return MapResultToActionResult(result);
+    }
+
+    /// <summary>
+    /// Creates a new category in the inventory
+    /// </summary>
+    /// <param name="createDto">The category data</param>
+    /// <returns>The newly created category</returns>
+    /// <response code="201">Returns the newly created category</response>
+    /// <response code="400">If the data is invalid or the category code already exists</response>
+    /// <remarks>
+    /// Sample request:
+    ///
+    ///     POST /api/categories
+    ///     {
+    ///        "name": "Portland Cement",
+    ///        "category": "Construction Materials",
+    ///        "description": "High quality cement for construction",
+    ///        "code": "CEM-001",
+    ///        "price": 25000,
+    ///        "stock": 100
+    ///     }
+    ///
+    /// </remarks>
+    [HttpPost]
+    [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Create([FromBody] CreateCategoryDto createDto)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+
+        var result = await _categoryService.CreateAsync(createDto);
+
+        if (!result.IsSuccess)
+            return MapFailure(result);
+
+        return CreatedAtAction(nameof(GetById), new { id = result.Data.Id }, result.Data);
+    }
     
     
     

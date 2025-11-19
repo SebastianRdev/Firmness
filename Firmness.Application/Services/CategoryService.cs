@@ -76,13 +76,13 @@ public class CategoryService : ICategoryService
 
             // Return succesfully result
             var dto = _mapper.Map<CategoryDto>(category);
-            _logger.LogInformation("Product '{ProductName}' created with ID {ProductId}", category.Name, category.Id);
+            _logger.LogInformation("Category '{CategoryName}' created with ID {CategoryId}", category.Name, category.Id);
             return ResultOft<CategoryDto>.Success(dto);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating product");
-            return ResultOft<CategoryDto>.Failure("Error creating product. Please try again.");
+            _logger.LogError(ex, "Error creating category");
+            return ResultOft<CategoryDto>.Failure("Error creating category. Please try again.");
         }
     }
 

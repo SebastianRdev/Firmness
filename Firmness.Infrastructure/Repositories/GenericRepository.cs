@@ -46,7 +46,6 @@ public class GenericRepository<T> : IGenericRepository<T> where T : class
     
     public async Task<bool> ExistsAsync(int id)
     {
-        var entity = await _dbSet.FindAsync(id);
         return await _dbSet.AnyAsync(e => EF.Property<int>(e, "Id") == id);
     }
     

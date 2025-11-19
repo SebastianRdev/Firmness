@@ -145,7 +145,7 @@ public class ProductsController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var updateDto = _mapper.Map<UpdateProductDto>(result.Data);
+        var updateDto = _mapper.Map<EditProductViewModel>(result.Data);
 
         return View(updateDto);
     }
@@ -153,9 +153,9 @@ public class ProductsController : Controller
     // POST: /Products/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, UpdateProductDto updateDto)
+    public async Task<IActionResult> Edit(int id, EditProductViewModel model)
     {
-        if (id != updateDto.Id)
+        if (id != model.Id)
         {
             TempData["Error"] = "ID does not match";
             return RedirectToAction(nameof(Index));
@@ -163,8 +163,10 @@ public class ProductsController : Controller
 
         if (!ModelState.IsValid)
         {
-            return View(updateDto);
+            return View(model);
         }
+        
+        var updateDto = _mapper.Map<UpdateProductDto>(model);
 
         var result = await _productApiClient.UpdateAsync(updateDto);
         
@@ -189,27 +191,24 @@ public class ProductsController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        return View(result.Data);
+        return Json(new { success = true, product = result.Data });
     }
 
     // POST: /Products/Delete/5
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var result = await _productApiClient.DeleteAsync(id);
-        
+    
         if (!result.IsSuccess)
         {
-            TempData["Error"] = result.ErrorMessage;
+            return Json(new { success = false, message = result.ErrorMessage });
         }
-        else
-        {
-            TempData["Success"] = "Product successfully removed";
-        }
-
-        return RedirectToAction(nameof(Index));
+    
+        return Json(new { success = true });
     }
+
 
     // GET: /Products/Search?term=cemento&page=1
     public async Task<IActionResult> Search(string term, int page = 1)
