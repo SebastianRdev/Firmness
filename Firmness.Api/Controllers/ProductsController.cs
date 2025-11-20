@@ -5,7 +5,6 @@ using Firmness.Application.Interfaces;
 using Firmness.Application.DTOs.Products;
 using Firmness.Application.Common;
 
-
 /// <summary>
 /// Manages products in the inventory
 /// </summary>
