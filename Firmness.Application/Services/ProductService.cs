@@ -45,8 +45,9 @@ public class ProductService : IProductService
     {
         try
         {
-            var products = await _productRepository.GetAllAsync();
+            var products = await _productRepository.GetAllAsync(p => p.Category);
             var dtos = _mapper.Map<IEnumerable<ProductDto>>(products);
+            _logger.LogInformation("Retrieved {Count} products", dtos.Count());
             return ResultOft<IEnumerable<ProductDto>>.Success(dtos);
         }
         catch (Exception ex)
@@ -73,7 +74,7 @@ public class ProductService : IProductService
                 return ResultOft<ProductDto>.Failure("The product ID must be greater than 0");
             }
 
-            var product = await _productRepository.GetByIdAsync(id);
+            var product = await _productRepository.GetByIdAsync(id, p => p.Category);
             
             if (product == null)
             {
@@ -103,6 +104,14 @@ public class ProductService : IProductService
     {
         try
         {
+            _logger.LogInformation("🔵 START: Creating product with CategoryId: {CategoryId}", createDto.CategoryId);
+            // Validate that the category exists
+            if (createDto.CategoryId <= 0)
+            {
+                _logger.LogWarning("❌ Invalid CategoryId: {CategoryId}", createDto.CategoryId);
+                return ResultOft<ProductDto>.Failure("You must select a valid category");
+            }
+            
             var allProducts = await _productRepository.GetAllAsync();
             if (allProducts.Any(p => p.Code.Equals(createDto.Code, StringComparison.OrdinalIgnoreCase)))
             {
@@ -113,14 +122,35 @@ public class ProductService : IProductService
             var product = _mapper.Map<Product>(createDto);
             product.CreatedAt = DateTime.UtcNow;
             product.IsActive = true;
+            
+            _logger.LogInformation("🟡 Mapped product: CategoryId={CategoryId}, Name={Name}", 
+                product.CategoryId, product.Name);
 
             // Save
             await _productRepository.AddAsync(product);
-            await _productRepository.SaveChangesAsync();
+            var saved = await _productRepository.SaveChangesAsync();
+            
+            _logger.LogInformation("🟢 Product saved: ID={ProductId}, CategoryId={CategoryId}, Rows affected={Rows}", 
+                product.Id, product.CategoryId, saved);
+            
+            // Recargar con categoría
+            var savedProduct = await _productRepository.GetByIdAsync(product.Id, p => p.Category);
+        
+            if (savedProduct?.Category != null)
+            {
+                _logger.LogInformation("✅ Product reloaded successfully with Category: {CategoryName} (ID: {CategoryId})", 
+                    savedProduct.Category.Name, savedProduct.Category.Id);
+            }
+            else
+            {
+                _logger.LogError("❌ Product reloaded but Category is NULL! ProductId={ProductId}, CategoryId={CategoryId}", 
+                    product.Id, product.CategoryId);
+            }
 
             // Return succesfully result
-            var dto = _mapper.Map<ProductDto>(product);
-            _logger.LogInformation("Product '{ProductName}' created with ID {ProductId}", product.Name, product.Id);
+            var dto = _mapper.Map<ProductDto>(savedProduct);
+            _logger.LogInformation("🏁 FINAL DTO: Id={Id}, CategoryId={CategoryId}, Category={Category}", 
+                dto.Id, dto.CategoryId, dto.Category);
             return ResultOft<ProductDto>.Success(dto);
         }
         catch (Exception ex)

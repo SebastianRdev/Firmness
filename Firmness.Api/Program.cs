@@ -37,24 +37,24 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// CONFIGURAR CORS (CRÍTICO)
+// CONFIGURE CORS (CRITICAL)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()   // Permite cualquier origen (solo para desarrollo)
+        policy.AllowAnyOrigin()   // Allows any source (for development purposes only)
               .AllowAnyMethod()   // GET, POST, PUT, DELETE
               .AllowAnyHeader();  // Authorization, Content-Type, etc.
     });
 });
 
-// REGISTRAR SERVICIOS
+// REGISTER SERVICES
 builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
-// CONFIGURAR CONTROLLERS
+// CONFIGURE CONTROLLERS
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -94,14 +94,14 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 
-// 10. TEST DE CONEXIÓN
+// 10. CONNECTION TEST
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     try
     {
         db.Database.OpenConnection();
-        Console.WriteLine("✅ API conectada a PostgreSQL");
+        Console.WriteLine("✅ API connected to PostgreSQL");
         db.Database.CloseConnection();
     }
     catch (Exception ex)

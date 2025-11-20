@@ -17,6 +17,7 @@
         .ToList();
 }
 
+@Html.AntiForgeryToken()
 <main class="flex-1 flex flex-col h-screen overflow-y-auto">
     <div class="p-6 md:p-8 space-y-6">
         
@@ -266,63 +267,113 @@
 </main>
 
 
-<!-- JavaScript para manejar el modal -->
 <script>
-    // Mostrar el modal y configurar el producto a eliminar
-    function showDeleteModal(button) {
-        var productId = button.getAttribute("data-id");
-        var productName = button.getAttribute("data-name");
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('deleteModal');
+        const productNameSpan = document.getElementById('productName');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        let productIdToDelete = null;
 
-        // Mostrar el nombre del producto en el modal
-        document.getElementById("productName").textContent = productName;
-
-        // Guardar el ID del producto para la acción de eliminación
-        var deleteBtn = document.getElementById("confirmDeleteBtn");
-        deleteBtn.onclick = function() {
-            deleteProduct(productId);
-        };
-
-        // Mostrar el modal
-        var modal = document.getElementById('deleteModal');
-        modal.classList.remove('hidden');  // Mostrar el modal
-    }
-
-    // Cerrar el modal
-    function closeDeleteModal() {
-        var modal = document.getElementById('deleteModal');
-        modal.classList.add('hidden');  // Ocultar el modal
-    }
-
-    // Llamar al API para eliminar el producto
-    async function deleteProduct(id) {
-        try {
-            // Obtener el token CSRF con JavaScript puro
-            var csrfToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
-
-            const response = await fetch(`/Products/${id}`, {
-                method: 'DELETE',  // Método HTTP DELETE
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': csrfToken // Usar el token CSRF obtenido
-                }
+        // Manejar clic en botones de eliminar - usamos el atributo title para identificarlos
+        document.querySelectorAll('a[title="Delete"]').forEach(function(deleteLink) {
+            deleteLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const url = this.href;
+                
+                // Hacer petición AJAX para obtener datos del producto
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            productIdToDelete = data.product.id;
+                            productNameSpan.textContent = data.product.name;
+                            modal.classList.remove('hidden');
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while loading product data.');
+                    });
             });
+        });
 
-            if (response.ok) {
-                // Si la eliminación es exitosa, ocultamos el modal y eliminamos el producto de la vista
-                var myModal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-                myModal.hide();
-                document.querySelector(`[data-id='${id}']`).closest('tr').remove();  // Eliminar la fila de la tabla
+        // Cerrar modal al cancelar
+        cancelDeleteBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+            productIdToDelete = null;
+        });
 
-                alert('Product deleted successfully!');
-            } else {
-                const errorData = await response.json();
-                alert(`Error deleting product: ${errorData.error}`);
+        // Cerrar modal al hacer clic fuera de él
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+                productIdToDelete = null;
             }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while deleting the product.');
-        }
-    }
+        });
 
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                modal.classList.add('hidden');
+                productIdToDelete = null;
+            }
+        });
 
+        // Confirmar eliminación
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (!productIdToDelete) return;
+
+            // Deshabilitar botón mientras se procesa
+            confirmDeleteBtn.disabled = true;
+            const originalText = confirmDeleteBtn.textContent;
+            confirmDeleteBtn.textContent = 'Deleting...';
+
+            // Obtener token antiforgery
+            const token = document.querySelector('input[name="__RequestVerificationToken"]');
+            const formData = new FormData();
+            if (token) {
+                formData.append('__RequestVerificationToken', token.value);
+            }
+
+            // Hacer petición POST para eliminar
+            fetch(`/Products/DeleteConfirmed/${productIdToDelete}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Cerrar modal
+                    modal.classList.add('hidden');
+                    
+                    // Mostrar mensaje de éxito (opcional)
+                    alert('Product deleted successfully!');
+                    
+                    // Recargar la página para ver los cambios
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                    confirmDeleteBtn.disabled = false;
+                    confirmDeleteBtn.textContent = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the product.');
+                confirmDeleteBtn.disabled = false;
+                confirmDeleteBtn.textContent = originalText;
+            });
+        });
+    });
 </script>

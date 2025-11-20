@@ -187,8 +187,7 @@ public class ProductsController : Controller
         
         if (!result.IsSuccess)
         {
-            TempData["Error"] = result.ErrorMessage;
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = false, message = result.ErrorMessage });
         }
 
         return Json(new { success = true, product = result.Data });

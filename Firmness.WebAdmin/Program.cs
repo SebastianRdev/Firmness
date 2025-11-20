@@ -15,6 +15,10 @@ using Firmness.WebAdmin.ApiClients;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
+
 Env.Load();
 
 // Tells the framework to use Identity with your ApplicationUser class and roles (IdentityRole)
@@ -33,9 +37,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // AutoMapper
 builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
 
-// Repositorio genérico
+// Repositories
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
 
 // Application Services
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -62,9 +65,9 @@ builder.Services.AddHttpClient<IProductApiClient, ProductApiClient>(client =>
 })
 .ConfigurePrimaryHttpMessageHandler(() =>
 {
-    // Crea un nuevo HttpClientHandler para desactivar la validación SSL en desarrollo
+    // Create a new HttpClientHandler to disable SSL validation in development
     var handler = new HttpClientHandler();
-    handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator; // Desactiva la validación SSL
+    handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator; // Disable SSL validation
     return handler;
 });
 
@@ -75,9 +78,9 @@ builder.Services.AddHttpClient<ICategoryApiClient, CategoryApiClient>(client =>
 })
 .ConfigurePrimaryHttpMessageHandler(() =>
 {
-    // Crea un nuevo HttpClientHandler para desactivar la validación SSL en desarrollo
+    // Create a new HttpClientHandler to disable SSL validation in development
     var handler = new HttpClientHandler();
-    handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator; // Desactiva la validación SSL
+    handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator; // Disable SSL validation
     return handler;
 });
 

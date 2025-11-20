@@ -12,7 +12,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa718861-3f03-42ed-8f2e-7c9249f445db" name="Changes" comment="" />
+    <list default="true" id="aa718861-3f03-42ed-8f2e-7c9249f445db" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Firmness/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Firmness/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Api/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Application/DTOs/Products/ProductDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/DTOs/Products/ProductDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Application/Firmness.Application.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/Firmness.Application.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Application/Mappings/MappingProfile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/Mappings/MappingProfile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Application/Services/ProductService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/Services/ProductService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Domain/Interfaces/IGenericRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Domain/Interfaces/IGenericRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Infrastructure/Repositories/GenericRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Infrastructure/Repositories/GenericRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/ProductsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/ProductsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Models/ProductViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Models/ProductViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Products/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Products/Index.cshtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/appsettings.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -25,14 +39,15 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/Firmness.Api/Controllers/CategoryController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/DTOs/Categories/CategoryDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/DTOs/Categories/CreateCategoryDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/DTOs/Categories/UpdateCategoryDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/Interfaces/ICategoryService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/Services/CategoryService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Domain/Entities/Category.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.Domain/Interfaces/IProductRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Infrastructure/Data/ApplicationDbContextFactory.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.Infrastructure/Repositories/ProductRepository.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/CategoryApiClient.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/ICategoryApiClient.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Models/CreateProductViewModel.cs" root0="FORCE_HIGHLIGHTING" />
@@ -173,6 +188,8 @@
       <workItem from="1762985312704" duration="2516000" />
       <workItem from="1763068887096" duration="2331000" />
       <workItem from="1763490719947" duration="96000" />
+      <workItem from="1763490819097" duration="10396000" />
+      <workItem from="1763585751718" duration="9645000" />
     </task>
     <servers />
   </component>
