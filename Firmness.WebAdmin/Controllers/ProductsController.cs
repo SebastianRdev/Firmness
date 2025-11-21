@@ -202,7 +202,7 @@ public class ProductsController : Controller
             ModelState.AddModelError(string.Empty, result.ErrorMessage);
             TempData["Error"] = result.ErrorMessage;
 
-            // recargar categorías (igual que arriba)
+            // Reload categories (same as above)
             var categories = await _categoryApiClient.GetAllAsync();
 
             model.Categories = categories.IsSuccess && categories.Data != null

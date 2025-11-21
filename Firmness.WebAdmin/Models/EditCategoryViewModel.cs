@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 
 public class EditCategoryViewModel
 {
-    [Required]
     public int Id { get; set; }
 
     [Required(ErrorMessage = "The name is required")]

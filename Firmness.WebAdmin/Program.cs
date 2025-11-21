@@ -43,6 +43,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 // Application Services
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 // Authentication services (you already register this in Program.cs, but you can centralize it here)
 builder.Services.AddScoped<IAuthService, AuthService>();

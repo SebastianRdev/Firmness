@@ -147,9 +147,6 @@ public class CategoryApiClient : ICategoryApiClient
         }
     }
 
-    // ========================================
-    // DELETE
-    // ========================================
     public async Task<Result> DeleteAsync(int id)
     {
         try

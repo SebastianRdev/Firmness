@@ -75,4 +75,97 @@ public class CategoriesController : Controller
         TempData["Success"] = $"Category '{result.Data.Name}' created successfully";
         return RedirectToAction(nameof(Index));
     }
+    
+    // GET: /Categories/Edit/5
+    public async Task<IActionResult> Edit(int id)
+    {
+        var result = await _categoryApiClient.GetByIdAsync(id);
+        
+        if (!result.IsSuccess)
+        {
+            TempData["Error"] = result.ErrorMessage;
+            return RedirectToAction(nameof(Index));
+        }
+
+        var viewModel = _mapper.Map<EditCategoryViewModel>(result.Data);
+
+        return View(viewModel);
+    }
+
+    // POST: /Categories/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, EditCategoryViewModel model)
+    {
+        if (id != model.Id)
+        {
+            TempData["Error"] = "ID does not match";
+            return RedirectToAction(nameof(Index));
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+        
+        var updateDto = _mapper.Map<UpdateCategoryDto>(model);
+
+        var result = await _categoryApiClient.UpdateAsync(updateDto);
+        
+        if (!result.IsSuccess)
+        {
+            ModelState.AddModelError(string.Empty, result.ErrorMessage);
+            TempData["Error"] = result.ErrorMessage;
+
+            return View(model);
+        }
+
+        TempData["Success"] = $"Category '{result.Data.Name}' successfully updated";
+        return RedirectToAction(nameof(Index));
+    }
+
+    // GET: /Categories/Delete/5
+    public async Task<IActionResult> Delete(int id)
+    {
+        var result = await _categoryApiClient.GetByIdAsync(id);
+        
+        if (!result.IsSuccess)
+        {
+            return Json(new { success = false, message = result.ErrorMessage });
+        }
+
+        return Json(new { success = true, category = result.Data });
+    }
+
+    // POST: /Categories/Delete/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var result = await _categoryApiClient.DeleteAsync(id);
+    
+        if (!result.IsSuccess)
+        {
+            return Json(new { success = false, message = result.ErrorMessage });
+        }
+    
+        return Json(new { success = true });
+    }
+
+
+    // GET: /Categories/Search?term=cemento&page=1
+    public async Task<IActionResult> Search(string term, int page = 1)
+    {
+        var result = await _categoryApiClient.SearchAsync(term);
+        
+        if (!result.IsSuccess)
+        {
+            TempData["Error"] = result.ErrorMessage;
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewData["SearchTerm"] = term;
+        ViewData["CurrentPage"] = page;
+        return View("Index", _mapper.Map<List<CategoryViewModel>>(result.Data));
+    }
 }

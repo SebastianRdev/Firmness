@@ -56,9 +56,31 @@ public class CategoryService : ICategoryService
         }
     }
 
-    public Task<ResultOft<CategoryDto>> GetByIdAsync(int id)
+    public async Task<ResultOft<CategoryDto>> GetByIdAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            if (id <= 0)
+            {
+                return ResultOft<CategoryDto>.Failure("The category ID must be greater than 0");
+            }
+
+            var category = await _categoryRepository.GetByIdAsync(id);
+            
+            if (category == null)
+            {
+                _logger.LogWarning("Category with ID {{CategoryId}} not found", id);
+                return ResultOft<CategoryDto>.Failure($"Category with ID {id} not found");
+            }
+
+            var dto = _mapper.Map<CategoryDto>(category);
+            return ResultOft<CategoryDto>.Success(dto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error obtaining the category {CategoryId}", id);
+            return ResultOft<CategoryDto>.Failure("Error loading category. Please try again.");
+        }
     }
 
     public async Task<ResultOft<CategoryDto>> CreateAsync(CreateCategoryDto createDto)
@@ -86,23 +108,112 @@ public class CategoryService : ICategoryService
         }
     }
 
-    public Task<ResultOft<CategoryDto>> UpdateAsync(UpdateCategoryDto updateDto)
+    public async Task<ResultOft<CategoryDto>> UpdateAsync(UpdateCategoryDto updateDto)
     {
-        throw new NotImplementedException();
+        try
+        {
+            if (updateDto.Id <= 0)
+            {
+                return ResultOft<CategoryDto>.Failure("The category ID must be greater than 0");
+            }
+            
+            var category = await _categoryRepository.GetByIdAsync(updateDto.Id);
+            if (category == null)
+            {
+                _logger.LogWarning("Attempt to update non-existent category with ID {CategoryId}", updateDto.Id);
+                return ResultOft<CategoryDto>.Failure($"Category with ID {updateDto.Id} not found");
+            }
+
+            // Map changes
+            _mapper.Map(updateDto, category);
+
+            // Save
+            await _categoryRepository.UpdateAsync(category);
+            await _categoryRepository.SaveChangesAsync();
+
+            // Return result
+            var dto = _mapper.Map<CategoryDto>(category);
+            _logger.LogInformation("Updated '{CategoryName}' category (ID: {CategoryId})", category.Name, category.Id);
+            return ResultOft<CategoryDto>.Success(dto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Category update failed {CategoryId}", updateDto.Id);
+            return ResultOft<CategoryDto>.Failure("Category update failed. Please try again.");
+        }
     }
 
-    public Task<Result> DeleteAsync(int id)
+    public async Task<Result> DeleteAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            if (id <= 0)
+            {
+                return Result.Failure("The category ID must be greater than 0");
+            }
+            
+            var exists = await _categoryRepository.ExistsAsync(id);
+            if (!exists)
+            {
+                _logger.LogWarning("Attempt to delete non-existent category with ID {CategoryId}", id);
+                return Result.Failure($"Category with ID {id} not found");
+            }
+
+            // Delete
+            await _categoryRepository.DeleteAsync(id);
+            await _categoryRepository.SaveChangesAsync();
+
+            _logger.LogInformation("Category with ID {CategoryId} removed", id);
+            return Result.Success();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting the category {CategoryId}", id);
+            return Result.Failure("Error deleting the category. Please try again..");
+        }
     }
 
-    public Task<ResultOft<IEnumerable<CategoryDto>>> SearchAsync(string searchTerm)
+    public async Task<ResultOft<IEnumerable<CategoryDto>>> SearchAsync(string searchTerm)
     {
-        throw new NotImplementedException();
+        try
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return ResultOft<IEnumerable<CategoryDto>>.Failure("The search term cannot be empty.");
+            }
+
+            if (searchTerm.Length < 2)
+            {
+                return ResultOft<IEnumerable<CategoryDto>>.Failure("The search term must be at least 2 characters long");
+            }
+
+            var categories = await _categoryRepository.GetAllAsync();
+            
+            var filtered = categories.Where(p => 
+                p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+            );
+
+            var dtos = _mapper.Map<IEnumerable<CategoryDto>>(filtered);
+            _logger.LogInformation("Searching for categories with the term '{SearchTerm}' returned {Count} results", searchTerm, dtos.Count());
+            return ResultOft<IEnumerable<CategoryDto>>.Success(dtos);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching for categories with term '{SearchTerm}'", searchTerm);
+            return ResultOft<IEnumerable<CategoryDto>>.Failure("Error searching for categories. Please try again.");
+        }
     }
 
-    public Task<bool> ExistsAsync(int id)
+    public async Task<bool> ExistsAsync(int id)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return await _categoryRepository.ExistsAsync(id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "A category with the code already exists. {CategoryId}", id);
+            return false;
+        }
     }
 }

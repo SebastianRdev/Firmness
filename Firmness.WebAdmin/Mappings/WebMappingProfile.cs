@@ -24,5 +24,9 @@ public class WebMappingProfile : Profile
             .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))
             .ForMember(dest => dest.Stock, opt => opt.MapFrom(src => src.Stock))
             .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive));
+
+        CreateMap<EditCategoryViewModel, UpdateCategoryDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
     }
 }
