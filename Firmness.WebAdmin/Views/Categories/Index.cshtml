@@ -71,6 +71,27 @@
             </div>
         }
         
+        <!-- Modal de Confirmación -->
+        <div id="deleteModal" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 hidden">
+            <div class="bg-white dark:bg-background-dark rounded-xl shadow-lg w-full max-w-md">
+                <div class="p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/50">
+                            <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-3xl">warning</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Delete Category</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Are you sure you want to delete '<span id="categoryName"></span>'? This action cannot be undone.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl flex justify-end gap-3">
+                    <button class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600" data-bs-dismiss="modal" id="cancelDeleteBtn">Cancel</button>
+                    <button class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+        
         <!-- Table Container -->
         <div class="bg-white dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
             @if (pagedCategories.Any())
@@ -78,39 +99,39 @@
                 <div class="overflow-x-auto">
                     <table class="min-w-full text-sm">
                         <thead class="bg-gray-50 dark:bg-gray-800/50">
-                            <tr class="text-left">
-                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Name</th>
-                                <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 text-center">Actions</th>
-                            </tr>
+                        <tr class="text-left">
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Name</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 text-center">Actions</th>
+                        </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
-                            @foreach (var category in pagedCategories)
-                            {
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
-                                        @category.Name
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <div class="flex justify-center items-center gap-2">
-                                            <a asp-action="Details" asp-route-id="@category.Id" 
-                                               class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" 
-                                               title="View Details">
-                                                <span class="material-symbols-outlined text-xl">visibility</span>
-                                            </a>
-                                            <a asp-action="Edit" asp-route-id="@category.Id" 
-                                               class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" 
-                                               title="Edit">
-                                                <span class="material-symbols-outlined text-xl">edit</span>
-                                            </a>
-                                            <a asp-action="Delete" asp-route-id="@category.Id" 
-                                               class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" 
-                                               title="Delete">
-                                                <span class="material-symbols-outlined text-xl">delete</span>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
+                        @foreach (var category in pagedCategories)
+                        {
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @category.Name
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex justify-center items-center gap-2">
+                                        <a asp-action="Details" asp-route-id="@category.Id" 
+                                           class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" 
+                                           title="View Details">
+                                            <span class="material-symbols-outlined text-xl">visibility</span>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@category.Id" 
+                                           class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" 
+                                           title="Edit">
+                                            <span class="material-symbols-outlined text-xl">edit</span>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@category.Id" 
+                                           class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" 
+                                           title="Delete">
+                                            <span class="material-symbols-outlined text-xl">delete</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
                         </tbody>
                     </table>
                 </div>
@@ -203,3 +224,114 @@
         </div>
     </div>
 </main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('deleteModal');
+        const categoryNameSpan = document.getElementById('categoryName');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        let categoryIdToDelete = null;
+
+        // Manejar clic en botones de eliminar - usamos el atributo title para identificarlos
+        document.querySelectorAll('a[title="Delete"]').forEach(function(deleteLink) {
+            deleteLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const url = this.href;
+                
+                // Hacer petición AJAX para obtener datos del category
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            categoryIdToDelete = data.category.id;
+                            categoryNameSpan.textContent = data.category.name;
+                            modal.classList.remove('hidden');
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while loading category data.');
+                    });
+            });
+        });
+
+        // Cerrar modal al cancelar
+        cancelDeleteBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+            categoryIdToDelete = null;
+        });
+
+        // Cerrar modal al hacer clic fuera de él
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+                categoryIdToDelete = null;
+            }
+        });
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                modal.classList.add('hidden');
+                categoryIdToDelete = null;
+            }
+        });
+
+        // Confirmar eliminación
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (!categoryIdToDelete) return;
+
+            // Deshabilitar botón mientras se procesa
+            confirmDeleteBtn.disabled = true;
+            const originalText = confirmDeleteBtn.textContent;
+            confirmDeleteBtn.textContent = 'Deleting...';
+
+            // Obtener token antiforgery
+            const token = document.querySelector('input[name="__RequestVerificationToken"]');
+            const formData = new FormData();
+            if (token) {
+                formData.append('__RequestVerificationToken', token.value);
+            }
+
+            // Hacer petición POST para eliminar
+            fetch(`/Categories/DeleteConfirmed/${categoryIdToDelete}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Cerrar modal
+                    modal.classList.add('hidden');
+                    
+                    // Mostrar mensaje de éxito (opcional)
+                    alert('Category deleted successfully!');
+                    
+                    // Recargar la página para ver los cambios
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                    confirmDeleteBtn.disabled = false;
+                    confirmDeleteBtn.textContent = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the category.');
+                confirmDeleteBtn.disabled = false;
+                confirmDeleteBtn.textContent = originalText;
+            });
+        });
+    });
+</script>

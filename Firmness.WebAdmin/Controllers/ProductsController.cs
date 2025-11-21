@@ -145,9 +145,25 @@ public class ProductsController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var updateDto = _mapper.Map<EditProductViewModel>(result.Data);
+        var viewModel = _mapper.Map<EditProductViewModel>(result.Data);
 
-        return View(updateDto);
+        var categoriesResult = await _categoryApiClient.GetAllAsync();
+
+        if (categoriesResult.IsSuccess && categoriesResult.Data != null)
+        {
+            viewModel.Categories = categoriesResult.Data.Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = c.Name,
+                Selected = c.Id == viewModel.CategoryId
+            });
+        }
+        else
+        {
+            viewModel.Categories = Enumerable.Empty<SelectListItem>();
+        }
+
+        return View(viewModel);
     }
 
     // POST: /Products/Edit/5
@@ -163,6 +179,17 @@ public class ProductsController : Controller
 
         if (!ModelState.IsValid)
         {
+            var categories = await _categoryApiClient.GetAllAsync();
+
+            model.Categories = categories.IsSuccess && categories.Data != null
+                ? categories.Data.Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name,
+                    Selected = c.Id == model.CategoryId
+                })
+                : Enumerable.Empty<SelectListItem>();
+
             return View(model);
         }
         
@@ -172,8 +199,22 @@ public class ProductsController : Controller
         
         if (!result.IsSuccess)
         {
+            ModelState.AddModelError(string.Empty, result.ErrorMessage);
             TempData["Error"] = result.ErrorMessage;
-            return View(updateDto);
+
+            // recargar categorías (igual que arriba)
+            var categories = await _categoryApiClient.GetAllAsync();
+
+            model.Categories = categories.IsSuccess && categories.Data != null
+                ? categories.Data.Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name,
+                    Selected = c.Id == model.CategoryId
+                })
+                : Enumerable.Empty<SelectListItem>();
+
+            return View(model); //
         }
 
         TempData["Success"] = $"Product '{result.Data.Name}' successfully updated";

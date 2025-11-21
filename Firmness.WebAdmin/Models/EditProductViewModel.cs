@@ -11,10 +11,10 @@ public class EditProductViewModel
     [Required(ErrorMessage = "Name is required")]
     [StringLength(100, MinimumLength = 3, ErrorMessage = "The name must be between 3 and 100 characters long")]
     public string Name { get; set; } = string.Empty;
-
-    [Required(ErrorMessage = "Category is required")]
-    [StringLength(50, ErrorMessage = "The category cannot exceed 50 characters")]
-    public string Category { get; set; } = string.Empty;
+    
+    public int CategoryId { get; set; }
+    
+    public IEnumerable<SelectListItem>? Categories { get; set; }
 
     [StringLength(500, ErrorMessage = "The description cannot exceed 500 characters")]
     public string Description { get; set; } = string.Empty;

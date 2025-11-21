@@ -15,8 +15,8 @@ public class UpdateProductDto
     public string Name { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Category is required")]
-    [StringLength(50, ErrorMessage = "The category cannot exceed 50 characters")]
-    public string Category { get; set; } = string.Empty;
+    [Range(1, int.MaxValue, ErrorMessage = "Please select a category")]
+    public int CategoryId { get; set; }
 
     [StringLength(500, ErrorMessage = "The description cannot exceed 500 characters")]
     public string Description { get; set; } = string.Empty;
