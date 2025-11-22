@@ -10,12 +10,12 @@ using Firmness.Application.Common;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class CustomerController : ControllerBase
+public class CustomersController : ControllerBase
 {
     private readonly ICustomerService _customerService;
-    private readonly ILogger<CustomerController> _logger;
+    private readonly ILogger<CustomersController> _logger;
 
-    public CustomerController(ICustomerService customerService, ILogger<CustomerController> logger)
+    public CustomersController(ICustomerService customerService, ILogger<CustomersController> logger)
     {
         _customerService = customerService;
         _logger = logger;
@@ -42,10 +42,10 @@ public class CustomerController : ControllerBase
     /// <returns>The customer details</returns>
     /// <response code="200">Returns the customer</response>
     /// <response code="404">If the customer is not found</response>
-    [HttpGet("{id:int}")]
+    [HttpGet("{id:Guid}")]
     [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetById(Guid id)
     {
         var result = await _customerService.GetByIdAsync(id);
         return MapResultToActionResult(result);
@@ -76,15 +76,12 @@ public class CustomerController : ControllerBase
     /// <response code="200">Returns the updated customer</response>
     /// <response code="400">If the data is invalid or IDs don't match</response>
     /// <response code="404">If the customer is not found</response>
-    [HttpPut("{id:int}")]
+    [HttpPut("{id:Guid}")]
     [ProducesResponseType(typeof(CustomerDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateCustomerDto updateDto)
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateCustomerDto updateDto)
     {
-        if (id != updateDto.Id)
-            return BadRequest(new { error = "ID mismatch between route and payload" });
-
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
@@ -98,10 +95,10 @@ public class CustomerController : ControllerBase
     /// <param name="id">The customer ID to delete</param>
     /// <response code="204">If the customer was successfully deleted</response>
     /// <response code="404">If the customer is not found</response>
-    [HttpDelete("{id:int}")]
+    [HttpDelete("{id:Guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(Guid id)
     {
         var result = await _customerService.DeleteAsync(id);
 
@@ -127,8 +124,50 @@ public class CustomerController : ControllerBase
         return MapResultToActionResult(result);
     }
     
-    
-    
+    // Obtener roles del usuario
+    [HttpGet("{id}/roles")]
+    public async Task<IActionResult> GetUserRoles(Guid id)
+    {
+        try
+        {
+            var roles = await _customerService.GetUserRolesAsync(id);
+            return Ok(roles);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    // Obtener lista de roles disponibles
+    [HttpGet("roles")]
+    public async Task<IActionResult> GetAllRoles()
+    {
+        try
+        {
+            var roles = await _customerService.GetAllRolesAsync();
+            return Ok(roles);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    // Actualizar rol del usuario
+    [HttpPut("{id}/roles")]
+    public async Task<IActionResult> UpdateUserRole(Guid id, [FromBody] string role)
+    {
+        try
+        {
+            await _customerService.UpdateUserRoleAsync(id, role);
+            return Ok(new { message = "Role updated successfully" });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
     
     
     // ========== HELPERS (undocumented, are private) ==========

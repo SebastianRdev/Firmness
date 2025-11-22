@@ -207,9 +207,7 @@ public class CategoryApiClient : ICategoryApiClient
         }
     }
 
-    // ========================================
     // HELPER CLASS (API errors)
-    // ========================================
     private class ApiErrorResponse
     {
         public string? Error { get; set; }

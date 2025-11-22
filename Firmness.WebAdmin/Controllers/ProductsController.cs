@@ -102,17 +102,9 @@ public class ProductsController : Controller
         }
         
         // Map ViewModel -> DTO expected by the API
-        var dto = new CreateProductDto
-        {
-            Name = model.Name,
-            Price = model.Price,
-            CategoryId = model.CategoryId,
-            Code = model.Code,
-            Description = model.Description,
-            Stock = model.Stock
-        };
+        var createDto = _mapper.Map<CreateProductDto>(model);
 
-        var result = await _productApiClient.CreateAsync(dto);
+        var result = await _productApiClient.CreateAsync(createDto);
         
         if (!result.IsSuccess)
         {

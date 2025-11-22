@@ -1,13 +1,354 @@
-﻿
-<!DOCTYPE html>
+﻿@model IEnumerable<Firmness.WebAdmin.Models.CustomerViewModel>
 
-<html>
-<head>
-    <title>title</title>
-</head>
-<body>
-<div>
-      
-</div>
-</body>
-</html>
+@{
+    ViewData["Title"] = "Customer Management";
+    var searchTerm = ViewData["SearchTerm"] as string;
+    var customersList = Model.ToList();
+    
+    // Pagination (you can configure this later)
+    int currentPage = ViewData["CurrentPage"] as int? ?? 1;
+    int pageSize = 10;
+    int totalCustomers = customersList.Count;
+    int totalPages = (int)Math.Ceiling(totalCustomers / (double)pageSize);
+    
+    var pagedCustomers = customersList
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize)
+        .ToList();
+}
+
+@Html.AntiForgeryToken()
+<main class="flex-1 flex flex-col h-screen overflow-y-auto">
+    <div class="p-6 md:p-8 space-y-6">
+        
+        <!-- Page Heading -->
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <div class="flex min-w-72 flex-col gap-2">
+                <h1 class="text-gray-900 dark:text-white text-3xl md:text-4xl font-black leading-tight tracking-tight">Customer Management</h1>
+                <p class="text-gray-500 dark:text-gray-400 text-base font-normal leading-normal">Manage your inventory of construction supplies and vehicle rentals.</p>
+            </div>
+            <a asp-controller="Customers" asp-action="Create" class="flex items-center justify-center gap-2 min-w-[84px] cursor-pointer rounded-lg h-11 px-5 bg-primary text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-primary/90">
+                <span class="material-symbols-outlined">add_circle</span>
+                <span class="truncate">Create New Customer</span>
+            </a>
+        </div>
+        
+        <!-- Notifications -->
+        <partial name="_Notifications" />
+        
+        <!-- Search and Filter Bar -->
+        <form asp-action="Search" method="get" class="flex flex-col md:flex-row gap-4">
+            <div class="flex-grow">
+                <label class="flex flex-col min-w-40 h-12 w-full">
+                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full bg-white dark:bg-background-dark border border-gray-300 dark:border-gray-700 focus-within:ring-2 focus-within:ring-primary">
+                        <div class="text-gray-400 dark:text-gray-500 flex items-center justify-center pl-4">
+                            <span class="material-symbols-outlined">search</span>
+                        </div>
+                        <input name="term" 
+                               value="@searchTerm"
+                               class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-800 dark:text-gray-200 focus:outline-0 focus:ring-0 border-none bg-transparent h-full placeholder:text-gray-400 dark:placeholder:text-gray-500 px-4 pl-2 text-base font-normal leading-normal" 
+                               placeholder="Search by name or code..."/>
+                    </div>
+                </label>
+            </div>
+            
+            <div class="flex gap-2">
+                <button type="submit" class="h-12 px-6 rounded-lg bg-gray-800 dark:bg-gray-700 text-white hover:bg-gray-900 dark:hover:bg-gray-600 font-medium">
+                    Search
+                </button>
+                @if (!string.IsNullOrEmpty(searchTerm))
+                {
+                    <a asp-action="Index" class="h-12 px-6 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 font-medium flex items-center">
+                        Clear
+                    </a>
+                }
+            </div>
+        </form>
+
+        @if (!string.IsNullOrEmpty(searchTerm))
+        {
+            <div class="text-gray-600 dark:text-gray-400">
+                Showing results for: <strong class="text-gray-800 dark:text-gray-200">"@searchTerm"</strong>
+            </div>
+        }
+        
+        <!-- Confirmation Modal -->
+        <div id="deleteModal" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 hidden">
+            <div class="bg-white dark:bg-background-dark rounded-xl shadow-lg w-full max-w-md">
+                <div class="p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/50">
+                            <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-3xl">warning</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Delete Customer</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Are you sure you want to delete '<span id="customerName"></span>'? This action cannot be undone.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl flex justify-end gap-3">
+                    <button class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600" data-bs-dismiss="modal" id="cancelDeleteBtn">Cancel</button>
+                    <button class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Table Container -->
+        <div class="bg-white dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+            @if (pagedCustomers.Any())
+            {
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-gray-50 dark:bg-gray-800/50">
+                        <tr class="text-left">
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">UserName</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">FullName</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Role</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Address</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">PhoneNumber</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 text-center">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                        @foreach (var customer in pagedCustomers)
+                        {
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @customer.UserName
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @customer.FullName
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @customer.Roles.Select(r => r.Text).FirstOrDefault()
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @customer.Address
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @customer.PhoneNumber
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex justify-center items-center gap-2">
+                                        <a asp-action="Details" asp-route-id="@customer.Id" 
+                                           class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200" 
+                                           title="View Details">
+                                            <span class="material-symbols-outlined text-xl">visibility</span>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@customer.Id" 
+                                           class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600" 
+                                           title="Edit">
+                                            <span class="material-symbols-outlined text-xl">edit</span>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@customer.Id" 
+                                           class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600" 
+                                           title="Delete">
+                                            <span class="material-symbols-outlined text-xl">delete</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Showing 
+                        <span class="font-medium">@((currentPage - 1) * pageSize + 1)</span> 
+                        to 
+                        <span class="font-medium">@Math.Min(currentPage * pageSize, totalCustomers)</span> 
+                        of 
+                        <span class="font-medium">@totalCustomers</span> 
+                        results
+                    </p>
+                    <nav class="flex items-center gap-2">
+                        @if (currentPage > 1)
+                        {
+                            <a asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-term="@searchTerm"
+                               class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                                <span class="material-symbols-outlined text-xl">chevron_left</span>
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 opacity-50 cursor-not-allowed" disabled>
+                                <span class="material-symbols-outlined text-xl">chevron_left</span>
+                            </button>
+                        }
+
+                        @for (int i = 1; i <= totalPages; i++)
+                        {
+                            if (i == currentPage)
+                            {
+                                <button class="flex items-center justify-center h-9 w-9 rounded-lg border border-primary bg-primary text-white text-sm font-medium">
+                                    @i
+                                </button>
+                            }
+                            else
+                            {
+                                <a asp-action="Index" asp-route-page="@i" asp-route-term="@searchTerm"
+                                   class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium">
+                                    @i
+                                </a>
+                            }
+                        }
+
+                        @if (currentPage < totalPages)
+                        {
+                            <a asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-term="@searchTerm"
+                               class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800">
+                                <span class="material-symbols-outlined text-xl">chevron_right</span>
+                            </a>
+                        }
+                        else
+                        {
+                            <button class="flex items-center justify-center h-9 w-9 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400 opacity-50 cursor-not-allowed" disabled>
+                                <span class="material-symbols-outlined text-xl">chevron_right</span>
+                            </button>
+                        }
+                    </nav>
+                </div>
+            }
+            else
+            {
+                <!-- Empty State -->
+                <div class="text-center py-12">
+                    <div class="flex justify-center mb-4">
+                        <span class="material-symbols-outlined text-gray-400" style="font-size: 64px;">inventory_2</span>
+                    </div>
+                    <h3 class="mt-2 text-lg font-medium text-gray-900 dark:text-white">No customers found</h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        @if (!string.IsNullOrEmpty(searchTerm))
+                        {
+                            <span>No customers match your search. Try different keywords.</span>
+                        }
+                        else
+                        {
+                            <span>Get started by creating your first customer.</span>
+                        }
+                    </p>
+                    <div class="mt-6">
+                        <a asp-action="Create" class="inline-flex items-center gap-2 px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary/90">
+                            <span class="material-symbols-outlined text-xl">add_circle</span>
+                            New Customer
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('deleteModal');
+        const customerNameSpan = document.getElementById('customerName');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        let customerIdToDelete = null;
+
+        // Manejar clic en botones de eliminar - usamos el atributo title para identificarlos
+        document.querySelectorAll('a[title="Delete"]').forEach(function(deleteLink) {
+            deleteLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const url = this.href;
+                
+                // Hacer petición AJAX para obtener datos del customer
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            customerIdToDelete = data.customer.id;
+                            customerNameSpan.textContent = data.customer.name;
+                            modal.classList.remove('hidden');
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while loading customer data.');
+                    });
+            });
+        });
+
+        // Cerrar modal al cancelar
+        cancelDeleteBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+            customerIdToDelete = null;
+        });
+
+        // Cerrar modal al hacer clic fuera de él
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+                customerIdToDelete = null;
+            }
+        });
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                modal.classList.add('hidden');
+                customerIdToDelete = null;
+            }
+        });
+
+        // Confirmar eliminación
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (!customerIdToDelete) return;
+
+            // Deshabilitar botón mientras se procesa
+            confirmDeleteBtn.disabled = true;
+            const originalText = confirmDeleteBtn.textContent;
+            confirmDeleteBtn.textContent = 'Deleting...';
+
+            // Obtener token antiforgery
+            const token = document.querySelector('input[name="__RequestVerificationToken"]');
+            const formData = new FormData();
+            if (token) {
+                formData.append('__RequestVerificationToken', token.value);
+            }
+
+            // Hacer petición POST para eliminar
+            fetch(`/Customers/DeleteConfirmed/${customerIdToDelete}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Cerrar modal
+                    modal.classList.add('hidden');
+                    
+                    // Mostrar mensaje de éxito (opcional)
+                    alert('Customer deleted successfully!');
+                    
+                    // Recargar la página para ver los cambios
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                    confirmDeleteBtn.disabled = false;
+                    confirmDeleteBtn.textContent = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the customer.');
+                confirmDeleteBtn.disabled = false;
+                confirmDeleteBtn.textContent = originalText;
+            });
+        });
+    });
+</script>

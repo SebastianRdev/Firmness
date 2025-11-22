@@ -213,7 +213,6 @@ public class ProductApiClient : IProductApiClient
             return ResultOft<IEnumerable<ProductDto>>.Failure("Unexpected error. Please try again.");
         }
     }
-
     
     // HELPER CLASS (errores de la API)
     private class ApiErrorResponse

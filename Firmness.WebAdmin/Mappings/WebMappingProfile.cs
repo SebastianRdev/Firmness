@@ -2,8 +2,10 @@ namespace Firmness.WebAdmin.Mappings;
 
 using AutoMapper;
 using Firmness.Application.DTOs.Products;
-using Firmness.WebAdmin.Models;
 using Firmness.Application.DTOs.Categories;
+using Firmness.Application.DTOs.Customers;
+using Firmness.WebAdmin.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 public class WebMappingProfile : Profile
 {
@@ -14,6 +16,15 @@ public class WebMappingProfile : Profile
             .ForMember(dest => dest.Categories, opt => opt.Ignore());
         CreateMap<CategoryDto, CategoryViewModel>();
         CreateMap<CategoryDto, EditCategoryViewModel>();
+        CreateMap<CustomerDto, CustomerViewModel>()
+            .ForMember(dest => dest.Roles, opt => opt.MapFrom(src => src.Roles.Select(role => new SelectListItem
+            {
+                Text = role,
+                Value = role
+            }).ToList()));
+        CreateMap<CustomerDto, EditCustomerViewModel>()
+            .ForMember(dest => dest.Roles, opt => opt.Ignore()) // Los roles se asignarán manualmente en el controlador
+            .ForMember(dest => dest.SelectedRole, opt => opt.MapFrom(src => src.Roles.FirstOrDefault())); // Asigna el primer rol como seleccionado
 
         CreateMap<EditProductViewModel, UpdateProductDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -28,5 +39,13 @@ public class WebMappingProfile : Profile
         CreateMap<EditCategoryViewModel, UpdateCategoryDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<EditCustomerViewModel, UpdateCustomerDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+            .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
+            .ForMember(dest => dest.NewPassword, opt => opt.MapFrom(src => src.NewPassword));
     }
 }

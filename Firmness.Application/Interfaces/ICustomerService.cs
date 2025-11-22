@@ -13,7 +13,7 @@ public interface ICustomerService
     /// <summary>
     /// You get a customer by your ID.
     /// </summary>
-    Task<ResultOft<CustomerDto>> GetByIdAsync(int id);
+    Task<ResultOft<CustomerDto>> GetByIdAsync(Guid id);
 
     /// <summary>
     /// Create a new customer.
@@ -28,7 +28,7 @@ public interface ICustomerService
     /// <summary>
     /// Delete a customer.
     /// </summary>
-    Task<Result> DeleteAsync(int id);
+    Task<Result> DeleteAsync(Guid id);
 
     /// <summary>
     /// Search for customers by term.
@@ -39,4 +39,10 @@ public interface ICustomerService
     /// Check if a customer exists.
     /// </summary>
     Task<bool> ExistsAsync(int id);
+
+    Task<IEnumerable<string>> GetUserRolesAsync(Guid userId);
+
+    Task<IEnumerable<string>> GetAllRolesAsync();
+
+    Task UpdateUserRoleAsync(Guid userId, string newRole);
 }

@@ -59,12 +59,9 @@ public class CategoriesController : Controller
         }
         
         // Map ViewModel -> DTO expected by the API
-        var dto = new CreateCategoryDto
-        {
-            Name = model.Name
-        };
+        var createDto = _mapper.Map<CreateCategoryDto>(model);
 
-        var result = await _categoryApiClient.CreateAsync(dto);
+        var result = await _categoryApiClient.CreateAsync(createDto);
         
         if (!result.IsSuccess)
         {

@@ -87,8 +87,6 @@ public class CategoryService : ICategoryService
     {
         try
         {
-            var allCategories = await _categoryRepository.GetAllAsync();
-
             // Map and assign automatic values
             var category = _mapper.Map<Category>(createDto);
 

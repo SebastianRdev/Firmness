@@ -85,6 +85,19 @@ builder.Services.AddHttpClient<ICategoryApiClient, CategoryApiClient>(client =>
     return handler;
 });
 
+builder.Services.AddHttpClient<ICustomerApiClient, CustomerApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBase);
+    client.Timeout = TimeSpan.FromSeconds(30);
+})
+.ConfigurePrimaryHttpMessageHandler(() =>
+{
+    // Create a new HttpClientHandler to disable SSL validation in development
+    var handler = new HttpClientHandler();
+    handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator; // Disable SSL validation
+    return handler;
+});
+
 var app = builder.Build();
 
 
