@@ -13,4 +13,6 @@ public interface ICustomerApiClient
     Task<ResultOft<IEnumerable<CustomerDto>>> SearchAsync(string searchTerm);
     Task<ResultOft<IEnumerable<string>>> GetAllRolesAsync();
     Task<Result>UpdateUserRoleAsync(Guid id, string selectedRole);
+    Task<ResultOft<IEnumerable<CustomerDto>>> GetAllPaginatedAsync(int page, int pageSize);
+    Task<Result> ImportExcelAsync(IFormFile file);
 }

@@ -264,6 +264,70 @@ public class CustomerApiClient : ICustomerApiClient
             return Result.Failure("Unexpected error. Please try again.");
         }
     }
+    
+    public async Task<ResultOft<IEnumerable<CustomerDto>>> GetAllPaginatedAsync(int page = 1, int pageSize = 10)
+    {
+        try
+        {
+            var response = await _httpClient.GetAsync($"customers?page={page}&pageSize={pageSize}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                _logger.LogError("API error getting paginated customers: {StatusCode} - {Error}", 
+                    response.StatusCode, errorContent);
+                return ResultOft<IEnumerable<CustomerDto>>.Failure("Error loading paginated customers from API");
+            }
+
+            var customers = await response.Content.ReadFromJsonAsync<IEnumerable<CustomerDto>>();
+            return ResultOft<IEnumerable<CustomerDto>>.Success(customers ?? new List<CustomerDto>());
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Network error calling API");
+            return ResultOft<IEnumerable<CustomerDto>>.Failure("Could not connect to API. Please verify the service is running.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error getting paginated customers");
+            return ResultOft<IEnumerable<CustomerDto>>.Failure("Unexpected error. Please try again.");
+        }
+    }
+    
+    public async Task<Result> ImportExcelAsync(IFormFile file)
+    {
+        try
+        {
+            var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(file.OpenReadStream());
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            content.Add(fileContent, "file", file.FileName);
+
+            var response = await _httpClient.PostAsync("customers/import-excel", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                _logger.LogError("API error importing Excel file: {StatusCode} - {Error}",
+                    response.StatusCode, errorContent);
+                return Result.Failure("Error importing Excel file.");
+            }
+
+            return Result.Success();
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "Network error calling API");
+            return Result.Failure("Could not connect to API.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error importing Excel");
+            return Result.Failure("Unexpected error. Please try again.");
+        }
+    }
+
+
 
     // HELPER CLASS (API errors)
     private class ApiErrorResponse

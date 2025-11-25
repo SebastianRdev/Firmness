@@ -25,10 +25,10 @@ public class CustomersController : Controller
     }
     
     // GET: /Customers?page=1
-    public async Task<IActionResult> Index(int page = 1)
+    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
-        var result = await _customerApiClient.GetAllAsync();
-        
+        var result = await _customerApiClient.GetAllPaginatedAsync(page, pageSize);
+    
         if (!result.IsSuccess)
         {
             TempData["Error"] = result.ErrorMessage;
@@ -38,6 +38,8 @@ public class CustomersController : Controller
         var viewModels = _mapper.Map<List<CustomerViewModel>>(result.Data);
 
         ViewData["CurrentPage"] = page;
+        ViewData["PageSize"] = pageSize;
+
         return View(viewModels);
     }
 
@@ -158,4 +160,27 @@ public class CustomersController : Controller
         ViewData["CurrentPage"] = page;
         return View("Index", _mapper.Map<List<CustomerViewModel>>(result.Data));
     }
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ImportExcel(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            TempData["Error"] = "No file selected.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var result = await _customerApiClient.ImportExcelAsync(file);
+    
+        if (!result.IsSuccess)
+        {
+            TempData["Error"] = result.ErrorMessage;
+            return RedirectToAction(nameof(Index));
+        }
+
+        TempData["Success"] = "Data imported successfully!";
+        return RedirectToAction(nameof(Index));
+    }
+
 }

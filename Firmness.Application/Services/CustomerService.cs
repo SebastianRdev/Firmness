@@ -9,6 +9,8 @@ using Firmness.Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using OfficeOpenXml;
 
 /// <summary>
 /// Provides business logic operations for managing customers,
@@ -44,29 +46,32 @@ public class CustomerService : ICustomerService
     /// A <see cref="ResultOft{T}"/> containing a collection of <see cref="CustomerDto"/> 
     /// if successful, or an error message if failed.
     /// </returns>
-    public async Task<ResultOft<IEnumerable<CustomerDto>>> GetAllAsync()
+    public async Task<ResultOft<IEnumerable<CustomerDto>>> GetAllAsync(int page = 1, int pageSize = 10)
     {
         try
         {
-            var customerUsers = await GetCustomerUsersAsync();
-            var customerDtos = new List<CustomerDto>();
+            var query = _userManager.Users.AsQueryable();
 
-            foreach (var user in customerUsers)
-            {
-                var roles = await _userManager.GetRolesAsync(user);
-                var dto = _mapper.Map<CustomerDto>(user);
-                dto.Roles = roles.ToList();
-                customerDtos.Add(dto);
-            }
+            // Pagination: skip previous items based on page number and page size
+            var customers = await query.Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            var customerDtos = _mapper.Map<IEnumerable<CustomerDto>>(customers);
+
+            // If there is no data on that page
+            if (!customerDtos.Any())
+                return ResultOft<IEnumerable<CustomerDto>>.Failure("No customers found on this page.");
 
             return ResultOft<IEnumerable<CustomerDto>>.Success(customerDtos);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving all customers");
-            return ResultOft<IEnumerable<CustomerDto>>.Failure("Error loading customers. Please try again.");
+            _logger.LogError(ex, "Error retrieving paginated customers.");
+            return ResultOft<IEnumerable<CustomerDto>>.Failure("Error loading paginated customers.");
         }
     }
+
 
     public async Task<ResultOft<CustomerDto>> GetByIdAsync(Guid id)
     {
@@ -286,20 +291,41 @@ public class CustomerService : ICustomerService
         await _userManager.AddToRoleAsync(user, newRole); // Asigna el nuevo rol
     }
 
-    private async Task<List<ApplicationUser>> GetCustomerUsersAsync()
+    public async Task<Result> ImportFromExcelAsync(IFormFile file)
     {
-        var users = await _userManager.Users.ToListAsync();
-        var customers = new List<ApplicationUser>();
-
-        foreach (var user in users)
+        try
         {
-            var roles = await _userManager.GetRolesAsync(user);
+            using (var package = new ExcelPackage(file.OpenReadStream()))
+            {
+                var worksheet = package.Workbook.Worksheets[0];
+                var rowCount = worksheet.Dimension.Rows;
+                var columnCount = worksheet.Dimension.Columns;
 
-            if (roles.Contains("Customer"))
-                customers.Add(user);
+                var customerData = new List<CustomerDto>();
+
+                for (int row = 2; row <= rowCount; row++) // Empieza desde la fila 2 para omitir encabezados
+                {
+                    var customer = new CustomerDto
+                    {
+                        UserName = worksheet.Cells[row, 1].Text,
+                        FullName = worksheet.Cells[row, 2].Text,
+                        Email = worksheet.Cells[row, 3].Text,
+                        Address = worksheet.Cells[row, 4].Text,
+                        PhoneNumber = worksheet.Cells[row, 5].Text
+                    };
+
+                    customerData.Add(customer);
+                }
+
+                // Procesamiento adicional con IA para corregir los nombres de las columnas
+
+                return Result.Success();
+            }
         }
-
-        return customers;
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error importing Excel data");
+            return Result.Failure("Error processing the Excel file.");
+        }
     }
-
 }

@@ -2,13 +2,14 @@ namespace Firmness.Application.Interfaces;
 
 using Firmness.Application.DTOs.Customers;
 using Firmness.Application.Common;
+using Microsoft.AspNetCore.Http;
 
 public interface ICustomerService
 {
     /// <summary>
     /// It obtains all the customers of the system.
     /// </summary>
-    Task<ResultOft<IEnumerable<CustomerDto>>> GetAllAsync();
+    Task<ResultOft<IEnumerable<CustomerDto>>> GetAllAsync(int page, int pageSize);
 
     /// <summary>
     /// You get a customer by your ID.
@@ -45,4 +46,5 @@ public interface ICustomerService
     Task<IEnumerable<string>> GetAllRolesAsync();
 
     Task UpdateUserRoleAsync(Guid userId, string newRole);
+    Task<Result> ImportFromExcelAsync(IFormFile file);
 }

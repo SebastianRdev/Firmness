@@ -30,9 +30,9 @@ public class CustomersController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<CustomerDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10)
     {
-        var result = await _customerService.GetAllAsync();
+        var result = await _customerService.GetAllAsync(page, pageSize);
         return MapResultToActionResult(result);
     }
     /// <summary>
@@ -168,6 +168,27 @@ public class CustomersController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+    
+    [HttpPost("import-excel")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ImportExcel(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("No file selected.");
+        }
+
+        var result = await _customerService.ImportFromExcelAsync(file);
+    
+        if (!result.IsSuccess)
+        {
+            return BadRequest(result.ErrorMessage);
+        }
+
+        return Ok(new { message = "Data imported successfully." });
+    }
+
     
     
     // ========== HELPERS (undocumented, are private) ==========

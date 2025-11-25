@@ -6,6 +6,7 @@
 
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="15.1.0" />
+      <PackageReference Include="EPPlus" Version="8.2.1" />
     </ItemGroup>
 
     <PropertyGroup>
