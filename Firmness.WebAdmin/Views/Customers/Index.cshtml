@@ -75,10 +75,31 @@ var pagedCustomers = customersList
 
         @if (!string.IsNullOrEmpty(searchTerm))
         {
-        <div class="text-gray-600 dark:text-gray-400">
-            Showing results for: <strong class="text-gray-800 dark:text-gray-200">"@searchTerm"</strong>
-        </div>
+            <div class="text-gray-600 dark:text-gray-400">
+                Showing results for: <strong class="text-gray-800 dark:text-gray-200">"@searchTerm"</strong>
+            </div>
         }
+        
+        <!-- Confirmation Modal -->
+        <div id="deleteModal" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 hidden">
+            <div class="bg-white dark:bg-background-dark rounded-xl shadow-lg w-full max-w-md">
+                <div class="p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/50">
+                            <span class="material-symbols-outlined text-red-600 dark:text-red-400 text-3xl">warning</span>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Delete Customer</h3>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Are you sure you want to delete '<span id="customerName"></span>'? This action cannot be undone.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl flex justify-end gap-3">
+                    <button class="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600" data-bs-dismiss="modal" id="cancelDeleteBtn">Cancel</button>
+                    <button class="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700" id="confirmDeleteBtn">Delete</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Table Container -->
         <div class="bg-white dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
@@ -186,6 +207,11 @@ var pagedCustomers = customersList
         const importExcelModal = document.getElementById('importExcelModal');
         const closeImportModal = document.getElementById('closeImportModal');
         const cancelImportBtn = document.getElementById('cancelImportBtn');
+        const modal = document.getElementById('deleteModal');
+        const customerNameSpan = document.getElementById('customerName');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        let customerIdToDelete = null;
 
         // Open the modal
         importExcelBtn.addEventListener('click', function() {
@@ -199,6 +225,107 @@ var pagedCustomers = customersList
 
         cancelImportBtn.addEventListener('click', function() {
             importExcelModal.classList.add('hidden');
+        });
+
+        // Manejar clic en botones de eliminar - usamos el atributo title para identificarlos
+        document.querySelectorAll('a[title="Delete"]').forEach(function(deleteLink) {
+            deleteLink.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const url = this.href;
+
+                // Hacer petición AJAX para obtener datos del customer
+                fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            customerIdToDelete = data.customer.id;
+                            customerNameSpan.textContent = data.customer.name;
+                            modal.classList.remove('hidden');
+                        } else {
+                            alert('Error: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while loading customer data.');
+                    });
+            });
+        });
+
+        // Cerrar modal al cancelar
+        cancelDeleteBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+            customerIdToDelete = null;
+        });
+
+        // Cerrar modal al hacer clic fuera de él
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+                customerIdToDelete = null;
+            }
+        });
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                modal.classList.add('hidden');
+                customerIdToDelete = null;
+            }
+        });
+
+        // Confirmar eliminación
+        confirmDeleteBtn.addEventListener('click', function() {
+            if (!customerIdToDelete) return;
+
+            // Deshabilitar botón mientras se procesa
+            confirmDeleteBtn.disabled = true;
+            const originalText = confirmDeleteBtn.textContent;
+            confirmDeleteBtn.textContent = 'Deleting...';
+
+            // Obtener token antiforgery
+            const token = document.querySelector('input[name="__RequestVerificationToken"]');
+            const formData = new FormData();
+            if (token) {
+                formData.append('__RequestVerificationToken', token.value);
+            }
+
+            // Hacer petición POST para eliminar
+            fetch(`/Customers/DeleteConfirmed/${customerIdToDelete}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Cerrar modal
+                        modal.classList.add('hidden');
+
+                        // Mostrar mensaje de éxito (opcional)
+                        alert('Customer deleted successfully!');
+
+                        // Recargar la página para ver los cambios
+                        window.location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                        confirmDeleteBtn.disabled = false;
+                        confirmDeleteBtn.textContent = originalText;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the customer.');
+                    confirmDeleteBtn.disabled = false;
+                    confirmDeleteBtn.textContent = originalText;
+                });
         });
     });
 </script>

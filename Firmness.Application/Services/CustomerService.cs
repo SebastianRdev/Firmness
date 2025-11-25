@@ -1,5 +1,6 @@
 namespace Firmness.Application.Services;
 
+using System.Linq;
 using AutoMapper;
 using Firmness.Application.Common;
 using Firmness.Application.DTOs.Customers;
@@ -50,14 +51,25 @@ public class CustomerService : ICustomerService
     {
         try
         {
-            var query = _userManager.Users.AsQueryable();
+            var customerUsers = await GetCustomerUsersAsync();
 
-            // Pagination: skip previous items based on page number and page size
-            var customers = await query.Skip((page - 1) * pageSize)
+            // Aplicamos la paginación a la lista completa
+            var pagedUsers = customerUsers
+                .OrderBy(u => u.UserName)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToListAsync();
+                .ToList();
 
-            var customerDtos = _mapper.Map<IEnumerable<CustomerDto>>(customers);
+            // Mapeamos con roles incluidos
+            var customerDtos = new List<CustomerDto>();
+
+            foreach (var user in pagedUsers)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                var dto = _mapper.Map<CustomerDto>(user);
+                dto.Roles = roles.ToList();
+                customerDtos.Add(dto);
+            }
 
             // If there is no data on that page
             if (!customerDtos.Any())
@@ -289,6 +301,22 @@ public class CustomerService : ICustomerService
         var currentRoles = await _userManager.GetRolesAsync(user);
         await _userManager.RemoveFromRolesAsync(user, currentRoles.ToArray()); // Elimina los roles actuales
         await _userManager.AddToRoleAsync(user, newRole); // Asigna el nuevo rol
+    }
+    
+    private async Task<List<ApplicationUser>> GetCustomerUsersAsync()
+    {
+        var users = await _userManager.Users.ToListAsync();
+        var customers = new List<ApplicationUser>();
+
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (roles.Contains("Customer"))
+                customers.Add(user);
+        }
+
+        return customers;
     }
 
     public async Task<Result> ImportFromExcelAsync(IFormFile file)

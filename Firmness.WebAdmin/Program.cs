@@ -16,6 +16,7 @@ using FluentValidation;
 using Firmness.WebAdmin.Validators.Customers;
 using Firmness.WebAdmin.Validators.Categories;
 using Firmness.WebAdmin.Validators.Products;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,9 +57,12 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateCustomerValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateProductValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateCategoryValidator>();
 
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
 
 // Add database
 builder.Services.AddDatabase(builder.Configuration);
