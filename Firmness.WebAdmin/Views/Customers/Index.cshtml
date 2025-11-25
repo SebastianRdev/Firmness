@@ -104,6 +104,7 @@
                             <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">UserName</th>
                             <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">FullName</th>
                             <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Role</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Email</th>
                             <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Address</th>
                             <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">PhoneNumber</th>
                             <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 text-center">Actions</th>
@@ -121,6 +122,9 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
                                     @customer.Roles.Select(r => r.Text).FirstOrDefault()
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @customer.Email
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
                                     @customer.Address

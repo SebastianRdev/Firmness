@@ -33,6 +33,13 @@
                         <span asp-validation-for="UserName" class="text-red-500 text-sm mt-1"></span>
                     </label>
                     
+                    <!-- Email -->
+                    <label class="flex flex-col">
+                        <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Email</p>
+                        <input asp-for="Email" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal"/>
+                        <span asp-validation-for="Email" class="text-red-500 text-sm mt-1"></span>
+                    </label>
+                    
                     <!-- Address -->
                     <label class="flex flex-col">
                         <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Address</p>
@@ -45,6 +52,20 @@
                         <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">PhoneNumber</p>
                         <input asp-for="PhoneNumber" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal"/>
                         <span asp-validation-for="PhoneNumber" class="text-red-500 text-sm mt-1"></span>
+                    </label>
+                    
+                    <!-- Password -->
+                    <label class="flex flex-col">
+                        <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">Password</p>
+                        <input asp-for="Password" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal"/>
+                        <span asp-validation-for="Password" class="text-red-500 text-sm mt-1"></span>
+                    </label>
+                    
+                    <!-- ConfirmPassword -->
+                    <label class="flex flex-col">
+                        <p class="text-slate-900 dark:text-white text-base font-medium leading-normal pb-2">ConfirmPassword</p>
+                        <input asp-for="ConfirmPassword" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-slate-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-slate-300 dark:border-slate-700 bg-background-light dark:bg-background-dark h-12 placeholder:text-slate-400 dark:placeholder:text-slate-500 px-4 text-base font-normal leading-normal"/>
+                        <span asp-validation-for="ConfirmPassword" class="text-red-500 text-sm mt-1"></span>
                     </label>
                 </div>
                 

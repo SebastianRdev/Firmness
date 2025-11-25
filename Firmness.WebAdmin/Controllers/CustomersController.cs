@@ -48,6 +48,7 @@ public class CustomersController : Controller
         return View();
     }
 
+
     // POST: /Customers/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -57,12 +58,12 @@ public class CustomersController : Controller
         {
             return View(model);
         }
-        
-        // Map ViewModel -> DTO expected by the API
+
+        // Map ViewModel → DTO
         var createDto = _mapper.Map<CreateCustomerDto>(model);
 
         var result = await _customerApiClient.CreateAsync(createDto);
-        
+
         if (!result.IsSuccess)
         {
             ModelState.AddModelError(string.Empty, result.ErrorMessage);
@@ -76,7 +77,6 @@ public class CustomersController : Controller
     // GET: /Customers/Edit/5
     public async Task<IActionResult> Edit(Guid id)
     {
-        // Obtén el cliente desde la API
         var result = await _customerApiClient.GetByIdAsync(id);
         if (!result.IsSuccess)
         {
@@ -84,7 +84,6 @@ public class CustomersController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        // Obtén los roles disponibles desde la API
         var rolesResult = await _customerApiClient.GetAllRolesAsync();
         if (!rolesResult.IsSuccess)
         {
@@ -92,16 +91,20 @@ public class CustomersController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        // Mapeamos los datos a un ViewModel
         var viewModel = _mapper.Map<EditCustomerViewModel>(result.Data);
-        viewModel.Roles = rolesResult.Data.Select(role => new SelectListItem
-        {
-            Text = role,
-            Value = role
-        }).ToList();
+
+        viewModel.Roles = rolesResult.Data
+            .Select(role => new SelectListItem
+            {
+                Text = role,
+                Value = role,
+                Selected = viewModel.SelectedRole != null && viewModel.SelectedRole.Contains(role)
+            })
+            .ToList();
 
         return View(viewModel);
     }
+
 
     // POST: /Customers/Edit/5
     [HttpPost]
@@ -113,28 +116,20 @@ public class CustomersController : Controller
             return View(model);
         }
 
-        // Crear DTO para actualizar
         var updateDto = _mapper.Map<UpdateCustomerDto>(model);
 
-        // Actualizar rol usando la API
         var result = await _customerApiClient.UpdateAsync(updateDto);
+
         if (!result.IsSuccess)
         {
             TempData["Error"] = result.ErrorMessage;
             return View(model);
         }
 
-        // Asignar el rol seleccionado al usuario
-        var roleUpdateResult = await _customerApiClient.UpdateUserRoleAsync(id, model.SelectedRole);
-        if (!roleUpdateResult.IsSuccess)
-        {
-            TempData["Error"] = roleUpdateResult.ErrorMessage;
-            return View(model);
-        }
-
         TempData["Success"] = $"Customer '{result.Data.UserName}' successfully updated";
-        return RedirectToAction(nameof(Index)); // Redirigir a la lista de clientes
+        return RedirectToAction(nameof(Index));
     }
+
 
     // GET: /Customers/Delete/5
     public async Task<IActionResult> Delete(Guid id)

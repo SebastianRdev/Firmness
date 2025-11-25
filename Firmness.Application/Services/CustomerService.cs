@@ -48,20 +48,15 @@ public class CustomerService : ICustomerService
     {
         try
         {
-            // Obtener todos los usuarios (clientes) de AspNetUsers
-            var customers = await _userManager.Users.ToListAsync();
+            var customerUsers = await GetCustomerUsersAsync();
             var customerDtos = new List<CustomerDto>();
 
-            foreach (var customer in customers)
+            foreach (var user in customerUsers)
             {
-                // Mapear los datos del usuario a CustomerDto
-                var customerDto = _mapper.Map<CustomerDto>(customer);
-
-                // Obtener los roles asociados al usuario
-                var roles = await _userManager.GetRolesAsync(customer);
-                customerDto.Roles = roles.ToList();  // Asignar los roles al CustomerDto
-
-                customerDtos.Add(customerDto);
+                var roles = await _userManager.GetRolesAsync(user);
+                var dto = _mapper.Map<CustomerDto>(user);
+                dto.Roles = roles.ToList();
+                customerDtos.Add(dto);
             }
 
             return ResultOft<IEnumerable<CustomerDto>>.Success(customerDtos);
@@ -78,23 +73,20 @@ public class CustomerService : ICustomerService
         try
         {
             if (id == Guid.Empty)
-            {
                 return ResultOft<CustomerDto>.Failure("The customer ID must be a valid GUID");
-            }
 
-            var customer = await _userManager.FindByIdAsync(id.ToString());
-        
-            if (customer == null)
-            {
-                _logger.LogWarning("Customer with ID {{CustomerId}} not found", id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            if (user == null)
                 return ResultOft<CustomerDto>.Failure($"Customer with ID {id} not found");
-            }
 
-            var dto = _mapper.Map<CustomerDto>(customer);
+            var roles = await _userManager.GetRolesAsync(user);
 
-            // Retrieve user roles
-            var roles = await _userManager.GetRolesAsync(customer);
-            dto.Roles = roles.ToList();  // Assign roles
+            if (!roles.Contains("Customer"))
+                return ResultOft<CustomerDto>.Failure($"Customer with ID {id} not found");
+
+            var dto = _mapper.Map<CustomerDto>(user);
+            dto.Roles = roles.ToList();
 
             return ResultOft<CustomerDto>.Success(dto);
         }
@@ -104,8 +96,7 @@ public class CustomerService : ICustomerService
             return ResultOft<CustomerDto>.Failure("Error loading customer. Please try again.");
         }
     }
-
-
+    
     public async Task<ResultOft<CustomerDto>> CreateAsync(CreateCustomerDto createDto)
     {
         try
@@ -116,17 +107,17 @@ public class CustomerService : ICustomerService
 
             if (!result.Succeeded)
             {
-                return ResultOft<CustomerDto>.Failure("Error creating customer. Please try again.");
+                var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+                return ResultOft<CustomerDto>.Failure(errors);
             }
+            
+            // Assign default role
+            var roleResult = await _userManager.AddToRoleAsync(customer, "Customer");
 
-            // Assign roles to the user
-            if (createDto.Roles != null && createDto.Roles.Any())
+            if (!roleResult.Succeeded)
             {
-                var addRolesResult = await _userManager.AddToRolesAsync(customer, createDto.Roles);
-                if (!addRolesResult.Succeeded)
-                {
-                    return ResultOft<CustomerDto>.Failure("Error assigning roles to customer.");
-                }
+                var errors = string.Join("; ", roleResult.Errors.Select(e => e.Description));
+                return ResultOft<CustomerDto>.Failure(errors);
             }
 
             // Map user to DTO
@@ -254,7 +245,7 @@ public class CustomerService : ICustomerService
         }
     }
 
-    public async Task<bool> ExistsAsync(int id)
+    public async Task<bool> ExistsAsync(Guid id)
     {
         try
         {
@@ -280,7 +271,7 @@ public class CustomerService : ICustomerService
     // Obtener todos los roles disponibles
     public async Task<IEnumerable<string>> GetAllRolesAsync()
     {
-        return new List<string> { "Admin", "Customer", "Manager", "Editor" };  // Roles predeterminados o puedes obtenerlos dinámicamente si es necesario.
+        return new List<string> { "Admin", "Customer" };  // Roles predeterminados o puedes obtenerlos dinámicamente si es necesario.
     }
 
     // Actualizar el rol de un usuario
@@ -292,6 +283,22 @@ public class CustomerService : ICustomerService
         var currentRoles = await _userManager.GetRolesAsync(user);
         await _userManager.RemoveFromRolesAsync(user, currentRoles.ToArray()); // Elimina los roles actuales
         await _userManager.AddToRoleAsync(user, newRole); // Asigna el nuevo rol
+    }
+
+    private async Task<List<ApplicationUser>> GetCustomerUsersAsync()
+    {
+        var users = await _userManager.Users.ToListAsync();
+        var customers = new List<ApplicationUser>();
+
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+
+            if (roles.Contains("Customer"))
+                customers.Add(user);
+        }
+
+        return customers;
     }
 
 }

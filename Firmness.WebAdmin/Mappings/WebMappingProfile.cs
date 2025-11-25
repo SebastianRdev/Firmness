@@ -22,6 +22,9 @@ public class WebMappingProfile : Profile
                 Text = role,
                 Value = role
             }).ToList()));
+        
+        CreateMap<CreateCustomerViewModel, CreateCustomerDto>();
+        
         CreateMap<CustomerDto, EditCustomerViewModel>()
             .ForMember(dest => dest.Roles, opt => opt.Ignore()) // Los roles se asignarán manualmente en el controlador
             .ForMember(dest => dest.SelectedRole, opt => opt.MapFrom(src => src.Roles.FirstOrDefault())); // Asigna el primer rol como seleccionado
@@ -44,6 +47,7 @@ public class WebMappingProfile : Profile
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.UserName))
             .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.FullName))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
             .ForMember(dest => dest.NewPassword, opt => opt.MapFrom(src => src.NewPassword));

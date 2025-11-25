@@ -13,29 +13,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa718861-3f03-42ed-8f2e-7c9249f445db" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/CustomerApiClient.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/ICustomerApiClient.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Customers/Create.cshtml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Customers/Edit.cshtml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Firmness/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Firmness/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.Api/Controllers/CustomerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/Controllers/CustomersController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Api/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/Program.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.Application/DTOs/Customers/CreateCustomerDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/DTOs/Customers/CreateCustomerDto.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.Application/DTOs/Customers/CustomerDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/DTOs/Customers/CustomerDto.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.Application/DTOs/Customers/UpdateCustomerDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/DTOs/Customers/UpdateCustomerDto.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.Application/Interfaces/ICustomerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/Interfaces/ICustomerService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.Application/Mappings/MappingProfile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/Mappings/MappingProfile.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.Application/Services/CategoryService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/Services/CategoryService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.Application/Services/CustomerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/Services/CustomerService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/CategoryApiClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/CategoryApiClient.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/ProductApiClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/ProductApiClient.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/CategoriesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/CategoriesController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/CustomersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/CustomersController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/ProductsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/ProductsController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Mappings/WebMappingProfile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Mappings/WebMappingProfile.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Models/CreateCustomerViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Models/CreateCustomerViewModel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Models/CustomerViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Models/CustomerViewModel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Models/EditCustomerViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Models/EditCustomerViewModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Customers/Create.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Customers/Create.cshtml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Customers/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Customers/Index.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -51,7 +41,6 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/7d382df578ec93391918cfaa4ce7f4b8f35c9aed1241d6556dc9be26df13c/IdentityUser.cs" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/Firmness.Api/Controllers/CustomerController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/DTOs/Categories/CategoryDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/DTOs/Categories/CreateCategoryDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/DTOs/Categories/UpdateCategoryDto.cs" root0="FORCE_HIGHLIGHTING" />
@@ -213,7 +202,9 @@
       <workItem from="1763490719947" duration="96000" />
       <workItem from="1763490819097" duration="10396000" />
       <workItem from="1763585751718" duration="9645000" />
-      <workItem from="1763751438110" duration="19484000" />
+      <workItem from="1763751438110" duration="19745000" />
+      <workItem from="1763773008293" duration="19000" />
+      <workItem from="1764007893589" duration="11561000" />
     </task>
     <servers />
   </component>

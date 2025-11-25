@@ -38,7 +38,7 @@ public interface ICustomerService
     /// <summary>
     /// Check if a customer exists.
     /// </summary>
-    Task<bool> ExistsAsync(int id);
+    Task<bool> ExistsAsync(Guid id);
 
     Task<IEnumerable<string>> GetUserRolesAsync(Guid userId);
 
