@@ -1,4 +1,4 @@
-@model Firmness.WebAdmin.Models.EditCustomerViewModel;
+@model Firmness.WebAdmin.Models.Customers.EditCustomerViewModel;
 
 @{
     ViewData["Title"] = "Edit Customer";
@@ -54,6 +54,15 @@
                     </label>
                 </div>
                 
+                <!-- Email -->
+                <div>
+                    <label class="flex flex-col">
+                        <p class="text-sm font-medium leading-normal pb-2 text-[#0e141b] dark:text-slate-300">Email</p>
+                        <input asp-for="Email" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e141b] dark:text-slate-200 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#d0dbe7] dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 placeholder:text-[#4e7397] px-4 text-base font-normal leading-normal"/>
+                        <span asp-validation-for="Email" class="text-red-500 text-sm mt-1"></span>
+                    </label>
+                </div>
+                
                 <!-- Address -->
                 <div>
                     <label class="flex flex-col">
@@ -72,16 +81,28 @@
                     </label>
                 </div>
                 
-                <!-- Role -->
+                <!-- Password Change Section -->
+                <div class="md:col-span-2 mt-4 pt-4 border-t border-slate-200 dark:border-slate-800">
+                    <p class="text-sm font-medium text-[#0e141b] dark:text-slate-300 mb-4">Change Password (Optional)</p>
+                </div>
+                
+                <!-- NewPassword -->
                 <div>
                     <label class="flex flex-col">
-                        <p class="text-sm font-medium leading-normal pb-2 text-[#0e141b] dark:text-slate-300">Role</p>
-                        <select asp-for="SelectedRole" asp-items="Model.Roles" class="form-select flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e141b] dark:text-slate-200 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#d0dbe7] dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 px-4 text-base font-normal leading-normal">
-                            <option value="">Select a role</option>
-                        </select>
-                        <span asp-validation-for="SelectedRole" class="text-red-500 text-sm mt-1"></span>
+                        <p class="text-sm font-medium leading-normal pb-2 text-[#0e141b] dark:text-slate-300">New Password</p>
+                        <input asp-for="NewPassword" type="password" placeholder="Leave blank to keep current password" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e141b] dark:text-slate-200 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#d0dbe7] dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 placeholder:text-[#4e7397] px-4 text-base font-normal leading-normal"/>
+                        <span asp-validation-for="NewPassword" class="text-red-500 text-sm mt-1"></span>
                     </label>
                 </div>
+
+                <!-- ConfirmNewPassword -->
+                <div>
+                    <label class="flex flex-col">
+                        <p class="text-sm font-medium leading-normal pb-2 text-[#0e141b] dark:text-slate-300">Confirm New Password</p>
+                        <input asp-for="ConfirmNewPassword" type="password" placeholder="Confirm new password" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#0e141b] dark:text-slate-200 focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-[#d0dbe7] dark:border-slate-700 bg-white dark:bg-slate-900 focus:border-primary dark:focus:border-primary h-12 placeholder:text-[#4e7397] px-4 text-base font-normal leading-normal"/>
+                        <span asp-validation-for="ConfirmNewPassword" class="text-red-500 text-sm mt-1"></span>
+                    </label>
+                </div>  
                 
                 <!-- Action Buttons -->
                 <div class="md:col-span-2 flex justify-end items-center gap-3 pt-4 mt-4 border-t border-slate-200 dark:border-slate-800">

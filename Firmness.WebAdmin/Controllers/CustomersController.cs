@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Firmness.Application.Interfaces;
 using Firmness.Application.DTOs.Customers;
 using Firmness.WebAdmin.ApiClients;
-using Firmness.WebAdmin.Models;
+using Firmness.WebAdmin.Models.Customers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 
@@ -84,27 +84,10 @@ public class CustomersController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var rolesResult = await _customerApiClient.GetAllRolesAsync();
-        if (!rolesResult.IsSuccess)
-        {
-            TempData["Error"] = rolesResult.ErrorMessage;
-            return RedirectToAction(nameof(Index));
-        }
-
         var viewModel = _mapper.Map<EditCustomerViewModel>(result.Data);
-
-        viewModel.Roles = rolesResult.Data
-            .Select(role => new SelectListItem
-            {
-                Text = role,
-                Value = role,
-                Selected = viewModel.SelectedRole != null && viewModel.SelectedRole.Contains(role)
-            })
-            .ToList();
 
         return View(viewModel);
     }
-
 
     // POST: /Customers/Edit/5
     [HttpPost]

@@ -1,4 +1,4 @@
-namespace Firmness.WebAdmin.Models;
+namespace Firmness.WebAdmin.Models.Products;
 
 public class ProductViewModel
 {

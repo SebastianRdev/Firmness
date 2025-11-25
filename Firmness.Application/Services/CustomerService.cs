@@ -146,27 +146,27 @@ public class CustomerService : ICustomerService
 
             _mapper.Map(updateDto, customer);
 
-            // Update the roles
-            if (updateDto.Roles != null && updateDto.Roles.Any())
+            // If a new password was provided, we changed it
+            if (!string.IsNullOrEmpty(updateDto.NewPassword))
             {
-                var currentRoles = await _userManager.GetRolesAsync(customer);
-                var rolesToAdd = updateDto.Roles.Except(currentRoles).ToList();
-                var rolesToRemove = currentRoles.Except(updateDto.Roles).ToList();
-
-                if (rolesToRemove.Any())
+                var passwordResult = await _userManager.RemovePasswordAsync(customer);
+                if (!passwordResult.Succeeded)
                 {
-                    await _userManager.RemoveFromRolesAsync(customer, rolesToRemove);
+                    return ResultOft<CustomerDto>.Failure("Error removing the old password.");
                 }
-                if (rolesToAdd.Any())
+
+                var newPasswordResult = await _userManager.AddPasswordAsync(customer, updateDto.NewPassword);
+                if (!newPasswordResult.Succeeded)
                 {
-                    await _userManager.AddToRolesAsync(customer, rolesToAdd);
+                    return ResultOft<CustomerDto>.Failure("Error setting the new password.");
                 }
             }
-            
+
             await _userManager.UpdateAsync(customer);
 
+            // We map the updated client to DTO to return it
             var dto = _mapper.Map<CustomerDto>(customer);
-            _logger.LogInformation("Updated '{CustomerName}' customer (ID: {CustomerId})", customer.UserName, customer.Id);
+            _logger.LogInformation("Updated customer '{CustomerName}' (ID: {CustomerId})", customer.UserName, customer.Id);
 
             return ResultOft<CustomerDto>.Success(dto);
         }
@@ -176,6 +176,7 @@ public class CustomerService : ICustomerService
             return ResultOft<CustomerDto>.Failure("Customer update failed. Please try again.");
         }
     }
+
 
 
     public async Task<Result> DeleteAsync(Guid id)

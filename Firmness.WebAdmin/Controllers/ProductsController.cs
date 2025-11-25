@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Firmness.Application.Interfaces;
 using Firmness.Application.DTOs.Products;
 using Firmness.WebAdmin.ApiClients;
-using Firmness.WebAdmin.Models;
+using Firmness.WebAdmin.Models.Products;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 

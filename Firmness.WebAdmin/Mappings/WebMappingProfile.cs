@@ -4,7 +4,9 @@ using AutoMapper;
 using Firmness.Application.DTOs.Products;
 using Firmness.Application.DTOs.Categories;
 using Firmness.Application.DTOs.Customers;
-using Firmness.WebAdmin.Models;
+using Firmness.WebAdmin.Models.Products;
+using Firmness.WebAdmin.Models.Categories;
+using Firmness.WebAdmin.Models.Customers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 public class WebMappingProfile : Profile
@@ -24,10 +26,8 @@ public class WebMappingProfile : Profile
             }).ToList()));
         
         CreateMap<CreateCustomerViewModel, CreateCustomerDto>();
-        
-        CreateMap<CustomerDto, EditCustomerViewModel>()
-            .ForMember(dest => dest.Roles, opt => opt.Ignore()) // Los roles se asignarán manualmente en el controlador
-            .ForMember(dest => dest.SelectedRole, opt => opt.MapFrom(src => src.Roles.FirstOrDefault())); // Asigna el primer rol como seleccionado
+
+        CreateMap<CustomerDto, EditCustomerViewModel>();
 
         CreateMap<EditProductViewModel, UpdateProductDto>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -50,6 +50,7 @@ public class WebMappingProfile : Profile
             .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
             .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber))
-            .ForMember(dest => dest.NewPassword, opt => opt.MapFrom(src => src.NewPassword));
+            .ForMember(dest => dest.NewPassword, opt => opt.MapFrom(src => src.NewPassword))
+            .ForMember(dest => dest.ConfirmNewPassword, opt => opt.MapFrom(src => src.ConfirmNewPassword));
     }
 }

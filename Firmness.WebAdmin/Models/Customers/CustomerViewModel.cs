@@ -1,4 +1,4 @@
-namespace Firmness.WebAdmin.Models;
+namespace Firmness.WebAdmin.Models.Customers;
 
 using Microsoft.AspNetCore.Mvc.Rendering;
 

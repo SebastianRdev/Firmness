@@ -12,6 +12,10 @@ using Firmness.Application.Services;
 using Firmness.Domain.Interfaces;
 using Firmness.Application.Mappings;
 using Firmness.WebAdmin.ApiClients;
+using FluentValidation;
+using Firmness.WebAdmin.Validators.Customers;
+using Firmness.WebAdmin.Validators.Categories;
+using Firmness.WebAdmin.Validators.Products;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +52,9 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 // Authentication services (you already register this in Program.cs, but you can centralize it here)
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+builder.Services.AddValidatorsFromAssemblyContaining<CreateCustomerValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateProductValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateCategoryValidator>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
