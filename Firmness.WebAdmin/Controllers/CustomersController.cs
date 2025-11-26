@@ -160,22 +160,6 @@ public class CustomersController : Controller
         ViewData["CurrentPage"] = page;
         return View("Index", _mapper.Map<List<CustomerViewModel>>(result.Data));
     }
-    /*
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ImportExcel(IFormFile file)
-    {
-        if (file == null || file.Length == 0)
-            return Json(new { success = false, message = "No file selected." });
-
-        var result = await _customerApiClient.ExtractHeadersFromExcelAsync(file);
-
-        if (!result.IsSuccess)
-            return Json(new { success = false, message = result.ErrorMessage });
-
-        return Json(new { success = true, headers = result.Data.OriginalHeaders });
-    }
-    */
     
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -216,32 +200,4 @@ public class CustomersController : Controller
             headers = result.Data.OriginalHeaders 
         });
     }
-
-    /*
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ImportExcel(IFormFile file)
-    {
-        if (file == null || file.Length == 0)
-        {
-            TempData["Error"] = "No file selected.";
-            return RedirectToAction(nameof(Index));
-        }
-
-        var result = await _customerApiClient.ExtractHeadersFromExcelAsync(file);
-        if (!result.IsSuccess)
-        {
-            TempData["Error"] = result.ErrorMessage;
-            return RedirectToAction(nameof(Index));
-        }
-
-        // Guardar en TempData o en un lugar temporal (ej: cache) para usar luego
-        TempData["ExcelHeaders"] = System.Text.Json.JsonSerializer.Serialize(result.Data.OriginalHeaders);
-
-        // Aquí deberías devolver la vista Index (o partial) que abre un modal y muestra los headers.
-        // Para no cambiar mucho, redirigimos a Index y la vista leerá TempData["ExcelHeaders"] para abrir modal.
-        TempData["Success"] = "Headers extracted. Please confirm mapping.";
-        return RedirectToAction(nameof(Index));
-    }*/
-
 }

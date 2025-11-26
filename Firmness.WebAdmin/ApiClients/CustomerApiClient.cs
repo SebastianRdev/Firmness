@@ -347,8 +347,11 @@ public class CustomerApiClient : ICustomerApiClient
                 return ResultOft<ExcelHeadersResponseDto>.Failure("Error extracting headers from API");
             }
 
-            var dto = await response.Content.ReadFromJsonAsync<ExcelHeadersResponseDto>();
-            return dto != null ? ResultOft<ExcelHeadersResponseDto>.Success(dto) : ResultOft<ExcelHeadersResponseDto>.Failure("No data returned from API");
+            // Leemos el ResultOft completo, no solo el DTO
+            var resultWrapper = await response.Content.ReadFromJsonAsync<ResultOft<ExcelHeadersResponseDto>>();
+        
+            // Devolvemos el resultado tal cual viene de la API
+            return resultWrapper ?? ResultOft<ExcelHeadersResponseDto>.Failure("No data returned from API");
         }
         catch (Exception ex)
         {
