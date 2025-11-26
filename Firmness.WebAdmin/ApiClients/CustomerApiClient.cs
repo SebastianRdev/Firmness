@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Firmness.Application.DTOs.Customers;
 using Firmness.Application.Common;
+using Firmness.Application.DTOs.Excel;
 
 public class CustomerApiClient : ICustomerApiClient
 {
@@ -327,7 +328,35 @@ public class CustomerApiClient : ICustomerApiClient
         }
     }
 
+    public async Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file)
+    {
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            using var stream = file.OpenReadStream();
+            var streamContent = new StreamContent(stream);
+            streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType ?? "application/octet-stream");
+            content.Add(streamContent, "file", file.FileName);
 
+            var response = await _httpClient.PostAsync("customers/import/headers", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                _logger.LogWarning("API rejected header extraction: {StatusCode} - {Error}", response.StatusCode, errorContent);
+                return ResultOft<ExcelHeadersResponseDto>.Failure("Error extracting headers from API");
+            }
+
+            var dto = await response.Content.ReadFromJsonAsync<ExcelHeadersResponseDto>();
+            return dto != null ? ResultOft<ExcelHeadersResponseDto>.Success(dto) : ResultOft<ExcelHeadersResponseDto>.Failure("No data returned from API");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Network error extracting headers from API");
+            return ResultOft<ExcelHeadersResponseDto>.Failure("Could not connect to API");
+        }
+    }
+    
 
     // HELPER CLASS (API errors)
     private class ApiErrorResponse

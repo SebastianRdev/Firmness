@@ -13,10 +13,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa718861-3f03-42ed-8f2e-7c9249f445db" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Firmness.Application/DTOs/Excel/ExcelHeadersResponseDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Firmness.Application/Interfaces/IExcelService.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Firmness.Application/Services/ExcelService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Firmness/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Firmness/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Api/Controllers/CustomersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/Controllers/CustomersController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Api/Firmness.Api.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/Firmness.Api.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Api/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Application/Interfaces/ICustomerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/Interfaces/ICustomerService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.Application/Services/CustomerService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Application/Services/CustomerService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/CustomerApiClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/CustomerApiClient.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/ICustomerApiClient.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/ICustomerApiClient.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/CustomersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/CustomersController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Customers/Create.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Customers/Create.cshtml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Customers/Index.cshtml" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Views/Customers/Index.cshtml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,10 +59,13 @@
     <setting file="file://$PROJECT_DIR$/Firmness.Application/DTOs/Customers/CreateCustomerDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/DTOs/Customers/CustomerDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/DTOs/Customers/UpdateCustomerDto.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.Application/DTOs/Excel/ExcelHeadersResponseDto.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/Interfaces/ICategoryService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/Interfaces/ICustomerService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.Application/Interfaces/IExcelService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/Services/CategoryService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Application/Services/CustomerService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Firmness.Application/Services/ExcelService.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Domain/Entities/Category.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.Infrastructure/Data/ApplicationDbContextFactory.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/ApiClients/CategoryApiClient.cs" root0="FORCE_HIGHLIGHTING" />
@@ -74,6 +86,7 @@
     <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Views/Customers/Create.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Firmness.WebAdmin/Views/Customers/Edit.cshtml" root0="FORCE_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
   </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 8
@@ -83,23 +96,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.Firmness.WebAdmin: https.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.Firmness.WebAdmin: https.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.Firmness.WebAdmin: https">
     <configuration name="Firmness.Api: http" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Firmness.Api/Firmness.Api.csproj" />
@@ -221,6 +234,7 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />

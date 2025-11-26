@@ -2,6 +2,7 @@ namespace Firmness.WebAdmin.ApiClients;
 
 using Firmness.Application.Common;
 using Firmness.Application.DTOs.Customers;
+using Firmness.Application.DTOs.Excel;
 
 public interface ICustomerApiClient
 {
@@ -15,4 +16,5 @@ public interface ICustomerApiClient
     Task<Result>UpdateUserRoleAsync(Guid id, string selectedRole);
     Task<ResultOft<IEnumerable<CustomerDto>>> GetAllPaginatedAsync(int page, int pageSize);
     Task<Result> ImportExcelAsync(IFormFile file);
+    Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file);
 }

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using OfficeOpenXml;
+using Firmness.Application.DTOs.Excel;
 
 /// <summary>
 /// Provides business logic operations for managing customers,
@@ -21,6 +22,7 @@ using OfficeOpenXml;
 public class CustomerService : ICustomerService
 {
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IExcelService _excelService;
     private readonly IMapper _mapper;
     private readonly ILogger<CustomerService> _logger;
 
@@ -32,10 +34,12 @@ public class CustomerService : ICustomerService
     /// <param name="logger">The logger used to record application events and errors.</param>
     public CustomerService(
         UserManager<ApplicationUser> userManager,
+        IExcelService excelService,
         IMapper mapper,
         ILogger<CustomerService> logger)
     {
         _userManager = userManager;
+        _excelService = excelService;
         _mapper = mapper;
         _logger = logger;
     }
@@ -356,4 +360,31 @@ public class CustomerService : ICustomerService
             return Result.Failure("Error processing the Excel file.");
         }
     }
+    
+    public async Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file)
+    {
+        try
+        {
+            if (file == null || file.Length == 0)
+                return ResultOft<ExcelHeadersResponseDto>.Failure("No file uploaded.");
+
+            var headers = await _excelService.GetHeadersAsync(file);
+
+            if (headers == null || headers.Count == 0)
+                return ResultOft<ExcelHeadersResponseDto>.Failure("Excel contains no readable headers.");
+
+            var dto = new ExcelHeadersResponseDto
+            {
+                OriginalHeaders = headers
+            };
+
+            return ResultOft<ExcelHeadersResponseDto>.Success(dto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error extracting headers.");
+            return ResultOft<ExcelHeadersResponseDto>.Failure("Error processing the Excel file.");
+        }
+    }
+    
 }

@@ -1,7 +1,7 @@
+using System.ComponentModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using DotNetEnv;
-
 using System.Net;
 using Firmness.Domain.Entities;
 using Firmness.Domain.Interfaces;
@@ -10,8 +10,17 @@ using Firmness.Infrastructure.Repositories;
 using Firmness.Application.Interfaces;
 using Firmness.Application.Services;
 using Microsoft.OpenApi.Models;
+using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information); 
+
+// Excel
+ExcelPackage.License.SetNonCommercialOrganization("Firmness.Api");
 
 Env.Load();
 
@@ -57,6 +66,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IExcelService, ExcelService>();
 
 // CONFIGURE CONTROLLERS
 builder.Services.AddControllers()
@@ -70,11 +80,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
-    { 
-        Title = "Firmness API", 
-        Version = "v1" 
+    {
+        Title = "Firmness API",
+        Version = "v1"
     });
 });
+
 
 ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
 

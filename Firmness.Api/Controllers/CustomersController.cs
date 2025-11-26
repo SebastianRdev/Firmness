@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Firmness.Application.Interfaces;
 using Firmness.Application.DTOs.Customers;
 using Firmness.Application.Common;
+using Firmness.Application.DTOs.Excel;
+using OfficeOpenXml;
 
 /// <summary>
 /// Manages customers in the inventory
@@ -188,6 +190,44 @@ public class CustomersController : ControllerBase
 
         return Ok(new { message = "Data imported successfully." });
     }
+    
+    [HttpPost("import/headers")]
+    [ProducesResponseType(typeof(ExcelHeadersResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+    public async Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file)
+    {
+        try
+        {
+            if (file == null || file.Length == 0)
+                return ResultOft<ExcelHeadersResponseDto>.Failure("File is empty");
+
+            using var stream = file.OpenReadStream();
+            using var package = new ExcelPackage(stream);
+            var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+            if (worksheet == null)
+                return ResultOft<ExcelHeadersResponseDto>.Failure("No worksheet found");
+
+            var headers = new List<string>();
+            for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
+            {
+                var header = worksheet.Cells[1, col].Text;
+                headers.Add(header);
+            }
+
+            var dto = new ExcelHeadersResponseDto
+            {
+                OriginalHeaders = headers
+            };
+
+            return ResultOft<ExcelHeadersResponseDto>.Success(dto);
+        }
+        catch (Exception ex)
+        {
+            return ResultOft<ExcelHeadersResponseDto>.Failure("Error extracting headers: " + ex.Message);
+        }
+    }
+
+
 
     
     

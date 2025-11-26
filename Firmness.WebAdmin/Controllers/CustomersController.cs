@@ -160,7 +160,64 @@ public class CustomersController : Controller
         ViewData["CurrentPage"] = page;
         return View("Index", _mapper.Map<List<CustomerViewModel>>(result.Data));
     }
+    /*
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ImportExcel(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return Json(new { success = false, message = "No file selected." });
+
+        var result = await _customerApiClient.ExtractHeadersFromExcelAsync(file);
+
+        if (!result.IsSuccess)
+            return Json(new { success = false, message = result.ErrorMessage });
+
+        return Json(new { success = true, headers = result.Data.OriginalHeaders });
+    }
+    */
     
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ImportExcel(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return Json(new { success = false, message = "No file selected." });
+
+        //_logger.LogInformation("📁 File received: {FileName}, Size: {Size} bytes", file.FileName, file.Length);
+
+        var result = await _customerApiClient.ExtractHeadersFromExcelAsync(file);
+
+        //_logger.LogInformation("📊 API Result - IsSuccess: {IsSuccess}", result.IsSuccess);
+
+        if (!result.IsSuccess)
+        {
+            //_logger.LogError("❌ Error from API: {ErrorMessage}", result.ErrorMessage);
+            return Json(new { success = false, message = result.ErrorMessage });
+        }
+
+        if (result.Data == null)
+        {
+            //_logger.LogWarning("⚠️ result.Data is NULL");
+            return Json(new { success = false, message = "No data returned from API" });
+        }
+
+        if (result.Data.OriginalHeaders == null)
+        {
+            //_logger.LogWarning("⚠️ result.Data.OriginalHeaders is NULL");
+            return Json(new { success = false, message = "Headers property is null" });
+        }
+
+        //_logger.LogInformation("✅ Headers count: {Count}", result.Data.OriginalHeaders.Count);
+        //_logger.LogInformation("📋 Headers: {Headers}", string.Join(", ", result.Data.OriginalHeaders));
+
+        return Json(new { 
+            success = true, 
+            headers = result.Data.OriginalHeaders 
+        });
+    }
+
+    /*
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ImportExcel(IFormFile file)
@@ -171,16 +228,20 @@ public class CustomersController : Controller
             return RedirectToAction(nameof(Index));
         }
 
-        var result = await _customerApiClient.ImportExcelAsync(file);
-    
+        var result = await _customerApiClient.ExtractHeadersFromExcelAsync(file);
         if (!result.IsSuccess)
         {
             TempData["Error"] = result.ErrorMessage;
             return RedirectToAction(nameof(Index));
         }
 
-        TempData["Success"] = "Data imported successfully!";
+        // Guardar en TempData o en un lugar temporal (ej: cache) para usar luego
+        TempData["ExcelHeaders"] = System.Text.Json.JsonSerializer.Serialize(result.Data.OriginalHeaders);
+
+        // Aquí deberías devolver la vista Index (o partial) que abre un modal y muestra los headers.
+        // Para no cambiar mucho, redirigimos a Index y la vista leerá TempData["ExcelHeaders"] para abrir modal.
+        TempData["Success"] = "Headers extracted. Please confirm mapping.";
         return RedirectToAction(nameof(Index));
-    }
+    }*/
 
 }

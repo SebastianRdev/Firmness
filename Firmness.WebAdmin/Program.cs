@@ -17,8 +17,17 @@ using Firmness.WebAdmin.Validators.Customers;
 using Firmness.WebAdmin.Validators.Categories;
 using Firmness.WebAdmin.Validators.Products;
 using FluentValidation.AspNetCore;
+using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.SetMinimumLevel(LogLevel.Information); 
+
+// Excel
+ExcelPackage.License.SetNonCommercialOrganization("Firmness.WebAdmin");
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -49,6 +58,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IExcelService, ExcelService>();
 
 // Authentication services (you already register this in Program.cs, but you can centralize it here)
 builder.Services.AddScoped<IAuthService, AuthService>();

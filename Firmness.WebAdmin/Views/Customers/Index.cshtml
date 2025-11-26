@@ -66,9 +66,9 @@ var pagedCustomers = customersList
                 </button>
                 @if (!string.IsNullOrEmpty(searchTerm))
                 {
-                <a asp-action="Index" class="h-12 px-6 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 font-medium flex items-center">
-                    Clear
-                </a>
+                    <a asp-action="Index" class="h-12 px-6 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 font-medium flex items-center">
+                        Clear
+                    </a>
                 }
             </div>
         </form>
@@ -100,75 +100,80 @@ var pagedCustomers = customersList
                 </div>
             </div>
         </div>
+        
+        <div class="mt-4">
+            <h3 class="font-semibold text-gray-700 dark:text-gray-300">Headers leídos:</h3>
+            <pre id="headersOutput" class="p-2 bg-gray-100 dark:bg-gray-700 rounded text-sm text-gray-800 dark:text-gray-200 overflow-x-auto"></pre>
+        </div>
 
         <!-- Table Container -->
         <div class="bg-white dark:bg-gray-900/50 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
             @if (pagedCustomers.Any())
             {
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-sm">
-                    <thead class="bg-gray-50 dark:bg-gray-800/50">
-                    <tr class="text-left">
-                        <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">UserName</th>
-                        <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">FullName</th>
-                        <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Role</th>
-                        <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Email</th>
-                        <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Address</th>
-                        <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">PhoneNumber</th>
-                        <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 text-center">Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
-                    @foreach (var customer in pagedCustomers)
-                    {
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
-                            @customer.UserName
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
-                            @customer.FullName
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
-                            @customer.Roles.Select(r => r.Text).FirstOrDefault()
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
-                            @customer.Email
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
-                            @customer.Address
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
-                            @customer.PhoneNumber
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center">
-                            <div class="flex justify-center items-center gap-2">
-                                <a asp-action="Details" asp-route-id="@customer.Id"
-                                   class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                                   title="View Details">
-                                    <span class="material-symbols-outlined text-xl">visibility</span>
-                                </a>
-                                <a asp-action="Edit" asp-route-id="@customer.Id"
-                                   class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600"
-                                   title="Edit">
-                                    <span class="material-symbols-outlined text-xl">edit</span>
-                                </a>
-                                <a asp-action="Delete" asp-route-id="@customer.Id"
-                                   class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600"
-                                   title="Delete">
-                                    <span class="material-symbols-outlined text-xl">delete</span>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    }
-                    </tbody>
-                </table>
-            </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-gray-50 dark:bg-gray-800/50">
+                        <tr class="text-left">
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">UserName</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">FullName</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Role</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Email</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">Address</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300">PhoneNumber</th>
+                            <th class="px-6 py-4 font-medium text-gray-600 dark:text-gray-300 text-center">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-800">
+                        @foreach (var customer in pagedCustomers)
+                        {
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @customer.UserName
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @customer.FullName
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @customer.Roles.Select(r => r.Text).FirstOrDefault()
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @customer.Email
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @customer.Address
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white font-medium">
+                                    @customer.PhoneNumber
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-center">
+                                    <div class="flex justify-center items-center gap-2">
+                                        <a asp-action="Details" asp-route-id="@customer.Id"
+                                           class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                                           title="View Details">
+                                            <span class="material-symbols-outlined text-xl">visibility</span>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@customer.Id"
+                                           class="p-2 rounded-full hover:bg-yellow-100 dark:hover:bg-yellow-900/50 text-yellow-500 hover:text-yellow-600"
+                                           title="Edit">
+                                            <span class="material-symbols-outlined text-xl">edit</span>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@customer.Id"
+                                           class="p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/50 text-red-500 hover:text-red-600"
+                                           title="Delete">
+                                            <span class="material-symbols-outlined text-xl">delete</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
             }
-            <!-- Pagination here... -->
         </div>
     </div>
 </main>
+
 
 <!-- Modal for Import Excel -->
 <div id="importExcelModal" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 hidden">
@@ -181,14 +186,17 @@ var pagedCustomers = customersList
                 </button>
             </div>
             <div class="mt-6">
-                <label class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" for="file-upload">
-                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
-                        <span class="material-symbols-outlined text-4xl text-gray-400">cloud_upload</span>
-                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Excel files (.xlsx, .xls)</p>
-                    </div>
-                    <input accept=".xlsx, .xls" class="hidden" id="file-upload" type="file"/>
-                </label>
+                <form id="importExcelForm" method="post" enctype="multipart/form-data" asp-action="ImportExcel">
+                    @Html.AntiForgeryToken()
+                    <label class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" for="file-upload">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
+                            <span class="material-symbols-outlined text-4xl text-gray-400">cloud_upload</span>
+                            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Excel files (.xlsx, .xls)</p>
+                        </div>
+                        <input accept=".xlsx, .xls" type="file" name="file" id="file-upload"/>
+                    </label>
+                </form>
             </div>
         </div>
         <div class="flex justify-end gap-3 px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 rounded-b-xl">
@@ -207,34 +215,89 @@ var pagedCustomers = customersList
         const importExcelModal = document.getElementById('importExcelModal');
         const closeImportModal = document.getElementById('closeImportModal');
         const cancelImportBtn = document.getElementById('cancelImportBtn');
+        const headersOutput = document.getElementById('headersOutput');
+
+        // Abrir modal
+        importExcelBtn.addEventListener('click', () => importExcelModal.classList.remove('hidden'));
+
+        // Cerrar modal
+        closeImportModal.addEventListener('click', () => importExcelModal.classList.add('hidden'));
+        cancelImportBtn.addEventListener('click', () => importExcelModal.classList.add('hidden'));
+
+        // Botón de confirmar subida (UN SOLO LISTENER)
+        document.getElementById('confirmImportBtn').addEventListener('click', async function() {
+            const fileInput = document.getElementById('file-upload');
+
+            if (!fileInput.files.length) {
+                alert('Por favor selecciona un archivo.');
+                headersOutput.textContent = "No se seleccionó ningún archivo.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            // Token antiforgery
+            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (tokenInput) {
+                formData.append('__RequestVerificationToken', tokenInput.value);
+            }
+
+            // Mostrar estado de carga
+            headersOutput.textContent = "Subiendo archivo...";
+
+            try {
+                const response = await fetch('/Customers/ImportExcel', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    alert('Error al subir archivo: ' + text);
+                    headersOutput.textContent = 'Error al leer headers: ' + text;
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.headers && data.headers.length > 0) {
+                        headersOutput.textContent = data.headers.join(", ");
+                        alert('Archivo subido correctamente. Headers leídos: ' + data.headers.join(', '));
+                    } else {
+                        headersOutput.textContent = "No se encontraron headers en el archivo.";
+                        alert('Archivo subido pero no se pudieron leer los headers.');
+                    }
+                } else {
+                    headersOutput.textContent = 'Error: ' + data.message;
+                    alert('Error: ' + data.message);
+                }
+
+                importExcelModal.classList.add('hidden');
+            } catch(err) {
+                console.error(err);
+                alert('Error al subir archivo.');
+                headersOutput.textContent = "Error subiendo o leyendo el archivo: " + err.message;
+            }
+        });
+    });
+
+    // Modal de confirmación de eliminación
+    document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('deleteModal');
         const customerNameSpan = document.getElementById('customerName');
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
         const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
         let customerIdToDelete = null;
 
-        // Open the modal
-        importExcelBtn.addEventListener('click', function() {
-            importExcelModal.classList.remove('hidden');
-        });
-
-        // Close the modal
-        closeImportModal.addEventListener('click', function() {
-            importExcelModal.classList.add('hidden');
-        });
-
-        cancelImportBtn.addEventListener('click', function() {
-            importExcelModal.classList.add('hidden');
-        });
-
-        // Manejar clic en botones de eliminar - usamos el atributo title para identificarlos
+        // Manejar clic en botones de eliminar
         document.querySelectorAll('a[title="Delete"]').forEach(function(deleteLink) {
             deleteLink.addEventListener('click', function(e) {
                 e.preventDefault();
 
                 const url = this.href;
 
-                // Hacer petición AJAX para obtener datos del customer
                 fetch(url, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
@@ -283,19 +346,16 @@ var pagedCustomers = customersList
         confirmDeleteBtn.addEventListener('click', function() {
             if (!customerIdToDelete) return;
 
-            // Deshabilitar botón mientras se procesa
             confirmDeleteBtn.disabled = true;
             const originalText = confirmDeleteBtn.textContent;
             confirmDeleteBtn.textContent = 'Deleting...';
 
-            // Obtener token antiforgery
             const token = document.querySelector('input[name="__RequestVerificationToken"]');
             const formData = new FormData();
             if (token) {
                 formData.append('__RequestVerificationToken', token.value);
             }
 
-            // Hacer petición POST para eliminar
             fetch(`/Customers/DeleteConfirmed/${customerIdToDelete}`, {
                 method: 'POST',
                 headers: {
@@ -306,13 +366,8 @@ var pagedCustomers = customersList
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Cerrar modal
                         modal.classList.add('hidden');
-
-                        // Mostrar mensaje de éxito (opcional)
                         alert('Customer deleted successfully!');
-
-                        // Recargar la página para ver los cambios
                         window.location.reload();
                     } else {
                         alert('Error: ' + data.message);

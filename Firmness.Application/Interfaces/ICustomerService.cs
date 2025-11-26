@@ -3,6 +3,7 @@ namespace Firmness.Application.Interfaces;
 using Firmness.Application.DTOs.Customers;
 using Firmness.Application.Common;
 using Microsoft.AspNetCore.Http;
+using Firmness.Application.DTOs.Excel;
 
 public interface ICustomerService
 {
@@ -47,4 +48,5 @@ public interface ICustomerService
 
     Task UpdateUserRoleAsync(Guid userId, string newRole);
     Task<Result> ImportFromExcelAsync(IFormFile file);
+    Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file);
 }
