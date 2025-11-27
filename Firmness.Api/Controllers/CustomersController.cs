@@ -14,14 +14,19 @@ using OfficeOpenXml;
 [Route("api/[controller]")]
 public class CustomersController : ControllerBase
 {
+    private readonly IExcelService _excelService;
     private readonly ICustomerService _customerService;
     private readonly ILogger<CustomersController> _logger;
 
-    public CustomersController(ICustomerService customerService, ILogger<CustomersController> logger)
+    public CustomersController(
+        ICustomerService customerService,
+        IExcelService excelService,
+        ILogger<CustomersController> logger)
     {
         _customerService = customerService;
+        _excelService = excelService;
         _logger = logger;
-    }      
+    }    
     
     /// <summary>
     /// Retrieves all customers from the inventory
@@ -171,65 +176,81 @@ public class CustomersController : ControllerBase
         }
     }
     
+    [HttpPost("import/headers")]
+    [ProducesResponseType(typeof(ResultOft<ExcelHeadersResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> ExtractHeaders(IFormFile file, [FromForm] string entityType)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest(new { error = "File is empty" });
+
+        if (string.IsNullOrWhiteSpace(entityType))
+            return BadRequest(new { error = "Entity type is required" });
+
+        _logger.LogInformation("Extracting headers from file: {FileName}, EntityType: {EntityType}", 
+            file.FileName, entityType);
+
+        var result = await _excelService.ExtractHeadersFromExcelAsync(file, entityType);
+
+        if (!result.IsSuccess)
+        {
+            _logger.LogWarning("Failed to extract headers: {Error}", result.ErrorMessage);
+            return BadRequest(new { error = result.ErrorMessage });
+        }
+
+        _logger.LogInformation("Successfully extracted {Count} headers", 
+            result.Data?.OriginalHeaders?.Count ?? 0);
+
+        // ✅ Devolver el ResultOft completo, NO solo result.Data
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// Step 2: Use AI to correct column names if needed
+    /// </summary>
+    [HttpPost("import/correct-headers")]
+    [ProducesResponseType(typeof(ExcelHeadersResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> CorrectHeaders([FromBody] CorrectHeadersRequest request)
+    {
+        if (request.OriginalHeaders == null || !request.OriginalHeaders.Any())
+            return BadRequest(new { error = "Original headers are required" });
+
+        if (request.CorrectHeaders == null || !request.CorrectHeaders.Any())
+            return BadRequest(new { error = "Correct headers template is required" });
+
+        var result = await _excelService.CorrectColumnNamesAsync(
+            request.OriginalHeaders, 
+            request.CorrectHeaders);
+
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.ErrorMessage });
+
+        return Ok(result.Data);
+    }
+
+    /// <summary>
+    /// Step 3: Import the Excel data with corrected or confirmed headers
+    /// </summary>
     [HttpPost("import-excel")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ImportExcel(IFormFile file)
+    public async Task<IActionResult> ImportExcel(IFormFile file, [FromForm] string entityType)
     {
         if (file == null || file.Length == 0)
-        {
-            return BadRequest("No file selected.");
-        }
+            return BadRequest(new { error = "No file selected" });
 
-        var result = await _customerService.ImportFromExcelAsync(file);
-    
+        if (string.IsNullOrWhiteSpace(entityType))
+            return BadRequest(new { error = "Entity type is required" });
+
+        // Aquí el CustomerService ya debería manejar la importación completa
+        var result = await _customerService.ImportFromExcelAsync(file, entityType);
+
         if (!result.IsSuccess)
-        {
-            return BadRequest(result.ErrorMessage);
-        }
+            return BadRequest(new { error = result.ErrorMessage });
 
-        return Ok(new { message = "Data imported successfully." });
+        return Ok(new { message = "Data imported successfully" });
     }
-    
-    [HttpPost("import/headers")]
-    [ProducesResponseType(typeof(ExcelHeadersResponseDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
-    public async Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file)
-    {
-        try
-        {
-            if (file == null || file.Length == 0)
-                return ResultOft<ExcelHeadersResponseDto>.Failure("File is empty");
-
-            using var stream = file.OpenReadStream();
-            using var package = new ExcelPackage(stream);
-            var worksheet = package.Workbook.Worksheets.FirstOrDefault();
-            if (worksheet == null)
-                return ResultOft<ExcelHeadersResponseDto>.Failure("No worksheet found");
-
-            var headers = new List<string>();
-            for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
-            {
-                var header = worksheet.Cells[1, col].Text;
-                headers.Add(header);
-            }
-
-            var dto = new ExcelHeadersResponseDto
-            {
-                OriginalHeaders = headers
-            };
-
-            return ResultOft<ExcelHeadersResponseDto>.Success(dto);
-        }
-        catch (Exception ex)
-        {
-            return ResultOft<ExcelHeadersResponseDto>.Failure("Error extracting headers: " + ex.Message);
-        }
-    }
-
-
-
-    
     
     // ========== HELPERS (undocumented, are private) ==========
 
@@ -271,5 +292,10 @@ public class CustomersController : ControllerBase
             return NotFound(new { error = message });
 
         return BadRequest(new { error = message });
+    }
+    public class CorrectHeadersRequest
+    {
+        public List<string> OriginalHeaders { get; set; } = new();
+        public List<string> CorrectHeaders { get; set; } = new();
     }
 }

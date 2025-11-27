@@ -198,8 +198,6 @@ public class CustomerService : ICustomerService
         }
     }
 
-
-
     public async Task<Result> DeleteAsync(Guid id)
     {
         try
@@ -323,7 +321,7 @@ public class CustomerService : ICustomerService
         return customers;
     }
 
-    public async Task<Result> ImportFromExcelAsync(IFormFile file)
+    public async Task<Result> ImportFromExcelAsync(IFormFile file, string entityType)
     {
         try
         {
@@ -333,23 +331,49 @@ public class CustomerService : ICustomerService
                 var rowCount = worksheet.Dimension.Rows;
                 var columnCount = worksheet.Dimension.Columns;
 
-                var customerData = new List<CustomerDto>();
+                // Leer los encabezados del archivo Excel
+                var headers = new List<string>();
+                for (int col = 1; col <= columnCount; col++)
+                {
+                    var header = worksheet.Cells[1, col].Text.Trim();
+                    headers.Add(header);
+                }
 
+                // Usar el servicio de Excel para corregir los encabezados
+                var headersCorrectionResult = await _excelService.CorrectColumnNamesAsync(headers, ColumnTemplates.Templates[entityType]);
+
+                if (!headersCorrectionResult.IsSuccess)
+                {
+                    return Result.Failure("Error correcting headers.");
+                }
+
+                // Obtener los encabezados corregidos
+                var correctedHeaders = headersCorrectionResult.Data.CorrectedColumns;
+
+                // Si los encabezados fueron corregidos, hacer algo con el reporte (por ejemplo, mostrarlo al usuario)
+                if (headersCorrectionResult.Data.WasCorrected)
+                {
+                    var changes = headersCorrectionResult.Data.ChangesReport;
+                    _logger.LogInformation($"Headers corrected: {changes}");
+                }
+
+                // Procesar las filas del Excel después de la corrección de encabezados
+                var customerData = new List<CustomerDto>();
                 for (int row = 2; row <= rowCount; row++) // Empieza desde la fila 2 para omitir encabezados
                 {
                     var customer = new CustomerDto
                     {
-                        UserName = worksheet.Cells[row, 1].Text,
-                        FullName = worksheet.Cells[row, 2].Text,
-                        Email = worksheet.Cells[row, 3].Text,
-                        Address = worksheet.Cells[row, 4].Text,
-                        PhoneNumber = worksheet.Cells[row, 5].Text
+                        UserName = worksheet.Cells[row, correctedHeaders.IndexOf("username") + 1].Text,
+                        FullName = worksheet.Cells[row, correctedHeaders.IndexOf("fullname") + 1].Text,
+                        Email = worksheet.Cells[row, correctedHeaders.IndexOf("email") + 1].Text,
+                        Address = worksheet.Cells[row, correctedHeaders.IndexOf("address") + 1].Text,
+                        PhoneNumber = worksheet.Cells[row, correctedHeaders.IndexOf("phonenumber") + 1].Text
                     };
 
                     customerData.Add(customer);
                 }
 
-                // Procesamiento adicional con IA para corregir los nombres de las columnas
+                // Aquí podrías guardar los datos de los clientes en la base de datos o hacer más procesamiento
 
                 return Result.Success();
             }
@@ -360,6 +384,7 @@ public class CustomerService : ICustomerService
             return Result.Failure("Error processing the Excel file.");
         }
     }
+
     
     public async Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file)
     {

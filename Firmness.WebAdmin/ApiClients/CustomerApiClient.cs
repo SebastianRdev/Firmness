@@ -328,7 +328,7 @@ public class CustomerApiClient : ICustomerApiClient
         }
     }
 
-    public async Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file)
+    public async Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file, string entityType)
     {
         try
         {
@@ -337,6 +337,9 @@ public class CustomerApiClient : ICustomerApiClient
             var streamContent = new StreamContent(stream);
             streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType ?? "application/octet-stream");
             content.Add(streamContent, "file", file.FileName);
+
+            // Aquí añadimos el entityType al request
+            content.Add(new StringContent(entityType), "entityType");
 
             var response = await _httpClient.PostAsync("customers/import/headers", content);
 
@@ -349,7 +352,7 @@ public class CustomerApiClient : ICustomerApiClient
 
             // Leemos el ResultOft completo, no solo el DTO
             var resultWrapper = await response.Content.ReadFromJsonAsync<ResultOft<ExcelHeadersResponseDto>>();
-        
+
             // Devolvemos el resultado tal cual viene de la API
             return resultWrapper ?? ResultOft<ExcelHeadersResponseDto>.Failure("No data returned from API");
         }

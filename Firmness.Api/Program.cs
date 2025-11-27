@@ -1,29 +1,58 @@
-using System.ComponentModel;
+using System.Net;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.OpenApi.Models;
 using DotNetEnv;
-using System.Net;
+using OfficeOpenXml;
 using Firmness.Domain.Entities;
 using Firmness.Domain.Interfaces;
 using Firmness.Infrastructure.Data;
 using Firmness.Infrastructure.Repositories;
 using Firmness.Application.Interfaces;
 using Firmness.Application.Services;
-using Microsoft.OpenApi.Models;
-using OfficeOpenXml;
+using Firmness.Infrastructure.Services.Gemini;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Logging
+// ==========================================
+// 1. LOAD .env FILE FIRST
+// ==========================================
+Env.Load();
+builder.Configuration.AddEnvironmentVariables();
+
+// ==========================================
+// 2. LOGGING
+// ==========================================
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
-builder.Logging.SetMinimumLevel(LogLevel.Information); 
+builder.Logging.SetMinimumLevel(LogLevel.Information);
 
-// Excel
+// ==========================================
+// 3. EXCEL LICENSE
+// ==========================================
 ExcelPackage.License.SetNonCommercialOrganization("Firmness.Api");
 
-Env.Load();
+// ==========================================
+// 4. VERIFY GEMINI API KEY (Development only)
+// ==========================================
+if (builder.Environment.IsDevelopment())
+{
+    var apiKey = builder.Configuration["GEMINI_API_KEY"] 
+                 ?? Environment.GetEnvironmentVariable("GEMINI_API_KEY");
+    
+    if (string.IsNullOrEmpty(apiKey))
+    {
+        Console.WriteLine("⚠️ WARNING: GEMINI_API_KEY not found in .env file");
+    }
+    else
+    {
+        Console.WriteLine($"✅ GEMINI_API_KEY loaded: {apiKey[..10]}...{apiKey[^4..]}");
+    }
+}
 
+// ==========================================
+// 5. DATABASE CONNECTION STRING
+// ==========================================
 var host = Environment.GetEnvironmentVariable("DB_HOST");
 var port = Environment.GetEnvironmentVariable("DB_PORT");
 var user = Environment.GetEnvironmentVariable("DB_USER");
@@ -36,7 +65,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString)
 );
 
-// CONFIGURE IDENTITY 
+// ==========================================
+// 6. IDENTITY CONFIGURATION
+// ==========================================
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 {
     options.Password.RequiredLength = 6;
@@ -49,51 +80,92 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// CONFIGURE CORS (CRITICAL)
+// ==========================================
+// 7. CORS CONFIGURATION
+// ==========================================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()   // Allows any source (for development purposes only)
-              .AllowAnyMethod()   // GET, POST, PUT, DELETE
-              .AllowAnyHeader();  // Authorization, Content-Type, etc.
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
 
-// REGISTER SERVICES
+// ==========================================
+// 8. AUTOMAPPER
+// ==========================================
 builder.Services.AddAutoMapper(cfg => { }, AppDomain.CurrentDomain.GetAssemblies());
+
+// ==========================================
+// 9. REPOSITORIES
+// ==========================================
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+// ==========================================
+// 10. APPLICATION SERVICES
+// ==========================================
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IExcelService, ExcelService>();
 
-// CONFIGURE CONTROLLERS
+// ==========================================
+// 11. GEMINI AI SERVICE (HttpClient configurado)
+// ⚠️ IMPORTANTE: Solo una vez, no duplicado
+// ==========================================
+builder.Services.AddHttpClient<IGeminiService, GeminiApiClient>((serviceProvider, client) =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+    client.DefaultRequestHeaders.Add("User-Agent", "FirmnessApp/1.0");
+});
+
+// ==========================================
+// 12. CONTROLLERS
+// ==========================================
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
 
-// SWAGGER
+// ==========================================
+// 13. SWAGGER
+// ==========================================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Firmness API",
-        Version = "v1"
+        Version = "v1",
+        Description = "API for Firmness Inventory Management System"
     });
+    
+    // Optional: Include XML comments if you have them
+    // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    // c.IncludeXmlComments(xmlPath);
 });
 
+// ==========================================
+// 14. DISABLE SSL VALIDATION (Development only)
+// ==========================================
+if (builder.Environment.IsDevelopment())
+{
+    ServicePointManager.ServerCertificateValidationCallback = 
+        (sender, certificate, chain, sslPolicyErrors) => true;
+}
 
-ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-
-// BUILD
+// ==========================================
+// BUILD APPLICATION
+// ==========================================
 var app = builder.Build();
 
-
-// MIDDLEWARE
+// ==========================================
+// 15. MIDDLEWARE PIPELINE
+// ==========================================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -106,23 +178,42 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
+app.UseAuthentication(); // ✅ Agregar esto si usas Identity
 app.UseAuthorization();
 app.MapControllers();
 
-// 10. CONNECTION TEST
+// ==========================================
+// 16. DATABASE CONNECTION TEST
+// ==========================================
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var services = scope.ServiceProvider;
+    var db = services.GetRequiredService<ApplicationDbContext>();
+    
     try
     {
         db.Database.OpenConnection();
-        Console.WriteLine("✅ API connected to PostgreSQL");
+        Console.WriteLine("✅ API connected to PostgreSQL successfully");
         db.Database.CloseConnection();
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ Error: {ex.Message}");
+        Console.WriteLine($"❌ Database connection error: {ex.Message}");
+    }
+    
+    // Optional: Test Gemini Service
+    try
+    {
+        var geminiService = services.GetRequiredService<IGeminiService>();
+        Console.WriteLine("✅ Gemini Service registered successfully");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"⚠️ Gemini Service registration issue: {ex.Message}");
     }
 }
 
+// ==========================================
+// RUN APPLICATION
+// ==========================================
 app.Run();

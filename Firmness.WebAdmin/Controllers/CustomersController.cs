@@ -163,41 +163,31 @@ public class CustomersController : Controller
     
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ImportExcel(IFormFile file)
+    public async Task<IActionResult> ImportExcel(IFormFile file, string entityType)
     {
         if (file == null || file.Length == 0)
             return Json(new { success = false, message = "No file selected." });
 
-        //_logger.LogInformation("📁 File received: {FileName}, Size: {Size} bytes", file.FileName, file.Length);
+        if (string.IsNullOrEmpty(entityType))
+            return Json(new { success = false, message = "Entity type not provided." });
 
-        var result = await _customerApiClient.ExtractHeadersFromExcelAsync(file);
-
-        //_logger.LogInformation("📊 API Result - IsSuccess: {IsSuccess}", result.IsSuccess);
+        // 🚀 Ahora enviamos file + entityType
+        var result = await _customerApiClient.ExtractHeadersFromExcelAsync(file, entityType);
 
         if (!result.IsSuccess)
-        {
-            //_logger.LogError("❌ Error from API: {ErrorMessage}", result.ErrorMessage);
             return Json(new { success = false, message = result.ErrorMessage });
-        }
 
         if (result.Data == null)
-        {
-            //_logger.LogWarning("⚠️ result.Data is NULL");
             return Json(new { success = false, message = "No data returned from API" });
-        }
 
         if (result.Data.OriginalHeaders == null)
-        {
-            //_logger.LogWarning("⚠️ result.Data.OriginalHeaders is NULL");
             return Json(new { success = false, message = "Headers property is null" });
-        }
 
-        //_logger.LogInformation("✅ Headers count: {Count}", result.Data.OriginalHeaders.Count);
-        //_logger.LogInformation("📋 Headers: {Headers}", string.Join(", ", result.Data.OriginalHeaders));
-
-        return Json(new { 
-            success = true, 
-            headers = result.Data.OriginalHeaders 
+        return Json(new
+        {
+            success = true,
+            headers = result.Data.OriginalHeaders,
+            entityType = entityType
         });
     }
 }

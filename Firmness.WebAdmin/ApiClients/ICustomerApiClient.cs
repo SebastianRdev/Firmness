@@ -16,5 +16,5 @@ public interface ICustomerApiClient
     Task<Result>UpdateUserRoleAsync(Guid id, string selectedRole);
     Task<ResultOft<IEnumerable<CustomerDto>>> GetAllPaginatedAsync(int page, int pageSize);
     Task<Result> ImportExcelAsync(IFormFile file);
-    Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file);
+    Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file, string entityType);
 }

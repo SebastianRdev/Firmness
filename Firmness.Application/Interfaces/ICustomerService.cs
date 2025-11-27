@@ -47,6 +47,6 @@ public interface ICustomerService
     Task<IEnumerable<string>> GetAllRolesAsync();
 
     Task UpdateUserRoleAsync(Guid userId, string newRole);
-    Task<Result> ImportFromExcelAsync(IFormFile file);
+    Task<Result> ImportFromExcelAsync(IFormFile file, string entityType);
     Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file);
 }

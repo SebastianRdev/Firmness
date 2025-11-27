@@ -188,6 +188,8 @@ var pagedCustomers = customersList
             <div class="mt-6">
                 <form id="importExcelForm" method="post" enctype="multipart/form-data" asp-action="ImportExcel">
                     @Html.AntiForgeryToken()
+                    <input type="hidden" name="entityType" value="customer" />
+                    
                     <label class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors" for="file-upload">
                         <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center">
                             <span class="material-symbols-outlined text-4xl text-gray-400">cloud_upload</span>
@@ -224,7 +226,7 @@ var pagedCustomers = customersList
         closeImportModal.addEventListener('click', () => importExcelModal.classList.add('hidden'));
         cancelImportBtn.addEventListener('click', () => importExcelModal.classList.add('hidden'));
 
-        // Botón de confirmar subida (UN SOLO LISTENER)
+        // Botón de confirmar subida
         document.getElementById('confirmImportBtn').addEventListener('click', async function() {
             const fileInput = document.getElementById('file-upload');
 
@@ -236,6 +238,9 @@ var pagedCustomers = customersList
 
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
+
+            // ✅ AGREGAR entityType (esto faltaba)
+            formData.append('entityType', 'Customer'); // ⚠️ Debe coincidir con ColumnTemplates
 
             // Token antiforgery
             const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
@@ -307,7 +312,7 @@ var pagedCustomers = customersList
                     .then(data => {
                         if (data.success) {
                             customerIdToDelete = data.customer.id;
-                            customerNameSpan.textContent = data.customer.name;
+                            customerNameSpan.textContent = data.customer.userName;
                             modal.classList.remove('hidden');
                         } else {
                             alert('Error: ' + data.message);
