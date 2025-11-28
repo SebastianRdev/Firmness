@@ -363,6 +363,41 @@ public class CustomerApiClient : ICustomerApiClient
         }
     }
     
+    public async Task<ResultOft<ExcelHeadersResponseDto>> CorrectHeadersAsync(
+        List<string> originalHeaders, 
+        List<string> correctHeaders)
+    {
+        try
+        {
+            var request = new
+            {
+                originalHeaders = originalHeaders,
+                correctHeaders = correctHeaders
+            };
+
+            _logger.LogInformation("Calling API to correct headers with AI");
+
+            var response = await _httpClient.PostAsJsonAsync("customers/import/correct-headers", request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                _logger.LogWarning("API rejected header correction: {StatusCode} - {Error}", 
+                    response.StatusCode, errorContent);
+                return ResultOft<ExcelHeadersResponseDto>.Failure("Error correcting headers with AI");
+            }
+
+            var resultWrapper = await response.Content.ReadFromJsonAsync<ResultOft<ExcelHeadersResponseDto>>();
+
+            return resultWrapper ?? ResultOft<ExcelHeadersResponseDto>.Failure("No data returned from API");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Network error calling AI correction API");
+            return ResultOft<ExcelHeadersResponseDto>.Failure($"Could not connect to API: {ex.Message}");
+        }
+    }
+    
 
     // HELPER CLASS (API errors)
     private class ApiErrorResponse

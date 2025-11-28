@@ -62,7 +62,7 @@ public class GeminiApiClient : IGeminiService
             },
             generationConfig = new
             {
-                temperature = 0.3, // Más determinista para correcciones
+                temperature = 0.3,
                 maxOutputTokens = 2048
             }
         };

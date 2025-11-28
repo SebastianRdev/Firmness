@@ -226,7 +226,7 @@ var pagedCustomers = customersList
         closeImportModal.addEventListener('click', () => importExcelModal.classList.add('hidden'));
         cancelImportBtn.addEventListener('click', () => importExcelModal.classList.add('hidden'));
 
-        // Botón de confirmar subida
+        // Botón de confirmar subida (PASO 1: Extraer headers)
         document.getElementById('confirmImportBtn').addEventListener('click', async function() {
             const fileInput = document.getElementById('file-upload');
 
@@ -238,20 +238,17 @@ var pagedCustomers = customersList
 
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
+            formData.append('entityType', 'Customer');
 
-            // ✅ AGREGAR entityType (esto faltaba)
-            formData.append('entityType', 'Customer'); // ⚠️ Debe coincidir con ColumnTemplates
-
-            // Token antiforgery
             const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
             if (tokenInput) {
                 formData.append('__RequestVerificationToken', tokenInput.value);
             }
 
-            // Mostrar estado de carga
-            headersOutput.textContent = "Subiendo archivo...";
+            headersOutput.textContent = "📤 Subiendo archivo y extrayendo headers...";
 
             try {
+                // PASO 1: Extraer headers
                 const response = await fetch('/Customers/ImportExcel', {
                     method: 'POST',
                     body: formData
@@ -260,30 +257,83 @@ var pagedCustomers = customersList
                 if (!response.ok) {
                     const text = await response.text();
                     alert('Error al subir archivo: ' + text);
-                    headersOutput.textContent = 'Error al leer headers: ' + text;
+                    headersOutput.textContent = 'Error: ' + text;
                     return;
                 }
 
                 const data = await response.json();
 
-                if (data.success) {
-                    if (data.headers && data.headers.length > 0) {
-                        headersOutput.textContent = data.headers.join(", ");
-                        alert('Archivo subido correctamente. Headers leídos: ' + data.headers.join(', '));
-                    } else {
-                        headersOutput.textContent = "No se encontraron headers en el archivo.";
-                        alert('Archivo subido pero no se pudieron leer los headers.');
-                    }
-                } else {
+                if (!data.success) {
                     headersOutput.textContent = 'Error: ' + data.message;
                     alert('Error: ' + data.message);
+                    return;
                 }
 
+                // Mostrar headers originales
+                const originalHeaders = data.headers || [];
+                const correctHeaders = data.correctHeaders || [];
+
+                headersOutput.innerHTML = `
+                <div class="space-y-2">
+                    <p><strong>Headers encontrados en Excel:</strong></p>
+                    <p class="text-blue-600">${originalHeaders.join(', ')}</p>
+                    <p class="mt-2"><strong>Headers esperados:</strong></p>
+                    <p class="text-green-600">${correctHeaders.join(', ')}</p>
+                </div>
+            `;
+
+                // PASO 2: Llamar a la IA para corregir headers
+                headersOutput.innerHTML += '<p class="mt-4 text-yellow-600">🤖 Corrigiendo headers con IA...</p>';
+
+                const correctionResponse = await fetch('/Customers/CorrectHeadersWithAI', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': tokenInput?.value
+                    },
+                    body: JSON.stringify({
+                        originalHeaders: originalHeaders,
+                        correctHeaders: correctHeaders
+                    })
+                });
+
+                if (!correctionResponse.ok) {
+                    headersOutput.innerHTML += '<p class="text-red-600">❌ Error llamando a la IA</p>';
+                    return;
+                }
+
+                const correctionData = await correctionResponse.json();
+
+                if (!correctionData.success) {
+                    headersOutput.innerHTML += `<p class="text-red-600">❌ ${correctionData.message}</p>`;
+                    return;
+                }
+
+                // Mostrar resultados de la corrección
+                const correctedColumns = correctionData.data.correctedColumns || [];
+                const wasCorrected = correctionData.data.wasCorrected;
+                const changesReport = correctionData.data.changesReport || 'No changes';
+
+                headersOutput.innerHTML += `
+                <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded">
+                    <p class="font-bold text-green-700 dark:text-green-400">✅ Corrección completada</p>
+                    <p class="mt-2"><strong>Headers corregidos:</strong></p>
+                    <p class="text-green-600">${correctedColumns.join(', ')}</p>
+                    <p class="mt-2"><strong>Reporte de cambios:</strong></p>
+                    <p class="text-gray-700 dark:text-gray-300">${changesReport}</p>
+                    <p class="mt-2 text-sm ${wasCorrected ? 'text-orange-600' : 'text-green-600'}">
+                        ${wasCorrected ? '⚠️ Se realizaron correcciones' : '✓ No se necesitaron correcciones'}
+                    </p>
+                </div>
+            `;
+
+                alert('Headers procesados exitosamente!\n\n' + changesReport);
                 importExcelModal.classList.add('hidden');
+
             } catch(err) {
                 console.error(err);
-                alert('Error al subir archivo.');
-                headersOutput.textContent = "Error subiendo o leyendo el archivo: " + err.message;
+                alert('Error al procesar archivo: ' + err.message);
+                headersOutput.textContent = "Error: " + err.message;
             }
         });
     });

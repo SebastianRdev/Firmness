@@ -176,6 +176,9 @@ public class CustomersController : ControllerBase
         }
     }
     
+    /// <summary>
+    /// Step 1: Extract headers from Excel and return them for user confirmation
+    /// </summary>
     [HttpPost("import/headers")]
     [ProducesResponseType(typeof(ResultOft<ExcelHeadersResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
@@ -209,7 +212,7 @@ public class CustomersController : ControllerBase
     /// Step 2: Use AI to correct column names if needed
     /// </summary>
     [HttpPost("import/correct-headers")]
-    [ProducesResponseType(typeof(ExcelHeadersResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ResultOft<ExcelHeadersResponseDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CorrectHeaders([FromBody] CorrectHeadersRequest request)
     {
@@ -219,14 +222,23 @@ public class CustomersController : ControllerBase
         if (request.CorrectHeaders == null || !request.CorrectHeaders.Any())
             return BadRequest(new { error = "Correct headers template is required" });
 
+        _logger.LogInformation("Correcting {Count} headers with AI", request.OriginalHeaders.Count);
+
         var result = await _excelService.CorrectColumnNamesAsync(
             request.OriginalHeaders, 
             request.CorrectHeaders);
 
         if (!result.IsSuccess)
+        {
+            _logger.LogWarning("AI correction failed: {Error}", result.ErrorMessage);
             return BadRequest(new { error = result.ErrorMessage });
+        }
 
-        return Ok(result.Data);
+        _logger.LogInformation("AI correction successful. WasCorrected: {WasCorrected}", 
+            result.Data?.WasCorrected ?? false);
+
+        // ✅ Devolver el ResultOft completo
+        return Ok(result);
     }
 
     /// <summary>

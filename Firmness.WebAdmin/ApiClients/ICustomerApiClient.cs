@@ -17,4 +17,6 @@ public interface ICustomerApiClient
     Task<ResultOft<IEnumerable<CustomerDto>>> GetAllPaginatedAsync(int page, int pageSize);
     Task<Result> ImportExcelAsync(IFormFile file);
     Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file, string entityType);
+
+    Task<ResultOft<ExcelHeadersResponseDto>> CorrectHeadersAsync(List<string> originalHeaders, List<string> correctHeaders);
 }
