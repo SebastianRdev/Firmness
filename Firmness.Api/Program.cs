@@ -11,6 +11,10 @@ using Firmness.Infrastructure.Repositories;
 using Firmness.Application.Interfaces;
 using Firmness.Application.Services;
 using Firmness.Infrastructure.Services.Gemini;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Firmness.Infrastructure.Services.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,6 +85,28 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
 .AddDefaultTokenProviders();
 
 // ==========================================
+// 6.1 JWT AUTHENTICATION
+// ==========================================
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? "DefaultKeyMustBeLongEnough123456789"))
+    };
+});
+
+// ==========================================
 // 7. CORS CONFIGURATION
 // ==========================================
 builder.Services.AddCors(options =>
@@ -110,6 +136,9 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IExcelService, ExcelService>();
+builder.Services.AddScoped<ISaleService, SaleService>();
+builder.Services.AddScoped<ReceiptPdfService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 // ==========================================
 // 11. GEMINI AI SERVICE (HttpClient configurado)
@@ -142,11 +171,6 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1",
         Description = "API for Firmness Inventory Management System"
     });
-    
-    // Optional: Include XML comments if you have them
-    // var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    // var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-    // c.IncludeXmlComments(xmlPath);
 });
 
 // ==========================================
@@ -176,7 +200,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+// Disable HTTPS redirection in development to avoid CORS preflight issues
+// app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthentication(); // ✅ Agregar esto si usas Identity
 app.UseAuthorization();
@@ -210,6 +235,20 @@ using (var scope = app.Services.CreateScope())
     catch (Exception ex)
     {
         Console.WriteLine($"⚠️ Gemini Service registration issue: {ex.Message}");
+    }
+}
+
+// Después de builder.Build() y antes de app.Run()
+using (var scope = app.Services.CreateScope())
+{
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
+
+    // Ejecuta el seed (solo en entorno Development)
+    if (app.Environment.IsDevelopment())
+    {
+        await Firmness.Infrastructure.Data.Seed.AdminSeed.SeedAdminsAsync(userManager, roleManager);
+        Console.WriteLine("✅ Admin seed executed");
     }
 }
 

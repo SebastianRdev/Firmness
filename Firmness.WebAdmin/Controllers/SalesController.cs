@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿namespace Firmness.WebAdmin.Controllers;
 
-namespace Firmness.WebAdmin.Controllers;
+using Microsoft.AspNetCore.Mvc;
 
 public class SalesController : Controller
 {

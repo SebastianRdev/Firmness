@@ -14,6 +14,7 @@ public static class AdminSeed
                 UserName = "admin1",
                 Email = "admin1@firmness.com",
                 FullName = "System Admin One",
+                Address = "System Address",
                 EmailConfirmed = true
             },
             new ApplicationUser
@@ -21,6 +22,7 @@ public static class AdminSeed
                 UserName = "admin2",
                 Email = "admin2@firmness.com",
                 FullName = "System Admin Two",
+                Address = "System Address",
                 EmailConfirmed = true
             }
         };
