@@ -8,20 +8,20 @@ using Xunit;
 
 namespace Firmness.Test.Unit.Services;
 
-public class SaleServiceTests
+public class CustomerSaleServiceTests
 {
     private readonly Mock<IGenericRepository<Sale>> _saleRepositoryMock;
     private readonly Mock<IGenericRepository<Product>> _productRepositoryMock;
     private readonly Mock<IGenericRepository<Receipt>> _receiptRepositoryMock;
-    private readonly SaleService _saleService;
+    private readonly CustomerSaleService _customerSaleService;
 
-    public SaleServiceTests()
+    public CustomerSaleServiceTests()
     {
         _saleRepositoryMock = new Mock<IGenericRepository<Sale>>();
         _productRepositoryMock = new Mock<IGenericRepository<Product>>();
         _receiptRepositoryMock = new Mock<IGenericRepository<Receipt>>();
         
-        _saleService = new SaleService(
+        _customerSaleService = new CustomerSaleService(
             _saleRepositoryMock.Object,
             _productRepositoryMock.Object,
             _receiptRepositoryMock.Object
@@ -55,7 +55,7 @@ public class SaleServiceTests
             .ReturnsAsync((Sale s) => s);
 
         // Act
-        var result = await _saleService.CreateSaleAsync(saleDto);
+        var result = await _customerSaleService.CreateSaleAsync(saleDto);
 
         // Assert
         result.Should().NotBeNull();
@@ -87,7 +87,7 @@ public class SaleServiceTests
             .ReturnsAsync((Sale s) => s);
 
         // Act
-        await _saleService.CreateSaleAsync(saleDto);
+        await _customerSaleService.CreateSaleAsync(saleDto);
 
         // Assert
         product.Stock.Should().Be(7); // 10 - 3
@@ -114,7 +114,7 @@ public class SaleServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await _saleService.CreateSaleAsync(saleDto)
+            async () => await _customerSaleService.CreateSaleAsync(saleDto)
         );
     }
 
@@ -135,7 +135,7 @@ public class SaleServiceTests
         _saleRepositoryMock.Setup(r => r.GetByIdAsync(saleId)).ReturnsAsync(expectedSale);
 
         // Act
-        var result = await _saleService.GetSaleByIdAsync(saleId);
+        var result = await _customerSaleService.GetSaleByIdAsync(saleId);
 
         // Assert
         result.Should().NotBeNull();

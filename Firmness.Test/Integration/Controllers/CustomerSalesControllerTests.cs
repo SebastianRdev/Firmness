@@ -9,12 +9,12 @@ using Xunit;
 
 namespace Firmness.Test.Integration.Controllers;
 
-public class SalesControllerTests : IClassFixture<TestWebApplicationFactory>
+public class CustomerSalesControllerTests : IClassFixture<TestWebApplicationFactory>
 {
     private readonly HttpClient _client;
     private readonly TestWebApplicationFactory _factory;
 
-    public SalesControllerTests(TestWebApplicationFactory factory)
+    public CustomerSalesControllerTests(TestWebApplicationFactory factory)
     {
         _factory = factory;
         _client = factory.CreateClient();

@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Firmness.Infrastructure.Services.Identity;
+using Firmness.Infrastructure.Configuration;
+using Firmness.Infrastructure.Services.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +37,11 @@ builder.Logging.SetMinimumLevel(LogLevel.Information);
 // 3. EXCEL LICENSE
 // ==========================================
 ExcelPackage.License.SetNonCommercialOrganization("Firmness.Api");
+
+// ==========================================
+// 3.1 QUESTPDF LICENSE
+// ==========================================
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 
 // ==========================================
 // 4. VERIFY GEMINI API KEY (Development only)
@@ -141,6 +148,21 @@ builder.Services.AddScoped<ReceiptPdfService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 // ==========================================
+// 10.1 EMAIL CONFIGURATION
+// ==========================================
+builder.Services.Configure<EmailSettings>(options =>
+{
+    options.SmtpHost = Environment.GetEnvironmentVariable("SMTP_HOST") ?? "smtp.gmail.com";
+    options.SmtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") ?? "587");
+    options.SenderEmail = Environment.GetEnvironmentVariable("SMTP_SENDER_EMAIL") ?? "";
+    options.SenderName = Environment.GetEnvironmentVariable("SMTP_SENDER_NAME") ?? "Firmness";
+    options.Username = Environment.GetEnvironmentVariable("SMTP_USERNAME") ?? "";
+    options.Password = Environment.GetEnvironmentVariable("SMTP_PASSWORD") ?? "";
+    options.EnableSsl = bool.Parse(Environment.GetEnvironmentVariable("SMTP_ENABLE_SSL") ?? "true");
+    options.AdminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL") ?? "";
+});
+
+// ==========================================
 // 11. GEMINI AI SERVICE (HttpClient configurado)
 // ⚠️ IMPORTANTE: Solo una vez, no duplicado
 // ==========================================
@@ -211,6 +233,16 @@ if (builder.Environment.IsDevelopment())
 // BUILD APPLICATION
 // ==========================================
 var app = builder.Build();
+
+// ==========================================
+// CREATE RECEIPTS DIRECTORY
+// ==========================================
+var receiptsPath = Path.Combine(app.Environment.WebRootPath, "receipts");
+if (!Directory.Exists(receiptsPath))
+{
+    Directory.CreateDirectory(receiptsPath);
+    Console.WriteLine("✅ Receipts directory created");
+}
 
 // ==========================================
 // 15. MIDDLEWARE PIPELINE

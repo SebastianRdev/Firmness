@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Typography, Card, Button, List, Divider, message, Result, Spin, Row, Col } from 'antd';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import saleService from '../services/saleService';
+import customerSaleApi from '../services/api/customerSaleApi';
+import { CreateSaleRequest } from '../domain/dto/SaleDto';
 import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
@@ -13,70 +14,52 @@ const Checkout = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const [receiptFileName, setReceiptFileName] = useState(null);
+    const [saleInfo, setSaleInfo] = useState(null);
 
     const total = getCartTotal();
+    const taxAmount = total * 0.19; // 19% IVA
+    const grandTotal = total + taxAmount;
 
     const handlePurchase = async () => {
         if (!user || !user.id) {
-            message.error('User information missing. Please login again.');
+            message.error('Información de usuario faltante. Por favor, inicia sesión nuevamente.');
+            return;
+        }
+
+        if (cartItems.length === 0) {
+            message.warning('Tu carrito está vacío');
             return;
         }
 
         setLoading(true);
         try {
-            const saleData = {
-                customerId: user.id,
-                date: new Date().toISOString(),
-                totalAmount: total,
-                taxAmount: 0,
-                grandTotal: total,
-                saleDetails: cartItems.map(item => ({
-                    productId: item.id,
-                    quantity: item.quantity,
-                    unitPrice: item.price
-                }))
-            };
+            // Create sale request using DTO
+            const saleRequest = new CreateSaleRequest(
+                user.id,
+                cartItems,
+                {
+                    subtotal: total,
+                    taxes: taxAmount,
+                    grandTotal: grandTotal
+                }
+            );
 
-            // The backend redirects to download receipt, but since we use axios, we get the response.
-            // If the backend returns a redirect 302, axios follows it automatically if it's a GET, but for POST it might return the response.
-            // However, the controller returns RedirectToAction which returns 302.
-            // Axios follows redirects for 3xx.
-            // If the controller returns a file download directly or a redirect to it, we need to handle it.
-            // Actually, the controller returns: return RedirectToAction("DownloadReceipt", new { fileName = sale.ReceiptFileName });
-            // This means the response will be the PDF file content if axios follows the redirect.
+            // Call API
+            const response = await customerSaleApi.createSale(saleRequest);
 
-            // Let's try to handle it.
-            // Ideally, the API should return JSON with the file name, and the frontend initiates the download.
-            // But we have to work with existing backend.
-
-            // If axios follows the redirect, the response data will be the PDF blob.
-            // We should probably check the content type.
-
-            const response = await saleService.createSale(saleData);
-
-            // If we get here, it might be the PDF content or the redirect response.
-            // Since we didn't set responseType: 'blob' in createSale, we might get garbage text if it's a PDF.
-            // We should probably update createSale to handle this or change backend to return JSON.
-            // But I can't change backend logic easily without breaking other things maybe.
-            // Let's assume for now we get a success and we can try to download the receipt if we know the filename.
-            // But we don't know the filename unless we parse the redirect URL or if the backend returns it.
-
-            // Wait, SalesController:
-            // return RedirectToAction("DownloadReceipt", new { fileName = sale.ReceiptFileName });
-
-            // If I use axios, it follows redirects. So response.data will be the PDF binary.
-            // I should update saleService to expect blob.
-
-            message.success('Purchase successful!');
+            // Success!
+            message.success('¡Compra realizada exitosamente! Tu comprobante ha sido enviado a tu correo.');
+            setSaleInfo(response);
             setSuccess(true);
             clearCart();
 
         } catch (err) {
-            console.error(err);
-            // If it's a parsing error because we got binary data but expected JSON, it might be a success actually.
-            // But let's try to handle it better.
-            message.error('Failed to complete purchase.');
+            console.error('Purchase error:', err);
+
+            // Display user-friendly error message
+            const errorMessage = err.message || 'Error al completar la compra. Por favor, intenta nuevamente.';
+            message.error(errorMessage, 5); // Show for 5 seconds
+
         } finally {
             setLoading(false);
         }
@@ -86,13 +69,15 @@ const Checkout = () => {
         return (
             <Result
                 status="success"
-                title="Successfully Purchased Cloud Server ECS!"
-                subTitle="Order number: 2017182818828182881 Cloud server configuration takes 1-5 minutes, please wait."
+                title="¡Compra Realizada Exitosamente!"
+                subTitle={`Tu comprobante ha sido enviado a ${user?.email}. Recibirás un correo con el PDF adjunto en unos momentos.`}
                 extra={[
-                    <Button type="primary" key="console" onClick={() => navigate('/products')}>
-                        Buy Again
+                    <Button type="primary" key="products" onClick={() => navigate('/products')}>
+                        Seguir Comprando
                     </Button>,
-                    <Button key="buy">View Orders</Button>,
+                    <Button key="home" onClick={() => navigate('/')}>
+                        Ir al Inicio
+                    </Button>,
                 ]}
             />
         );
