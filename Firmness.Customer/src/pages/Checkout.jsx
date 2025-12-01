@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Card, Button, List, Divider, message, Result, Spin } from 'antd';
+import { Typography, Card, Button, List, Divider, message, Result, Spin, Row, Col } from 'antd';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import saleService from '../services/saleService';

@@ -32,80 +32,124 @@ const Register = () => {
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', background: '#f0f2f5' }}>
-            <Card style={{ width: 450, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                    <Title level={2}>Firmness</Title>
-                    <Text type="secondary">Create a new account</Text>
+        <div style={{ display: 'flex', minHeight: '100vh', background: '#fff' }}>
+            {/* Left Side - Image/Brand */}
+            <div style={{
+                flex: 1,
+                background: 'linear-gradient(rgba(0, 33, 64, 0.8), rgba(0, 33, 64, 0.8)), url("https://images.unsplash.com/photo-1503387762-592deb58ef4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80")',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                padding: '60px',
+                color: 'white'
+            }}>
+                <div style={{ maxWidth: '500px' }}>
+                    <h1 style={{ fontSize: '48px', fontWeight: 'bold', marginBottom: '24px', color: 'white', lineHeight: 1.2 }}>
+                        Build Your Future with Us
+                    </h1>
+                    <p style={{ fontSize: '18px', opacity: 0.9, lineHeight: 1.6 }}>
+                        Get instant access to top-tier construction supplies and heavy equipment rentals. We are your reliable partner in every project, big or small.
+                    </p>
                 </div>
+            </div>
 
-                {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 16 }} />}
-
-                <Form
-                    name="register"
-                    onFinish={onFinish}
-                    layout="vertical"
-                >
-                    <div style={{ display: 'flex', gap: 16 }}>
-                        <Form.Item
-                            name="firstName"
-                            style={{ flex: 1 }}
-                            rules={[{ required: true, message: 'Please input your First Name!' }]}
-                        >
-                            <Input placeholder="First Name" size="large" />
-                        </Form.Item>
-                        <Form.Item
-                            name="lastName"
-                            style={{ flex: 1 }}
-                            rules={[{ required: true, message: 'Please input your Last Name!' }]}
-                        >
-                            <Input placeholder="Last Name" size="large" />
-                        </Form.Item>
+            {/* Right Side - Form */}
+            <div style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '40px',
+                background: '#fff'
+            }}>
+                <div style={{ width: '100%', maxWidth: '480px' }}>
+                    <div style={{ marginBottom: '32px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px' }}>
+                            {/* Placeholder Logo Icon */}
+                            <div style={{ width: 32, height: 32, background: '#1890ff', borderRadius: 4 }}></div>
+                            <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#1f1f1f' }}>ConstructGo</span>
+                        </div>
+                        <h2 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '8px' }}>Create Your Account</h2>
+                        <Text type="secondary" style={{ fontSize: '16px' }}>Access construction supplies and heavy equipment rentals.</Text>
                     </div>
 
-                    <Form.Item
-                        name="email"
-                        rules={[{ required: true, message: 'Please input your Email!' }, { type: 'email', message: 'Please enter a valid email!' }]}
+                    {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 24 }} />}
+
+                    <Form
+                        name="register"
+                        onFinish={onFinish}
+                        layout="vertical"
+                        size="large"
                     >
-                        <Input prefix={<MailOutlined />} placeholder="Email" size="large" />
-                    </Form.Item>
+                        <div style={{ display: 'flex', gap: 16 }}>
+                            <Form.Item
+                                name="firstName"
+                                label={<span style={{ fontWeight: 500 }}>Full Name</span>}
+                                style={{ flex: 1 }}
+                                rules={[{ required: true, message: 'Please input your First Name!' }]}
+                            >
+                                <Input placeholder="John" style={{ borderRadius: '8px' }} />
+                            </Form.Item>
+                            <Form.Item
+                                name="lastName"
+                                label={<span style={{ fontWeight: 500 }}>&nbsp;</span>}
+                                style={{ flex: 1 }}
+                                rules={[{ required: true, message: 'Please input your Last Name!' }]}
+                            >
+                                <Input placeholder="Doe" style={{ borderRadius: '8px' }} />
+                            </Form.Item>
+                        </div>
 
-                    <Form.Item
-                        name="password"
-                        rules={[{ required: true, message: 'Please input your Password!' }, { min: 6, message: 'Password must be at least 6 characters' }]}
-                    >
-                        <Input.Password prefix={<LockOutlined />} placeholder="Password" size="large" />
-                    </Form.Item>
+                        <Form.Item
+                            name="email"
+                            label={<span style={{ fontWeight: 500 }}>Email Address</span>}
+                            rules={[{ required: true, message: 'Please input your Email!' }, { type: 'email', message: 'Please enter a valid email!' }]}
+                        >
+                            <Input placeholder="john.doe@constructgo.com" style={{ borderRadius: '8px' }} />
+                        </Form.Item>
 
-                    <Form.Item
-                        name="confirmPassword"
-                        dependencies={['password']}
-                        rules={[
-                            { required: true, message: 'Please confirm your password!' },
-                            ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                    if (!value || getFieldValue('password') === value) {
-                                        return Promise.resolve();
-                                    }
-                                    return Promise.reject(new Error('The two passwords that you entered do not match!'));
-                                },
-                            }),
-                        ]}
-                    >
-                        <Input.Password prefix={<LockOutlined />} placeholder="Confirm Password" size="large" />
-                    </Form.Item>
+                        <Form.Item
+                            name="password"
+                            label={<span style={{ fontWeight: 500 }}>Password</span>}
+                            rules={[{ required: true, message: 'Please input your Password!' }, { min: 6, message: 'Password must be at least 6 characters' }]}
+                        >
+                            <Input.Password placeholder="••••••••••" style={{ borderRadius: '8px' }} />
+                        </Form.Item>
 
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" block size="large" loading={loading}>
-                            Register
-                        </Button>
-                    </Form.Item>
+                        <Form.Item
+                            name="confirmPassword"
+                            label={<span style={{ fontWeight: 500 }}>Confirm Password</span>}
+                            dependencies={['password']}
+                            rules={[
+                                { required: true, message: 'Please confirm your password!' },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (!value || getFieldValue('password') === value) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                                    },
+                                }),
+                            ]}
+                        >
+                            <Input.Password placeholder="••••••••••" style={{ borderRadius: '8px' }} />
+                        </Form.Item>
 
-                    <div style={{ textAlign: 'center' }}>
-                        <Text>Already have an account? <Link to="/login">Login now</Link></Text>
-                    </div>
-                </Form>
-            </Card>
+                        <Form.Item style={{ marginTop: '24px' }}>
+                            <Button type="primary" htmlType="submit" block size="large" loading={loading} style={{ height: '48px', borderRadius: '8px', fontSize: '16px', fontWeight: 600, background: '#1890ff' }}>
+                                Create Account
+                            </Button>
+                        </Form.Item>
+
+                        <div style={{ textAlign: 'center' }}>
+                            <Text style={{ color: '#666' }}>Already have an account? <Link to="/login" style={{ fontWeight: 600 }}>Log In</Link></Text>
+                        </div>
+                    </Form>
+                </div>
+            </div>
         </div>
     );
 };

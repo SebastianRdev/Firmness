@@ -16,7 +16,7 @@ const Cart = () => {
             dataIndex: 'name',
             key: 'name',
             render: (text, record) => (
-                <Space direction="vertical" size={0}>
+                <Space orientation="vertical" size={0}>
                     <Text strong>{text}</Text>
                     <Text type="secondary" style={{ fontSize: 12 }}>Code: {record.code}</Text>
                 </Space>
@@ -65,7 +65,7 @@ const Cart = () => {
                 <Empty
                     image={Empty.PRESENTED_IMAGE_SIMPLE}
                     description={
-                        <Space direction="vertical">
+                        <Space orientation="vertical">
                             <Text type="secondary">Your cart is empty</Text>
                             <Link to="/products">
                                 <Button type="primary" icon={<ShoppingOutlined />}>
@@ -81,37 +81,65 @@ const Cart = () => {
 
     return (
         <div>
-            <Title level={2} style={{ marginBottom: 24 }}>Shopping Cart</Title>
+            <Title level={1} style={{ marginBottom: '32px', fontSize: '36px' }}>Your Shopping Cart</Title>
 
-            <Row gutter={24}>
+            <Row gutter={32}>
                 <Col xs={24} lg={16}>
-                    <Table
-                        columns={columns}
-                        dataSource={cartItems}
-                        rowKey="id"
-                        pagination={false}
-                        style={{ marginBottom: 24 }}
-                    />
-                    <Button onClick={clearCart}>Clear Cart</Button>
+                    <div style={{ background: '#fff', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+                        <Table
+                            columns={columns}
+                            dataSource={cartItems}
+                            rowKey="id"
+                            pagination={false}
+                            style={{ width: '100%' }}
+                        />
+                    </div>
+                    <div style={{ marginTop: '24px', textAlign: 'right' }}>
+                        <Button onClick={clearCart} danger type="text">Clear Cart</Button>
+                    </div>
                 </Col>
 
                 <Col xs={24} lg={8}>
-                    <Card title="Order Summary">
+                    <Card
+                        title={<span style={{ fontSize: '20px', fontWeight: 'bold' }}>Order Summary</span>}
+                        style={{ borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+                        styles={{
+                            header: { borderBottom: '1px solid #f0f0f0', padding: '24px' },
+                            body: { padding: '24px' }
+                        }}
+                    >
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-                            <Text>Subtotal</Text>
+                            <Text type="secondary">Subtotal</Text>
                             <Text strong>${getCartTotal().toFixed(2)}</Text>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-                            <Text>Tax (0%)</Text>
-                            <Text strong>$0.00</Text>
+                            <Text type="secondary">Estimated Taxes (5%)</Text>
+                            <Text strong>${(getCartTotal() * 0.05).toFixed(2)}</Text>
                         </div>
-                        <div style={{ borderTop: '1px solid #f0f0f0', margin: '16px 0' }} />
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 24 }}>
-                            <Title level={4}>Total</Title>
-                            <Title level={4}>${getCartTotal().toFixed(2)}</Title>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+                            <Text type="secondary">Delivery Fees</Text>
+                            <Text strong>$75.00</Text>
+                        </div>
+                        <div style={{ borderTop: '1px solid #f0f0f0', margin: '24px 0' }} />
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 32, alignItems: 'center' }}>
+                            <Title level={4} style={{ margin: 0 }}>Grand Total</Title>
+                            <Title level={3} style={{ margin: 0 }}>${(getCartTotal() * 1.05 + 75).toFixed(2)}</Title>
                         </div>
 
-                        <Button type="primary" block size="large" onClick={() => navigate('/checkout')}>
+                        <Button
+                            type="primary"
+                            block
+                            size="large"
+                            onClick={() => navigate('/checkout')}
+                            style={{
+                                height: '48px',
+                                background: '#1e3a8a', /* Darker blue for checkout button */
+                                borderColor: '#1e3a8a',
+                                borderRadius: '8px',
+                                fontSize: '16px',
+                                fontWeight: 600
+                            }}
+                        >
                             Proceed to Checkout
                         </Button>
                     </Card>
