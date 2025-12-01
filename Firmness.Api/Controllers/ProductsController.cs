@@ -1,6 +1,7 @@
 ﻿namespace Firmness.API.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Firmness.Application.Interfaces;
 using Firmness.Application.DTOs.Products;
 using Firmness.Application.Common;
@@ -10,6 +11,7 @@ using Firmness.Application.Common;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;

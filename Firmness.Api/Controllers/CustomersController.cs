@@ -1,6 +1,7 @@
 namespace Firmness.API.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Firmness.Application.Interfaces;
 using Firmness.Application.DTOs.Customers;
 using Firmness.Application.Common;
@@ -12,6 +13,7 @@ using OfficeOpenXml;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class CustomersController : ControllerBase
 {
     private readonly IExcelService _excelService;

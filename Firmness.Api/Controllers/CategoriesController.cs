@@ -2,6 +2,7 @@ namespace Firmness.API.Controllers;
 
 using Microsoft.AspNetCore.Mvc;
 using Firmness.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Firmness.Application.DTOs.Categories;
 using Firmness.Application.Common;
 
@@ -11,6 +12,7 @@ using Firmness.Application.Common;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
