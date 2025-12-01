@@ -144,7 +144,8 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IExcelService, ExcelService>();
 builder.Services.AddScoped<ICustomerSaleService, CustomerSaleService>();
-builder.Services.AddScoped<ReceiptPdfService>();
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+builder.Services.AddScoped<IReceiptPdfService, ReceiptPdfService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 // ==========================================

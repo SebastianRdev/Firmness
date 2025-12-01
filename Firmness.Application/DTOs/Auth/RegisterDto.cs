@@ -20,4 +20,11 @@ public class RegisterDto
 
     [Compare("Password")]
     public string ConfirmPassword { get; set; } = string.Empty;
+
+    [Required]
+    public string Address { get; set; } = string.Empty;
+
+    [Required]
+    [Phone]
+    public string PhoneNumber { get; set; } = string.Empty;
 }

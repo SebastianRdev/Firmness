@@ -11,7 +11,6 @@ using Firmness.Application.Common;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
@@ -30,6 +29,7 @@ public class ProductsController : ControllerBase
     /// <response code="200">Returns the list of products</response>
     /// <response code="400">If there was an error loading the products</response>
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(IEnumerable<ProductDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAll()
@@ -46,6 +46,7 @@ public class ProductsController : ControllerBase
     /// <response code="200">Returns the product</response>
     /// <response code="404">If the product is not found</response>
     [HttpGet("{id:int}")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
@@ -76,6 +77,7 @@ public class ProductsController : ControllerBase
     ///
     /// </remarks>
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(ProductDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateProductDto createDto)
@@ -101,6 +103,7 @@ public class ProductsController : ControllerBase
     /// <response code="400">If the data is invalid or IDs don't match</response>
     /// <response code="404">If the product is not found</response>
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
@@ -123,6 +126,7 @@ public class ProductsController : ControllerBase
     /// <response code="204">If the product was successfully deleted</response>
     /// <response code="404">If the product is not found</response>
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
@@ -143,6 +147,7 @@ public class ProductsController : ControllerBase
     /// <response code="200">Returns the list of matching products</response>
     /// <response code="400">If the search term is invalid</response>
     [HttpGet("search")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(IEnumerable<ProductDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Search([FromQuery] string term)

@@ -12,7 +12,6 @@ using Firmness.Application.Common;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
@@ -31,6 +30,7 @@ public class CategoriesController : ControllerBase
     /// <response code="200">Returns the list of categories</response>
     /// <response code="400">If there was an error loading the categories</response>
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(IEnumerable<CategoryDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAll()
@@ -46,6 +46,7 @@ public class CategoriesController : ControllerBase
     /// <response code="200">Returns the category</response>
     /// <response code="404">If the category is not found</response>
     [HttpGet("{id:int}")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(int id)
@@ -76,6 +77,7 @@ public class CategoriesController : ControllerBase
     ///
     /// </remarks>
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] CreateCategoryDto createDto)
@@ -101,6 +103,7 @@ public class CategoriesController : ControllerBase
     /// <response code="400">If the data is invalid or IDs don't match</response>
     /// <response code="404">If the category is not found</response>
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
@@ -123,6 +126,7 @@ public class CategoriesController : ControllerBase
     /// <response code="204">If the category was successfully deleted</response>
     /// <response code="404">If the category is not found</response>
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(int id)
