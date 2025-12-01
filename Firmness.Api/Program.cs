@@ -14,8 +14,8 @@ using Firmness.Infrastructure.Services.Gemini;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Firmness.Application.Configuration;
 using Firmness.Infrastructure.Services.Identity;
-using Firmness.Infrastructure.Configuration;
 using Firmness.Infrastructure.Services.Email;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -143,7 +143,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<IExcelService, ExcelService>();
-builder.Services.AddScoped<ISaleService, SaleService>();
+builder.Services.AddScoped<ICustomerSaleService, CustomerSaleService>();
 builder.Services.AddScoped<ReceiptPdfService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
@@ -313,3 +313,5 @@ using (var scope = app.Services.CreateScope())
 // RUN APPLICATION
 // ==========================================
 app.Run();
+
+public partial class Program { }

@@ -1,7 +1,9 @@
+using System.Net.Mail;
+
 namespace Firmness.Infrastructure.Services.Email;
 
 using Firmness.Application.Interfaces;
-using Firmness.Infrastructure.Configuration;
+using Firmness.Application.Configuration;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Logging;
@@ -34,7 +36,9 @@ public class SmtpEmailService : IEmailService
             if (!string.IsNullOrEmpty(attachmentPath) && File.Exists(attachmentPath))
             {
                 var fileName = attachmentName ?? Path.GetFileName(attachmentPath);
-                builder.Attachments.Add(attachmentPath, fileName: fileName);
+                var attachment = builder.Attachments.Add(attachmentPath);
+                attachment.ContentDisposition.FileName = fileName;
+                attachment.ContentType.Name = fileName;
                 _logger.LogInformation("Attachment added: {FileName}", fileName);
             }
 
@@ -75,7 +79,9 @@ public class SmtpEmailService : IEmailService
             if (!string.IsNullOrEmpty(attachmentPath) && File.Exists(attachmentPath))
             {
                 var fileName = attachmentName ?? Path.GetFileName(attachmentPath);
-                builder.Attachments.Add(attachmentPath, fileName: fileName);
+                var attachment = builder.Attachments.Add(attachmentPath);
+                attachment.ContentDisposition.FileName = fileName;
+                attachment.ContentType.Name = fileName;
                 _logger.LogInformation("Attachment added: {FileName}", fileName);
             }
 

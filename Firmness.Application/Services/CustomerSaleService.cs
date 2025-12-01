@@ -1,6 +1,61 @@
+namespace Firmness.Application.Services;
+
+using Firmness.Application.Common;
+using Firmness.Application.DTOs.Sales;
+using Firmness.Application.Interfaces;
+using Firmness.Domain.Entities;
+using Firmness.Domain.Interfaces;
+using Firmness.Application.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Hosting;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+
+public class CustomerSaleService : ICustomerSaleService
+{
+    private readonly IGenericRepository<Customer> _customerRepository;
+    private readonly IGenericRepository<Product> _productRepository;
+    private readonly IGenericRepository<Sale> _saleRepository;
+    private readonly IGenericRepository<Receipt> _receiptRepository;
+    private readonly IReceiptPdfService _pdfService;
+    private readonly IEmailService _emailService;
+    private readonly IWebHostEnvironment _environment;
+    private readonly EmailSettings _emailSettings;
+    private readonly ILogger<CustomerSaleService> _logger;
+
+    public CustomerSaleService(
+        IGenericRepository<Customer> customerRepository,
+        IGenericRepository<Product> productRepository,
+        IGenericRepository<Sale> saleRepository,
+        IGenericRepository<Receipt> receiptRepository,
+        IReceiptPdfService pdfService,
+        IEmailService emailService,
+        IWebHostEnvironment environment,
+        IOptions<EmailSettings> emailSettings,
+        ILogger<CustomerSaleService> logger)
+    {
+        _customerRepository = customerRepository;
+        _productRepository = productRepository;
+        _saleRepository = saleRepository;
+        _receiptRepository = receiptRepository;
+        _pdfService = pdfService;
+        _emailService = emailService;
+        _environment = environment;
+        _emailSettings = emailSettings.Value;
+        _logger = logger;
+    }
+
+    public async Task<ResultOft<SaleResponseDto>> CreateSaleWithReceiptAsync(CreateSaleDto createDto)
+    {
+        try
         {
             // 1. Validate customer exists
-            var customer = await _customerRepository.GetByIdAsync(createDto.CustomerId);
+            var customerIdStr = createDto.CustomerId.ToString();
+            var customer = await _customerRepository.FirstOrDefaultAsync(c => c.Id == customerIdStr);
             if (customer == null)
             {
                 return ResultOft<SaleResponseDto>.Failure("Customer not found");
@@ -16,12 +71,12 @@
             // 3. Create Sale entity
             var sale = new Sale
             {
-                CustomerId = createDto.CustomerId,
+                CustomerId = customerIdStr,
                 Date = createDto.Date,
                 TotalAmount = createDto.TotalAmount,
                 TaxAmount = createDto.TaxAmount,
                 GrandTotal = createDto.GrandTotal,
-                DeliveryFees = 0, // Can be added later
+                DeliveryFees = 0,
                 SaleDetails = new List<SaleDetail>()
             };
 
@@ -46,17 +101,21 @@
 
             // 5. Save sale
             await _saleRepository.AddAsync(sale);
+            await _saleRepository.SaveChangesAsync();
 
             // 6. Create receipt
             var receipt = new Receipt
             {
                 SaleId = sale.Id,
                 ReceiptNumber = GenerateReceiptNumber(sale.Id),
-                IssueDate = DateTime.Now,
+                GeneratedAt = DateTime.Now,
                 FileName = $"Receipt_{sale.Id}.pdf"
             };
+            receipt.FilePath = Path.Combine("receipts", receipt.FileName);
 
             await _receiptRepository.AddAsync(receipt);
+            await _receiptRepository.SaveChangesAsync();
+            
             sale.Receipt = receipt;
 
             // 7. Generate PDF
@@ -99,7 +158,7 @@
             var response = new SaleResponseDto
             {
                 Id = sale.Id,
-                CustomerId = sale.CustomerId,
+                CustomerId = Guid.Parse(sale.CustomerId),
                 CustomerName = customer.FullName,
                 CustomerEmail = customer.Email,
                 Date = sale.Date,
@@ -129,7 +188,11 @@
     {
         try
         {
-            var sale = await _saleRepository.GetByIdAsync(id);
+            var sale = await _saleRepository.GetByIdAsync(id, 
+                s => s.Customer, 
+                s => s.Receipt, 
+                s => s.SaleDetails);
+
             if (sale == null)
             {
                 return ResultOft<SaleResponseDto>.Failure("Sale not found");
@@ -138,7 +201,7 @@
             var response = new SaleResponseDto
             {
                 Id = sale.Id,
-                CustomerId = sale.CustomerId,
+                CustomerId = Guid.Parse(sale.CustomerId),
                 CustomerName = sale.Customer?.FullName ?? "Unknown",
                 CustomerEmail = sale.Customer?.Email ?? "Unknown",
                 Date = sale.Date,

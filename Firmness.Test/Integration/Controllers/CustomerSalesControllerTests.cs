@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Firmness.Application.DTOs.Auth;
-using Firmness.Application.DTOs.Sale;
+using Firmness.Application.DTOs.Sales;
 using Firmness.Test.Integration.Helpers;
 using FluentAssertions;
 using Xunit;
@@ -44,10 +44,14 @@ public class CustomerSalesControllerTests : IClassFixture<TestWebApplicationFact
         // Arrange
         var saleDto = new CreateSaleDto
         {
-            CustomerId = "test-customer",
-            Details = new List<SaleDetailDto>
+            CustomerId = Guid.NewGuid(),
+            Date = DateTime.Now,
+            TotalAmount = 100m,
+            TaxAmount = 19m,
+            GrandTotal = 119m,
+            SaleDetails = new List<CreateSaleDetailDto>
             {
-                new SaleDetailDto { ProductId = 1, Quantity = 1 }
+                new CreateSaleDetailDto { ProductId = 1, Quantity = 1, UnitPrice = 100m }
             }
         };
 
@@ -68,10 +72,14 @@ public class CustomerSalesControllerTests : IClassFixture<TestWebApplicationFact
 
         var saleDto = new CreateSaleDto
         {
-            CustomerId = "test-customer",
-            Details = new List<SaleDetailDto>
+            CustomerId = Guid.NewGuid(),
+            Date = DateTime.Now,
+            TotalAmount = 200m,
+            TaxAmount = 38m,
+            GrandTotal = 238m,
+            SaleDetails = new List<CreateSaleDetailDto>
             {
-                new SaleDetailDto { ProductId = 1, Quantity = 2 }
+                new CreateSaleDetailDto { ProductId = 1, Quantity = 2, UnitPrice = 100m }
             }
         };
 
@@ -95,10 +103,14 @@ public class CustomerSalesControllerTests : IClassFixture<TestWebApplicationFact
 
         var saleDto = new CreateSaleDto
         {
-            CustomerId = "test-customer",
-            Details = new List<SaleDetailDto>
+            CustomerId = Guid.NewGuid(),
+            Date = DateTime.Now,
+            TotalAmount = 100m,
+            TaxAmount = 19m,
+            GrandTotal = 119m,
+            SaleDetails = new List<CreateSaleDetailDto>
             {
-                new SaleDetailDto { ProductId = 1, Quantity = 1 }
+                new CreateSaleDetailDto { ProductId = 1, Quantity = 1, UnitPrice = 100m }
             }
         };
 
@@ -122,11 +134,15 @@ public class CustomerSalesControllerTests : IClassFixture<TestWebApplicationFact
 
         var saleDto = new CreateSaleDto
         {
-            CustomerId = "test-customer",
-            Details = new List<SaleDetailDto>
+            CustomerId = Guid.NewGuid(),
+            Date = DateTime.Now,
+            TotalAmount = 250m,
+            TaxAmount = 47.5m,
+            GrandTotal = 297.5m,
+            SaleDetails = new List<CreateSaleDetailDto>
             {
-                new SaleDetailDto { ProductId = 1, Quantity = 2 }, // 2 * 100 = 200
-                new SaleDetailDto { ProductId = 2, Quantity = 1 }  // 1 * 50 = 50
+                new CreateSaleDetailDto { ProductId = 1, Quantity = 2, UnitPrice = 100m }, // 2 * 100 = 200
+                new CreateSaleDetailDto { ProductId = 2, Quantity = 1, UnitPrice = 50m }  // 1 * 50 = 50
             }
         };
 
@@ -149,10 +165,14 @@ public class CustomerSalesControllerTests : IClassFixture<TestWebApplicationFact
         // First create a sale to get a receipt
         var saleDto = new CreateSaleDto
         {
-            CustomerId = "test-customer",
-            Details = new List<SaleDetailDto>
+            CustomerId = Guid.NewGuid(),
+            Date = DateTime.Now,
+            TotalAmount = 100m,
+            TaxAmount = 19m,
+            GrandTotal = 119m,
+            SaleDetails = new List<CreateSaleDetailDto>
             {
-                new SaleDetailDto { ProductId = 1, Quantity = 1 }
+                new CreateSaleDetailDto { ProductId = 1, Quantity = 1, UnitPrice = 100m }
             }
         };
 

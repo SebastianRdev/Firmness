@@ -87,8 +87,7 @@ public class TestWebApplicationFactory : WebApplicationFactory<Program>
         {
             var category = new Category
             {
-                Name = "Test Category",
-                Description = "Test Description"
+                Name = "Test Category"
             };
             context.Categories.Add(category);
             await context.SaveChangesAsync();

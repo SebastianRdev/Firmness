@@ -1,4 +1,4 @@
-namespace Firmness.Infrastructure.Configuration;
+namespace Firmness.Application.Configuration;
 
 public class EmailSettings
 {
