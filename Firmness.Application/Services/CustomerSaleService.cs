@@ -72,12 +72,13 @@ public class CustomerSaleService : ICustomerSaleService
             var sale = new Sale
             {
                 CustomerId = customerIdStr,
-                Date = createDto.Date,
+                Date = DateTime.UtcNow,
                 TotalAmount = createDto.TotalAmount,
                 TaxAmount = createDto.TaxAmount,
                 GrandTotal = createDto.GrandTotal,
                 DeliveryFees = 0,
-                SaleDetails = new List<SaleDetail>()
+                SaleDetails = new List<SaleDetail>(),
+                ReceiptFileName = "PENDING" // Initialize required field
             };
 
             // 4. Add sale details and update inventory
@@ -108,7 +109,7 @@ public class CustomerSaleService : ICustomerSaleService
             {
                 SaleId = sale.Id,
                 ReceiptNumber = GenerateReceiptNumber(sale.Id),
-                GeneratedAt = DateTime.Now,
+                GeneratedAt = DateTime.UtcNow,
                 FileName = $"Receipt_{sale.Id}.pdf"
             };
             receipt.FilePath = Path.Combine("receipts", receipt.FileName);
@@ -117,6 +118,9 @@ public class CustomerSaleService : ICustomerSaleService
             await _receiptRepository.SaveChangesAsync();
             
             sale.Receipt = receipt;
+            sale.ReceiptFileName = receipt.FileName; // Update with actual filename
+            await _saleRepository.UpdateAsync(sale); // Save the update
+
 
             // 7. Generate PDF
             var pdfPath = Path.Combine(_environment.WebRootPath, "receipts", receipt.FileName);
@@ -180,7 +184,8 @@ public class CustomerSaleService : ICustomerSaleService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating sale with receipt");
-            return ResultOft<SaleResponseDto>.Failure($"Error creating sale: {ex.Message}");
+            var errorMessage = ex.InnerException != null ? $"{ex.Message} Inner: {ex.InnerException.Message}" : ex.Message;
+            return ResultOft<SaleResponseDto>.Failure($"Error creating sale: {errorMessage}");
         }
     }
 

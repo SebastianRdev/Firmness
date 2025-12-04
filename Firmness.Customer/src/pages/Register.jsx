@@ -16,7 +16,7 @@ const Register = () => {
         setLoading(true);
         setError('');
         try {
-            await register(values.firstName, values.lastName, values.email, values.password, values.confirmPassword);
+            await register(values.firstName, values.lastName, values.email, values.password, values.confirmPassword, values.address, values.phoneNumber);
             message.success('Registration successful!');
             navigate('/products');
         } catch (err) {
@@ -76,7 +76,7 @@ const Register = () => {
                         <Text type="secondary" style={{ fontSize: '16px' }}>Access construction supplies and heavy equipment rentals.</Text>
                     </div>
 
-                    {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 24 }} />}
+                    {error && <Alert message="Error" description={error} type="error" showIcon style={{ marginBottom: 24 }} />}
 
                     <Form
                         name="register"
@@ -87,7 +87,7 @@ const Register = () => {
                         <div style={{ display: 'flex', gap: 16 }}>
                             <Form.Item
                                 name="firstName"
-                                label={<span style={{ fontWeight: 500 }}>Full Name</span>}
+                                label={<span style={{ fontWeight: 500 }}>First Name</span>}
                                 style={{ flex: 1 }}
                                 rules={[{ required: true, message: 'Please input your First Name!' }]}
                             >
@@ -95,7 +95,7 @@ const Register = () => {
                             </Form.Item>
                             <Form.Item
                                 name="lastName"
-                                label={<span style={{ fontWeight: 500 }}>&nbsp;</span>}
+                                label={<span style={{ fontWeight: 500 }}>Last Name</span>}
                                 style={{ flex: 1 }}
                                 rules={[{ required: true, message: 'Please input your Last Name!' }]}
                             >
@@ -109,6 +109,24 @@ const Register = () => {
                             rules={[{ required: true, message: 'Please input your Email!' }, { type: 'email', message: 'Please enter a valid email!' }]}
                         >
                             <Input placeholder="john.doe@constructgo.com" style={{ borderRadius: '8px' }} />
+                        </Form.Item>
+
+                        {/* Address Field */}
+                        <Form.Item
+                            name="address"
+                            label={<span style={{ fontWeight: 500 }}>Address</span>}
+                            rules={[{ required: true, message: 'Please input your Address!' }]}
+                        >
+                            <Input placeholder="123 Main St" style={{ borderRadius: '8px' }} />
+                        </Form.Item>
+
+                        {/* Phone Number Field */}
+                        <Form.Item
+                            name="phoneNumber"
+                            label={<span style={{ fontWeight: 500 }}>Phone Number</span>}
+                            rules={[{ required: true, message: 'Please input your Phone Number!' }, { pattern: /^[+]?\d{10,15}$/, message: 'Please enter a valid phone number' }]}
+                        >
+                            <Input placeholder="+1234567890" style={{ borderRadius: '8px' }} />
                         </Form.Item>
 
                         <Form.Item

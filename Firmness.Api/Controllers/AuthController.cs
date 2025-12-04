@@ -61,7 +61,7 @@ public class AuthController : ControllerBase
         if (userExists != null)
             return BadRequest(new { message = "User already exists" });
 
-        var user = new ApplicationUser
+        var user = new Customer
         {
             UserName = model.Email,
             Email = model.Email,

@@ -13,7 +13,7 @@ using OfficeOpenXml;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+// [Authorize(Roles = "Admin")]
 public class CustomersController : ControllerBase
 {
     private readonly IExcelService _excelService;

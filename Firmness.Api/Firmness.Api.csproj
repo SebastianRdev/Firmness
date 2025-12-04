@@ -36,4 +36,9 @@
       <ProjectReference Include="..\Firmness.Infrastructure\Firmness.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="receipts\" />
+      <Folder Include="wwwroot\" />
+    </ItemGroup>
+
 </Project>

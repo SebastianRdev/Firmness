@@ -10,13 +10,15 @@ const authService = {
         return response.data;
     },
 
-    register: async (firstName, lastName, email, password, confirmPassword) => {
+    register: async (firstName, lastName, email, password, confirmPassword, address, phoneNumber) => {
         const response = await api.post('/auth/register', {
             firstName,
             lastName,
             email,
             password,
             confirmPassword,
+            address,
+            phoneNumber,
         });
         if (response.data.token) {
             localStorage.setItem('token', response.data.token);

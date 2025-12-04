@@ -8,5 +8,5 @@ public class Receipt
     public Sale Sale { get; set; }  // Navigation property to Sale
     public string FileName { get; set; }  // Name of the PDF receipt file
     public string FilePath { get; set; }  // Full path to where the PDF is stored
-    public DateTime GeneratedAt { get; set; }  // Timestamp when the receipt was generated
+    public DateTime GeneratedAt { get; set; } = DateTime.UtcNow; // Timestamp when the receipt was generated
 }

@@ -46,6 +46,7 @@ QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 // ==========================================
 // 4. VERIFY GEMINI API KEY (Development only)
 // ==========================================
+/*
 if (builder.Environment.IsDevelopment())
 {
     var apiKey = builder.Configuration["GEMINI_API_KEY"] 
@@ -60,6 +61,7 @@ if (builder.Environment.IsDevelopment())
         Console.WriteLine($"✅ GEMINI_API_KEY loaded: {apiKey[..10]}...{apiKey[^4..]}");
     }
 }
+*/
 
 // ==========================================
 // 5. DATABASE CONNECTION STRING
@@ -285,6 +287,7 @@ using (var scope = app.Services.CreateScope())
     }
     
     // Optional: Test Gemini Service
+    /*
     try
     {
         var geminiService = services.GetRequiredService<IGeminiService>();
@@ -294,6 +297,7 @@ using (var scope = app.Services.CreateScope())
     {
         Console.WriteLine($"⚠️ Gemini Service registration issue: {ex.Message}");
     }
+    */
 }
 
 // Después de builder.Build() y antes de app.Run()

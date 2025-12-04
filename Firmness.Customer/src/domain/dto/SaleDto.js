@@ -4,7 +4,6 @@
 export class CreateSaleRequest {
     constructor(customerId, cartItems, totals) {
         this.customerId = customerId;
-        this.date = new Date().toISOString();
         this.totalAmount = totals.subtotal || 0;
         this.taxAmount = totals.taxes || 0;
         this.grandTotal = totals.grandTotal || 0;
