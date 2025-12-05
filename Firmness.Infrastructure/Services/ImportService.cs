@@ -5,24 +5,25 @@ using Firmness.Domain.Entities;
 using Firmness.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity;
 
 namespace Firmness.Infrastructure.Services;
 
 public class ImportService : IImportService
 {
     private readonly IExcelService _excelService;
-    private readonly IGenericRepository<Customer> _customerRepo;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IGenericRepository<Product> _productRepo;
     private readonly ILogger<ImportService> _logger;
 
     public ImportService(
         IExcelService excelService,
-        IGenericRepository<Customer> customerRepo,
+        UserManager<ApplicationUser> userManager,
         IGenericRepository<Product> productRepo,
         ILogger<ImportService> logger)
     {
         _excelService = excelService;
-        _customerRepo = customerRepo;
+        _userManager = userManager;
         _productRepo = productRepo;
         _logger = logger;
     }
@@ -136,7 +137,7 @@ public class ImportService : IImportService
 
     private async Task<(int inserted, List<int> failed)> InsertCustomersAsync(List<RowValidationResultDto> validRows)
     {
-        var customers = new List<Customer>();
+        int insertedCount = 0;
         var failedRows = new List<int>();
 
         foreach (var row in validRows)
@@ -145,16 +146,30 @@ public class ImportService : IImportService
             {
                 var customer = new Customer
                 {
-                    Id = Guid.NewGuid().ToString(),
                     UserName = row.RowData.GetValueOrDefault("Username", ""),
                     FullName = row.RowData.GetValueOrDefault("FullName", ""),
                     Email = row.RowData.GetValueOrDefault("Email", ""),
                     Address = row.RowData.GetValueOrDefault("Address", ""),
                     PhoneNumber = row.RowData.GetValueOrDefault("Phone", ""),
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.UtcNow,
+                    EmailConfirmed = true // Auto-confirm email for imported users
                 };
 
-                customers.Add(customer);
+                // Create user with default password
+                var result = await _userManager.CreateAsync(customer, "Temp123$");
+
+                if (result.Succeeded)
+                {
+                    // Assign role
+                    await _userManager.AddToRoleAsync(customer, "Customer");
+                    insertedCount++;
+                }
+                else
+                {
+                    _logger.LogWarning("Failed to create user for row {RowNumber}: {Errors}", 
+                        row.RowNumber, string.Join(", ", result.Errors.Select(e => e.Description)));
+                    failedRows.Add(row.RowNumber);
+                }
             }
             catch (Exception ex)
             {
@@ -163,13 +178,7 @@ public class ImportService : IImportService
             }
         }
 
-        if (customers.Any())
-        {
-            await _customerRepo.AddRangeAsync(customers);
-            await _customerRepo.SaveChangesAsync();
-        }
-
-        return (customers.Count, failedRows);
+        return (insertedCount, failedRows);
     }
 
     private async Task<(int inserted, List<int> failed)> InsertProductsAsync(List<RowValidationResultDto> validRows)

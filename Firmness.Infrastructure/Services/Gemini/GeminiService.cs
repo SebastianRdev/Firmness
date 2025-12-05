@@ -75,6 +75,17 @@ public class GeminiService : IGeminiService
             // 3. Intentar deserializar
             var dto = JsonSerializer.Deserialize<ExcelHeadersResponseDto>(text);
 
+            if (dto != null)
+            {
+                // Fallback: Si CorrectedColumns viene vacío pero CorrectHeaders tiene datos,
+                // asumimos que CorrectHeaders son las columnas corregidas en orden.
+                if ((dto.CorrectedColumns == null || !dto.CorrectedColumns.Any()) && 
+                    dto.CorrectHeaders != null && dto.CorrectHeaders.Any())
+                {
+                    dto.CorrectedColumns = new List<string>(dto.CorrectHeaders);
+                }
+            }
+
             return dto;
 
         }

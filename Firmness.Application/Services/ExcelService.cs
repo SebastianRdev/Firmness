@@ -167,7 +167,8 @@ public class ExcelService : IExcelService
         string entityType,
         List<string> correctedHeaders)
     {
-        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+        ExcelPackage.License.SetNonCommercialOrganization("Firmness.Application");
 
         using var package = new ExcelPackage(fileStream);
         var sheet = package.Workbook.Worksheets.First();
