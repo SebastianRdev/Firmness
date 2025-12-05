@@ -1,4 +1,4 @@
-namespace Firmness.Web.Models;
+namespace Firmness.WebAdmin.Models;
 
 public class PreviewViewModel
 {

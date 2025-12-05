@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Firmness.Web.Models;
+using Firmness.WebAdmin.Models;
 using Firmness.Application.Interfaces;
+
+namespace Firmness.WebAdmin.Controllers;
 
 public class ImportController : Controller
 {
@@ -20,8 +22,7 @@ public class ImportController : Controller
     [HttpPost]
     public async Task<IActionResult> Confirm([FromBody] PreviewViewModel vm)
     {
-        var result = await _importService.ImportAsync(vm.EntityType, vm.Rows);
-
-        return Ok(new { message = "Importación completada con éxito" });
+        // This controller is deprecated - use ExcelController in API instead
+        return BadRequest(new { message = "Please use /api/excel/preview and /api/excel/confirm endpoints" });
     }
 }

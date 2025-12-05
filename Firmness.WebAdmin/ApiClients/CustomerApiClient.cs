@@ -397,6 +397,45 @@ public class CustomerApiClient : ICustomerApiClient
             return ResultOft<ExcelHeadersResponseDto>.Failure($"Could not connect to API: {ex.Message}");
         }
     }
+
+    public async Task<ResultOft<BulkInsertResultDto>> BulkInsertAsync(
+        IFormFile file, string entityType, List<string> correctedHeaders)
+    {
+        try
+        {
+            using var content = new MultipartFormDataContent();
+
+            var fileContent = new StreamContent(file.OpenReadStream());
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType ?? "application/octet-stream");
+
+            content.Add(fileContent, "file", file.FileName);
+            content.Add(new StringContent(entityType), "entityType");
+
+            foreach (var header in correctedHeaders)
+            {
+                content.Add(new StringContent(header), "correctedHeaders");
+            }
+
+            var response = await _httpClient.PostAsync("excel/bulk-insert", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                _logger.LogWarning("API rejected bulk insert: {StatusCode} - {Error}", 
+                    response.StatusCode, errorContent);
+                return ResultOft<BulkInsertResultDto>.Failure("Error en la inserción masiva");
+            }
+
+            var resultWrapper = await response.Content.ReadFromJsonAsync<ResultOft<BulkInsertResultDto>>();
+            return resultWrapper ?? ResultOft<BulkInsertResultDto>.Failure("No data returned from API");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Network error calling bulk insert API");
+            return ResultOft<BulkInsertResultDto>.Failure($"Could not connect to API: {ex.Message}");
+        }
+    }
+
     
 
     // HELPER CLASS (API errors)

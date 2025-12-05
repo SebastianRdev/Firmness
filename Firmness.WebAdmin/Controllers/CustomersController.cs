@@ -275,6 +275,45 @@ public class CustomersController : Controller
         }
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ProcessBulkInsert(IFormFile file, string entityType, List<string> correctedHeaders)
+    {
+        _logger.LogInformation("ProcessBulkInsert called. File: {File}, Entity: {Entity}", file?.FileName, entityType);
+
+        if (file == null || file.Length == 0)
+            return Json(new { success = false, message = "No file uploaded" });
+
+        if (string.IsNullOrWhiteSpace(entityType))
+            return Json(new { success = false, message = "Entity type is required" });
+
+        if (correctedHeaders == null || correctedHeaders.Count == 0)
+            return Json(new { success = false, message = "Corrected headers are required" });
+
+        try
+        {
+            var result = await _customerApiClient.BulkInsertAsync(file, entityType, correctedHeaders);
+
+            if (!result.IsSuccess)
+            {
+                return Json(new { success = false, message = result.ErrorMessage });
+            }
+
+            return Json(new
+            {
+                success = true,
+                inserted = result.Data.InsertedCount,
+                failedRows = result.Data.FailedRows
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception in ProcessBulkInsert");
+            return Json(new { success = false, message = ex.Message });
+        }
+    }
+
+
     public class CorrectHeadersRequest
     {
         public List<string> OriginalHeaders { get; set; } = new();

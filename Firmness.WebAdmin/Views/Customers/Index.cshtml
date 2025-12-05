@@ -219,14 +219,20 @@ var pagedCustomers = customersList
         const cancelImportBtn = document.getElementById('cancelImportBtn');
         const headersOutput = document.getElementById('headersOutput');
 
+        let currentPreviewData = null; // Guardar el preview para confirmar después
+
         // Abrir modal
-        importExcelBtn.addEventListener('click', () => importExcelModal.classList.remove('hidden'));
+        importExcelBtn.addEventListener('click', () => {
+            importExcelModal.classList.remove('hidden');
+            headersOutput.innerHTML = '';
+            currentPreviewData = null;
+        });
 
         // Cerrar modal
         closeImportModal.addEventListener('click', () => importExcelModal.classList.add('hidden'));
         cancelImportBtn.addEventListener('click', () => importExcelModal.classList.add('hidden'));
 
-        // Botón de confirmar subida (PASO 1: Extraer headers)
+        // Botón de confirmar subida - FLUJO COMPLETO
         document.getElementById('confirmImportBtn').addEventListener('click', async function() {
             const fileInput = document.getElementById('file-upload');
 
@@ -238,102 +244,169 @@ var pagedCustomers = customersList
 
             const formData = new FormData();
             formData.append('file', fileInput.files[0]);
-            formData.append('entityType', 'Customer');
 
-            const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
-            if (tokenInput) {
-                formData.append('__RequestVerificationToken', tokenInput.value);
-            }
-
-            headersOutput.textContent = "📤 Subiendo archivo y extrayendo headers...";
+            headersOutput.innerHTML = "📤 Procesando archivo Excel...";
 
             try {
-                // PASO 1: Extraer headers
-                const response = await fetch('/Customers/ImportExcel', {
+                // PASO 1: Llamar a /api/excel/preview
+                const apiBaseUrl = 'https://localhost:5264'; // HTTPS
+                const previewResponse = await fetch(`${apiBaseUrl}/api/excel/preview?entityType=Customer`, {
                     method: 'POST',
                     body: formData
                 });
 
-                if (!response.ok) {
-                    const text = await response.text();
-                    alert('Error al subir archivo: ' + text);
-                    headersOutput.textContent = 'Error: ' + text;
+                if (!previewResponse.ok) {
+                    const errorText = await previewResponse.text();
+                    headersOutput.innerHTML = `<p class="text-red-600">❌ Error: ${errorText}</p>`;
+                    alert('Error al procesar archivo: ' + errorText);
                     return;
                 }
 
-                const data = await response.json();
+                const previewResult = await previewResponse.json();
 
-                if (!data.success) {
-                    headersOutput.textContent = 'Error: ' + data.message;
-                    alert('Error: ' + data.message);
+                if (!previewResult.success) {
+                    headersOutput.innerHTML = `<p class="text-red-600">❌ Error: ${previewResult.message}</p>`;
+                    alert('Error: ' + previewResult.message);
                     return;
                 }
 
-                // Mostrar headers originales
-                const originalHeaders = data.headers || [];
-                const correctHeaders = data.correctHeaders || [];
+                // Guardar el preview para confirmar después
+                currentPreviewData = previewResult.data;
+
+                // PASO 2: Mostrar preview con filas válidas e inválidas
+                const validRows = currentPreviewData.validRows || [];
+                const invalidRows = currentPreviewData.invalidRows || [];
+                const totalValid = currentPreviewData.totalValid || 0;
+                const totalInvalid = currentPreviewData.totalInvalid || 0;
 
                 headersOutput.innerHTML = `
-                <div class="space-y-2">
-                    <p><strong>Headers encontrados en Excel:</strong></p>
-                    <p class="text-blue-600">${originalHeaders.join(', ')}</p>
-                    <p class="mt-2"><strong>Headers esperados:</strong></p>
-                    <p class="text-green-600">${correctHeaders.join(', ')}</p>
-                </div>
-            `;
+                    <div class="space-y-4">
+                        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded">
+                            <p class="font-bold text-blue-700 dark:text-blue-400">📊 Preview del Excel</p>
+                            <p class="mt-2"><strong>Total de filas:</strong> ${totalValid + totalInvalid}</p>
+                            <p class="text-green-600"><strong>✅ Filas válidas:</strong> ${totalValid}</p>
+                            <p class="text-red-600"><strong>❌ Filas inválidas:</strong> ${totalInvalid}</p>
+                        </div>
 
-                // PASO 2: Llamar a la IA para corregir headers
-                headersOutput.innerHTML += '<p class="mt-4 text-yellow-600">🤖 Corrigiendo headers con IA...</p>';
+                        ${invalidRows.length > 0 ? `
+                        <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded">
+                            <p class="font-bold text-red-700 dark:text-red-400">⚠️ Errores encontrados:</p>
+                            <ul class="mt-2 list-disc list-inside text-sm">
+                                ${invalidRows.slice(0, 5).map(row => `
+                                    <li>Fila ${row.rowNumber}: ${row.errors.join(', ')}</li>
+                                `).join('')}
+                                ${invalidRows.length > 5 ? `<li>... y ${invalidRows.length - 5} errores más</li>` : ''}
+                            </ul>
+                        </div>
+                        ` : ''}
 
-                const correctionResponse = await fetch('/Customers/CorrectHeadersWithAI', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': tokenInput?.value
-                    },
-                    body: JSON.stringify({
-                        originalHeaders: originalHeaders,
-                        correctHeaders: correctHeaders
-                    })
-                });
+                        ${validRows.length > 0 ? `
+                        <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded">
+                            <p class="font-bold text-green-700 dark:text-green-400">✅ Primeras filas válidas:</p>
+                            <div class="mt-2 overflow-x-auto">
+                                <table class="min-w-full text-xs">
+                                    <thead>
+                                        <tr>
+                                            ${Object.keys(validRows[0].rowData).map(key => `
+                                                <th class="px-2 py-1 text-left">${key}</th>
+                                            `).join('')}
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${validRows.slice(0, 3).map(row => `
+                                            <tr>
+                                                ${Object.values(row.rowData).map(value => `
+                                                    <td class="px-2 py-1">${value}</td>
+                                                `).join('')}
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                                ${validRows.length > 3 ? `<p class="mt-2 text-xs text-gray-600">... y ${validRows.length - 3} filas más</p>` : ''}
+                            </div>
+                        </div>
+                        ` : ''}
 
-                if (!correctionResponse.ok) {
-                    headersOutput.innerHTML += '<p class="text-red-600">❌ Error llamando a la IA</p>';
-                    return;
+                        <div class="flex justify-end gap-3">
+                            <button id="cancelPreviewBtn" class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-bold hover:bg-gray-300 dark:hover:bg-gray-600">
+                                Cancelar
+                            </button>
+                            ${validRows.length > 0 ? `
+                            <button id="confirmInsertBtn" class="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-bold hover:bg-green-700">
+                                Confirmar e Insertar ${totalValid} registros
+                            </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+
+                // PASO 3: Manejar confirmación de inserción
+                const cancelPreviewBtn = document.getElementById('cancelPreviewBtn');
+                const confirmInsertBtn = document.getElementById('confirmInsertBtn');
+
+                if (cancelPreviewBtn) {
+                    cancelPreviewBtn.addEventListener('click', () => {
+                        importExcelModal.classList.add('hidden');
+                        currentPreviewData = null;
+                    });
                 }
 
-                const correctionData = await correctionResponse.json();
+                if (confirmInsertBtn) {
+                    confirmInsertBtn.addEventListener('click', async () => {
+                        confirmInsertBtn.disabled = true;
+                        confirmInsertBtn.textContent = 'Insertando...';
 
-                if (!correctionData.success) {
-                    headersOutput.innerHTML += `<p class="text-red-600">❌ ${correctionData.message}</p>`;
-                    return;
+                        try {
+                            // Llamar a /api/excel/confirm
+                            const confirmResponse = await fetch(`${apiBaseUrl}/api/excel/confirm`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(currentPreviewData)
+                            });
+
+                            if (!confirmResponse.ok) {
+                                const errorText = await confirmResponse.text();
+                                alert('Error al confirmar importación: ' + errorText);
+                                confirmInsertBtn.disabled = false;
+                                confirmInsertBtn.textContent = `Confirmar e Insertar ${totalValid} registros`;
+                                return;
+                            }
+
+                            const confirmResult = await confirmResponse.json();
+
+                            if (!confirmResult.success) {
+                                alert('Error: ' + confirmResult.message);
+                                confirmInsertBtn.disabled = false;
+                                confirmInsertBtn.textContent = `Confirmar e Insertar ${totalValid} registros`;
+                                return;
+                            }
+
+                            // Éxito!
+                            const insertedCount = confirmResult.data.insertedCount || 0;
+                            const failedRows = confirmResult.data.failedRows || [];
+
+                            alert(`✅ Importación completada!\n\n` +
+                                  `Registros insertados: ${insertedCount}\n` +
+                                  `Filas fallidas: ${failedRows.length}`);
+
+                            importExcelModal.classList.add('hidden');
+                            window.location.reload(); // Recargar para ver los nuevos datos
+
+                        } catch (err) {
+                            console.error(err);
+                            alert('Error al confirmar importación: ' + err.message);
+                            confirmInsertBtn.disabled = false;
+                            confirmInsertBtn.textContent = `Confirmar e Insertar ${totalValid} registros`;
+                        }
+                    });
                 }
-
-                // Mostrar resultados de la corrección
-                const correctedColumns = correctionData.data.correctedColumns || [];
-                const wasCorrected = correctionData.data.wasCorrected;
-                const changesReport = correctionData.data.changesReport || 'No changes';
-
-                headersOutput.innerHTML += `
-                <div class="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded">
-                    <p class="font-bold text-green-700 dark:text-green-400">✅ Corrección completada</p>
-                    <p class="mt-2"><strong>Headers corregidos:</strong></p>
-                    <p class="text-green-600">${correctedColumns.join(', ')}</p>
-                    <p class="mt-2"><strong>Reporte de cambios:</strong></p>
-                    <p class="text-gray-700 dark:text-gray-300">${changesReport}</p>
-                    <p class="mt-2 text-sm ${wasCorrected ? 'text-orange-600' : 'text-green-600'}">
-                        ${wasCorrected ? '⚠️ Se realizaron correcciones' : '✓ No se necesitaron correcciones'}
-                    </p>
-                </div>
-            `;
-
-                alert('Headers procesados exitosamente!\n\n' + changesReport);
-                importExcelModal.classList.add('hidden');
 
             } catch(err) {
                 console.error(err);
                 alert('Error al procesar archivo: ' + err.message);
-                headersOutput.textContent = "Error: " + err.message;
+                headersOutput.innerHTML = `<p class="text-red-600">Error: ${err.message}</p>`;
             }
         });
     });

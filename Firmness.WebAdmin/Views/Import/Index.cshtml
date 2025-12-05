@@ -1,4 +1,4 @@
-﻿@model Firmness.Web.ViewModels.Import.PreviewViewModel
+﻿@model Firmness.WebAdmin.Models.PreviewViewModel
 
 <h2>Preview de datos corregidos con IA (@Model.EntityType)</h2>
 
@@ -29,10 +29,17 @@
 
 <script>
 document.getElementById("btnConfirm").addEventListener("click", async () => {
+
+    const payload = {
+        entityType: "@Model.EntityType",
+        correctedHeaders: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.CorrectedHeaders)),
+        rows: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Rows))
+    };
+
     const response = await fetch("/Import/Confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model)))
+        body: JSON.stringify(payload)
     });
 
     const result = await response.json();
