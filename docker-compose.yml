@@ -1,0 +1,73 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: firmness-postgres
+    environment:
+      POSTGRES_USER: firmness_user
+      POSTGRES_PASSWORD: firmness_password
+      POSTGRES_DB: firmness_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - firmness-network
+
+  firmness-api:
+    build:
+      context: .
+      dockerfile: Firmness.Api/Dockerfile
+    container_name: firmness-api
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=firmness_user
+      - DB_PASS=firmness_password
+      - DB_NAME=firmness_db
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+    networks:
+      - firmness-network
+
+  firmness-webadmin:
+    build:
+      context: .
+      dockerfile: Firmness.WebAdmin/Dockerfile
+    container_name: firmness-webadmin
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=firmness_user
+      - DB_PASS=firmness_password
+      - DB_NAME=firmness_db
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ApiSettings__BaseUrl=http://firmness-api:8080/api/
+    ports:
+      - "8082:8080"
+    depends_on:
+      - firmness-api
+      - postgres
+    networks:
+      - firmness-network
+
+  firmness-customer:
+    build:
+      context: Firmness.Customer
+      dockerfile: Dockerfile
+    container_name: firmness-customer
+    ports:
+      - "8083:80"
+    networks:
+      - firmness-network
+
+networks:
+  firmness-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

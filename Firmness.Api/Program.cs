@@ -290,6 +290,7 @@ using (var scope = app.Services.CreateScope())
     
     try
     {
+        db.Database.Migrate();
         db.Database.OpenConnection();
         Console.WriteLine("✅ API connected to PostgreSQL successfully");
         db.Database.CloseConnection();

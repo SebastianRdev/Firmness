@@ -1,25 +1,24 @@
-﻿# Etapa 1: Build
+﻿# Use the official ASP.NET Core runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 8080
+
+# Use the official ASP.NET Core SDK image for building
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-
-# Copiar los archivos de solución
-COPY *.sln ./
-COPY Firmness.Infrastructure/Firmness.Infrastructure.csproj Firmness.Infrastructure/
-COPY Firmness.WebAdmin/Firmness.WebAdmin.csproj Firmness.WebAdmin/
-RUN dotnet restore
-
-# Copiar el resto del código y compilar
+COPY ["Firmness.WebAdmin/Firmness.WebAdmin.csproj", "Firmness.WebAdmin/"]
+COPY ["Firmness.Application/Firmness.Application.csproj", "Firmness.Application/"]
+COPY ["Firmness.Domain/Firmness.Domain.csproj", "Firmness.Domain/"]
+COPY ["Firmness.Infrastructure/Firmness.Infrastructure.csproj", "Firmness.Infrastructure/"]
+RUN dotnet restore "Firmness.WebAdmin/Firmness.WebAdmin.csproj"
 COPY . .
-RUN dotnet publish Firmness.WebAdmin -c Release -o /app/publish
+WORKDIR "/src/Firmness.WebAdmin"
+RUN dotnet build "Firmness.WebAdmin.csproj" -c Release -o /app/build
 
-# Etapa 2: Runtime
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM build AS publish
+RUN dotnet publish "Firmness.WebAdmin.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
 WORKDIR /app
-COPY --from=build /app/publish .
-
-# Variables de entorno (se pueden reemplazar en producción)
-ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=firmnessdb;Username=postgres;Password=postgres"
-
-EXPOSE 8080
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "Firmness.WebAdmin.dll"]

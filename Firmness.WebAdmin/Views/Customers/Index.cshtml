@@ -270,6 +270,9 @@ var pagedCustomers = customersList
                     return;
                 }
 
+                // Close the modal automatically
+                importExcelModal.classList.add('hidden');
+
                 // Guardar el preview para confirmar después
                 currentPreviewData = previewResult.data;
 
@@ -280,59 +283,86 @@ var pagedCustomers = customersList
                 const totalInvalid = currentPreviewData.totalInvalid || 0;
 
                 headersOutput.innerHTML = `
-                    <div class="space-y-4">
-                        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded">
-                            <p class="font-bold text-blue-700 dark:text-blue-400">📊 Preview del Excel</p>
-                            <p class="mt-2"><strong>Total de filas:</strong> ${totalValid + totalInvalid}</p>
-                            <p class="text-green-600"><strong>✅ Filas válidas:</strong> ${totalValid}</p>
-                            <p class="text-red-600"><strong>❌ Filas inválidas:</strong> ${totalInvalid}</p>
+                    <div class="flex flex-col gap-6">
+                        <!-- Stats -->
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            <div class="flex flex-1 flex-col gap-2 rounded-lg border border-[#cfe7d7] bg-[#f8fcf9] p-5 dark:border-zinc-800 dark:bg-zinc-900">
+                                <p class="text-base font-medium leading-normal text-[#0d1b12] dark:text-zinc-300">Total de Filas</p>
+                                <p class="text-3xl font-bold leading-tight tracking-tight text-[#0d1b12] dark:text-white">${totalValid + totalInvalid}</p>
+                            </div>
+                            <div class="flex flex-1 flex-col gap-2 rounded-lg border border-green-200 bg-green-50 p-5 dark:border-green-900/50 dark:bg-green-500/10">
+                                <p class="text-base font-medium leading-normal text-green-800 dark:text-green-300">Filas Válidas (✅)</p>
+                                <p class="text-3xl font-bold leading-tight tracking-tight text-green-600 dark:text-green-400">${totalValid}</p>
+                            </div>
+                            <div class="flex flex-1 flex-col gap-2 rounded-lg border border-red-200 bg-red-50 p-5 dark:border-red-900/50 dark:bg-red-500/10">
+                                <p class="text-base font-medium leading-normal text-red-800 dark:text-red-300">Filas Inválidas (❌)</p>
+                                <p class="text-3xl font-bold leading-tight tracking-tight text-red-600 dark:text-red-400">${totalInvalid}</p>
+                            </div>
                         </div>
 
                         ${invalidRows.length > 0 ? `
-                        <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded">
-                            <p class="font-bold text-red-700 dark:text-red-400">⚠️ Errores encontrados:</p>
-                            <ul class="mt-2 list-disc list-inside text-sm">
+                        <div class="flex flex-col gap-2 rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-500/10">
+                            <h3 class="flex items-center gap-2 text-lg font-bold leading-tight tracking-[-0.015em] text-red-800 dark:text-red-300">
+                                <span class="material-symbols-outlined">warning</span>
+                                Se encontraron errores en las siguientes filas:
+                            </h3>
+                            <div class="flex flex-col divide-y divide-red-200/50 dark:divide-red-900/50">
                                 ${invalidRows.slice(0, 5).map(row => `
-                                    <li>Fila ${row.rowNumber}: ${row.errors.join(', ')}</li>
+                                    <div class="flex items-center gap-4 py-3">
+                                        <div class="flex flex-col justify-center">
+                                            <p class="font-medium leading-normal text-red-900 dark:text-red-200">Fila ${row.rowNumber}: ${row.errors.join(', ')}</p>
+                                            <p class="text-sm font-normal leading-normal text-red-700 dark:text-red-400 line-clamp-1">Contenido: ${Object.values(row.rowData || {}).join(', ')}</p>
+                                        </div>
+                                    </div>
                                 `).join('')}
-                                ${invalidRows.length > 5 ? `<li>... y ${invalidRows.length - 5} errores más</li>` : ''}
-                            </ul>
-                        </div>
-                        ` : ''}
-
-                        ${validRows.length > 0 ? `
-                        <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded">
-                            <p class="font-bold text-green-700 dark:text-green-400">✅ Primeras filas válidas:</p>
-                            <div class="mt-2 overflow-x-auto">
-                                <table class="min-w-full text-xs">
-                                    <thead>
-                                        <tr>
-                                            ${Object.keys(validRows[0].rowData).map(key => `
-                                                <th class="px-2 py-1 text-left">${key}</th>
-                                            `).join('')}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${validRows.slice(0, 3).map(row => `
-                                            <tr>
-                                                ${Object.values(row.rowData).map(value => `
-                                                    <td class="px-2 py-1">${value}</td>
-                                                `).join('')}
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                                ${validRows.length > 3 ? `<p class="mt-2 text-xs text-gray-600">... y ${validRows.length - 3} filas más</p>` : ''}
+                                ${invalidRows.length > 5 ? `
+                                    <div class="py-3">
+                                        <p class="text-sm text-red-700 dark:text-red-400">... y ${invalidRows.length - 5} errores más</p>
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                         ` : ''}
 
-                        <div class="flex justify-end gap-3">
-                            <button id="cancelPreviewBtn" class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-bold hover:bg-gray-300 dark:hover:bg-gray-600">
+                        ${validRows.length > 0 ? `
+                        <div class="flex flex-col gap-3">
+                            <h3 class="text-lg font-bold leading-tight tracking-[-0.015em] text-[#0d1b12] dark:text-white">Previsualización de Filas Válidas</h3>
+                            <div class="overflow-hidden rounded-lg border border-[#cfe7d7] dark:border-zinc-800">
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full text-sm">
+                                        <thead class="bg-green-50/50 dark:bg-green-500/10">
+                                            <tr>
+                                                ${Object.keys(validRows[0].rowData).map(key => `
+                                                    <th class="whitespace-nowrap px-4 py-3 text-left font-semibold text-green-800 dark:text-green-300" scope="col">${key}</th>
+                                                `).join('')}
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-[#e7f3eb] dark:divide-zinc-800/50">
+                                            ${validRows.slice(0, 3).map(row => `
+                                                <tr class="bg-[#f8fcf9] dark:bg-zinc-900/50">
+                                                    ${Object.values(row.rowData).map(value => `
+                                                        <td class="whitespace-nowrap px-4 py-3 text-[#0d1b12] dark:text-zinc-300">${value}</td>
+                                                    `).join('')}
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                ${validRows.length > 3 ? `
+                                    <div class="px-4 py-2 bg-[#f8fcf9] dark:bg-zinc-900/50 border-t border-[#e7f3eb] dark:border-zinc-800/50">
+                                        <p class="text-xs text-zinc-600 dark:text-zinc-400">... y ${validRows.length - 3} filas más</p>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <div class="flex flex-col-reverse justify-end gap-3 pt-4 sm:flex-row">
+                            <button id="cancelPreviewBtn" class="flex h-11 items-center justify-center rounded-lg bg-zinc-100 px-6 text-sm font-semibold text-zinc-700 transition-colors hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700">
                                 Cancelar
                             </button>
                             ${validRows.length > 0 ? `
-                            <button id="confirmInsertBtn" class="px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-bold hover:bg-green-700">
+                            <button id="confirmInsertBtn" class="flex h-11 items-center justify-center rounded-lg bg-green-500 px-6 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-green-600 dark:bg-primary dark:text-background-dark dark:hover:bg-primary/90">
                                 Confirmar e Insertar ${totalValid} registros
                             </button>
                             ` : ''}
@@ -347,6 +377,7 @@ var pagedCustomers = customersList
                 if (cancelPreviewBtn) {
                     cancelPreviewBtn.addEventListener('click', () => {
                         importExcelModal.classList.add('hidden');
+                        headersOutput.innerHTML = '';
                         currentPreviewData = null;
                     });
                 }

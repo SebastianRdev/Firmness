@@ -2,53 +2,154 @@
 @using Firmness.Domain.Entities;
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
-
 @{
     ViewData["Title"] = "Home Page";
-    Layout = null; // No usamos layout con sidebar
+    Layout = null;
 }
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>@ViewData["Title"] - Firmness Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#135bec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#0d1117",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col items-center justify-center">
-
-    <div class="max-w-3xl mx-auto text-center p-8 bg-white rounded-2xl shadow-lg border border-gray-100">
-        @if (SignInManager.IsSignedIn(User))
-        {
-            var currentUser = await UserManager.GetUserAsync(User);
-            <h1 class="text-3xl font-bold text-gray-800 mb-3">
-                Welcome back, <span class="text-blue-600">@currentUser.FullName 👋</span>
-            </h1>
-            <p class="text-gray-600 text-lg mb-6">
-                This is your main landing page after signing in.  
-                From here, you can navigate to your dashboard, manage your products, clients, and sales.
-            </p>
-            <a href="/Dashboard" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2 rounded-lg transition">
-                Go to Dashboard
-            </a>
-        }
-        else
-        {
-            <h1 class="text-3xl font-bold text-gray-800 mb-3">Welcome to Firmness Admin</h1>
-            <p class="text-gray-600 text-lg mb-6">
-                This is a modern admin panel where you can manage products, clients, and sales efficiently.  
-                Please log in to get started.
-            </p>
-            <a href="/Account/Login" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium px-5 py-2 rounded-lg transition">
-                Sign In
-            </a>
-        }
+<body class="font-display bg-background-light dark:bg-background-dark text-gray-900 dark:text-gray-100">
+    <div class="relative flex h-screen min-h-[600px] w-full flex-col overflow-hidden group/design-root">
+        <!-- Background Effects -->
+        <div class="absolute inset-0 z-0 h-full w-full">
+            <!-- Light Mode Background -->
+            <div class="absolute inset-0 z-0 opacity-100 dark:opacity-0 transition-opacity duration-500">
+                <div class="absolute inset-0 bg-white"></div>
+                <div class="absolute -right-[10vw] -top-[20vh] h-[50vh] w-[50vw] rounded-full bg-blue-200/50 blur-[120px]"></div>
+                <div class="absolute -left-[15vw] bottom-[5vh] h-[40vh] w-[40vw] rounded-full bg-purple-200/50 blur-[120px]"></div>
+                <div class="absolute right-[20vw] top-[15vh] h-[30vh] w-[30vw] rounded-full bg-teal-100/50 blur-[100px]"></div>
+                <svg class="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="displacementFilter">
+                            <feTurbulence baseFrequency="0.01 0.03" numOctaves="1" result="turbulence" type="fractalNoise"></feTurbulence>
+                            <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="20" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+                        </filter>
+                        <radialGradient id="lightGradient">
+                            <stop offset="0%" stop-color="white" stop-opacity="0.6"></stop>
+                            <stop offset="100%" stop-color="white" stop-opacity="0"></stop>
+                        </radialGradient>
+                    </defs>
+                    <g class="opacity-30">
+                        <circle cx="10%" cy="20%" fill="url(#lightGradient)" r="200"></circle>
+                        <circle cx="80%" cy="60%" fill="url(#lightGradient)" r="300"></circle>
+                        <circle cx="50%" cy="90%" fill="url(#lightGradient)" r="150"></circle>
+                    </g>
+                </svg>
+            </div>
+            
+            <!-- Dark Mode Background -->
+            <div class="absolute inset-0 z-0 opacity-0 dark:opacity-100 transition-opacity duration-500">
+                <div class="absolute inset-0 bg-background-dark"></div>
+                <div class="absolute bottom-0 left-[-20%] right-[-20%] top-[-20%] h-[500px] w-[500px] rounded-full bg-primary/20 blur-[150px]"></div>
+                <div class="absolute bottom-[-10%] right-[-10%] h-[400px] w-[400px] rounded-full bg-[#36D7B7]/15 blur-[120px]"></div>
+                <div class="absolute left-[15%] top-[5%] h-[300px] w-[300px] rounded-full bg-[#8A2BE2]/15 blur-[100px]"></div>
+                <svg class="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="displacementFilterDark">
+                            <feTurbulence baseFrequency="0.02 0.01" numOctaves="1" result="turbulence" type="fractalNoise"></feTurbulence>
+                            <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="30" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+                        </filter>
+                        <radialGradient id="darkGradient">
+                            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.05"></stop>
+                            <stop offset="100%" stop-color="#ffffff" stop-opacity="0"></stop>
+                        </radialGradient>
+                    </defs>
+                    <g class="opacity-50" style="filter: url(#displacementFilterDark);">
+                        <circle cx="20%" cy="80%" fill="url(#darkGradient)" r="350"></circle>
+                        <circle cx="90%" cy="10%" fill="url(#darkGradient)" r="250"></circle>
+                    </g>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Content -->
+        <div class="relative flex h-full grow flex-col">
+            <main class="flex flex-1 items-center justify-center px-4 py-10 sm:px-6 lg:px-8">
+                <div class="layout-content-container flex flex-1 flex-col items-center justify-center text-center">
+                    <div class="w-full max-w-2xl">
+                        <div class="flex flex-col gap-6">
+                            @if (SignInManager.IsSignedIn(User))
+                            {
+                                var currentUser = await UserManager.GetUserAsync(User);
+                                <div class="flex flex-col gap-2 text-center">
+                                    <h1 class="text-4xl font-black leading-tight tracking-tighter text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
+                                        Welcome, <span class="text-primary">@currentUser.FullName 👋</span>
+                                    </h1>
+                                    <h2 class="text-base font-normal text-slate-600 dark:text-slate-300 sm:text-lg md:text-xl">
+                                        This is your main page after logging in. From here you can navigate to your control panel, manage your products, clients, and sales.
+                                    </h2>
+                                </div>
+                                <div class="flex justify-center">
+                                    <a href="/Dashboard" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-primary px-5 py-3 text-base font-bold text-white shadow-lg shadow-primary/30 transition-all duration-200 ease-in-out hover:bg-primary/90 hover:shadow-primary/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+                                        <span class="truncate">Go to Dashboard</span>
+                                    </a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="flex flex-col gap-2 text-center">
+                                    <h1 class="text-4xl font-black leading-tight tracking-tighter text-gray-900 dark:text-white sm:text-5xl md:text-6xl">
+                                        Welcome  to Firmness Admin
+                                    </h1>
+                                    <h2 class="text-base font-normal text-slate-600 dark:text-slate-300 sm:text-lg md:text-xl">
+                                        Modern admin panel to efficiently manage your products, clients, and sales.
+                                    </h2>
+                                </div>
+                                <div class="flex justify-center">
+                                    <a href="/Account/Login" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-primary px-5 py-3 text-base font-bold text-white shadow-lg shadow-primary/30 transition-all duration-200 ease-in-out hover:bg-primary/90 hover:shadow-primary/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+                                        <span class="truncate">Login</span>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- Footer -->
+            <footer class="relative z-10 p-5 text-center">
+                <p class="text-sm text-gray-500 dark:text-gray-400">© 2025 Firmness Admin. All rights reserved.</p>
+            </footer>
+        </div>
     </div>
-
-    <footer class="mt-10 text-gray-500 text-sm">
-        &copy; 2025 Firmness Admin. All rights reserved.
-    </footer>
-
 </body>
 </html>
