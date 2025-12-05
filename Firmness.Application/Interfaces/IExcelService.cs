@@ -15,4 +15,9 @@ public interface IExcelService
 
     Task<ResultOft<ExcelHeadersResponseDto>> CorrectColumnNamesAsync(List<string> realColumns,
         List<string> correctColumns);
+
+    Task<BulkPreviewResultDto> GeneratePreviewAsync(
+        Stream fileStream,
+        string entityType,
+        List<string> correctedHeaders);
 }

@@ -31,6 +31,8 @@ public interface IGenericRepository<T> where T : class
     /// <returns>The aggregated entity</returns>
     Task<T> AddAsync(T entity);
 
+    Task AddRangeAsync(IEnumerable<T> entities);
+
     /// <summary>
     /// Mark an entity as modified.
     /// It does not persist until SaveChangesAsync() is called.

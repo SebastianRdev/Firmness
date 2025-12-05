@@ -325,65 +325,99 @@ public class CustomerService : ICustomerService
     {
         try
         {
-            using (var package = new ExcelPackage(file.OpenReadStream()))
+            using var package = new ExcelPackage(file.OpenReadStream());
+            var worksheet = package.Workbook.Worksheets[0];
+
+            int rowCount = worksheet.Dimension.Rows;
+            int columnCount = worksheet.Dimension.Columns;
+
+            // 1. Leer encabezados originales
+            var headers = new List<string>();
+            for (int col = 1; col <= columnCount; col++)
             {
-                var worksheet = package.Workbook.Worksheets[0];
-                var rowCount = worksheet.Dimension.Rows;
-                var columnCount = worksheet.Dimension.Columns;
+                headers.Add(worksheet.Cells[1, col].Text.Trim());
+            }
 
-                // Leer los encabezados del archivo Excel
-                var headers = new List<string>();
-                for (int col = 1; col <= columnCount; col++)
+            // 2. Corregir encabezados con IA
+            var correction = await _excelService.CorrectColumnNamesAsync(
+                headers,
+                ColumnTemplates.Templates[entityType]
+            );
+
+            if (!correction.IsSuccess)
+                return Result.Failure("Error correcting headers.");
+
+            var corrected = correction.Data.CorrectedColumns;
+
+            if (correction.Data.WasCorrected)
+                _logger.LogInformation("Header corrections: {Report}", correction.Data.ChangesReport);
+
+            // 3. Crear un diccionario header → índice
+            var headerIndex = corrected
+                .Select((value, index) => new { value, index })
+                .ToDictionary(x => x.value.ToLower(), x => x.index + 1);
+
+            // 4. Contadores
+            int successCount = 0;
+            var errors = new List<string>();
+
+            // 5. Procesar filas
+            for (int row = 2; row <= rowCount; row++)
+            {
+                try
                 {
-                    var header = worksheet.Cells[1, col].Text.Trim();
-                    headers.Add(header);
-                }
-
-                // Usar el servicio de Excel para corregir los encabezados
-                var headersCorrectionResult = await _excelService.CorrectColumnNamesAsync(headers, ColumnTemplates.Templates[entityType]);
-
-                if (!headersCorrectionResult.IsSuccess)
-                {
-                    return Result.Failure("Error correcting headers.");
-                }
-
-                // Obtener los encabezados corregidos
-                var correctedHeaders = headersCorrectionResult.Data.CorrectedColumns;
-
-                // Si los encabezados fueron corregidos, hacer algo con el reporte (por ejemplo, mostrarlo al usuario)
-                if (headersCorrectionResult.Data.WasCorrected)
-                {
-                    var changes = headersCorrectionResult.Data.ChangesReport;
-                    _logger.LogInformation($"Headers corrected: {changes}");
-                }
-
-                // Procesar las filas del Excel después de la corrección de encabezados
-                var customerData = new List<CustomerDto>();
-                for (int row = 2; row <= rowCount; row++) // Empieza desde la fila 2 para omitir encabezados
-                {
-                    var customer = new CustomerDto
+                    // Crear DTO
+                    var dto = new CreateCustomerDto
                     {
-                        UserName = worksheet.Cells[row, correctedHeaders.IndexOf("username") + 1].Text,
-                        FullName = worksheet.Cells[row, correctedHeaders.IndexOf("fullname") + 1].Text,
-                        Email = worksheet.Cells[row, correctedHeaders.IndexOf("email") + 1].Text,
-                        Address = worksheet.Cells[row, correctedHeaders.IndexOf("address") + 1].Text,
-                        PhoneNumber = worksheet.Cells[row, correctedHeaders.IndexOf("phonenumber") + 1].Text
+                        UserName = worksheet.Cells[row, headerIndex["username"]].Text,
+                        FullName = worksheet.Cells[row, headerIndex["fullname"]].Text,
+                        Email = worksheet.Cells[row, headerIndex["email"]].Text,
+                        Address = worksheet.Cells[row, headerIndex["address"]].Text,
+                        PhoneNumber = worksheet.Cells[row, headerIndex["phone"]].Text,
+
+                        // Password temporal (buena práctica: usuarios cambian luego)
+                        Password = "Temp123$"
                     };
 
-                    customerData.Add(customer);
+                    // Validación mínima
+                    if (string.IsNullOrWhiteSpace(dto.Email))
+                    {
+                        errors.Add($"Fila {row}: email vacío.");
+                        continue;
+                    }
+
+                    // 6. Crear usuario con tu propio servicio
+                    var createResult = await CreateAsync(dto);
+
+                    if (!createResult.IsSuccess)
+                    {
+                        errors.Add($"Fila {row}: {createResult.ErrorMessage}");
+                        continue;
+                    }
+
+                    successCount++;
                 }
-
-                // Aquí podrías guardar los datos de los clientes en la base de datos o hacer más procesamiento
-
-                return Result.Success();
+                catch (Exception exRow)
+                {
+                    errors.Add($"Fila {row}: error inesperado: {exRow.Message}");
+                }
             }
+
+            _logger.LogInformation("Excel import completed: {Success} OK, {Errors} errors", successCount, errors.Count);
+
+            if (errors.Any())
+                return Result.Failure($"Imported {successCount} customers with {errors.Count} errors:\n" +
+                                    string.Join("\n", errors));
+
+            return Result.Success();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error importing Excel data");
+            _logger.LogError(ex, "Error importing Excel");
             return Result.Failure("Error processing the Excel file.");
         }
     }
+
 
     
     public async Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file)

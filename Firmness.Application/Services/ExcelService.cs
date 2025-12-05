@@ -1,5 +1,7 @@
 namespace Firmness.Application.Services;
 
+using Firmness.Application.MappingTemplates;
+using Firmness.Application.Validators;
 using Microsoft.Extensions.Logging;
 using Firmness.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -158,5 +160,70 @@ public class ExcelService : IExcelService
             _logger.LogError(ex, "Error calling Gemini AI");
             return ResultOft<ExcelHeadersResponseDto>.Failure("Error calling Gemini AI");
         }
+    }
+
+    public async Task<BulkPreviewResultDto> GeneratePreviewAsync(
+        Stream fileStream,
+        string entityType,
+        List<string> correctedHeaders)
+    {
+        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+
+        using var package = new ExcelPackage(fileStream);
+        var sheet = package.Workbook.Worksheets.First();
+
+        _logger.LogInformation("Reading preview rows for entity {EntityType}", entityType);
+
+        // 1. Leer filas con los headers corregidos
+        var rawRows = EPPlusHelper.ReadRows(sheet, correctedHeaders);
+
+        // 2. Mapear headers corregidos → propiedades reales
+        var mapping = entityType.ToLower() switch
+        {
+            "customer" => CustomerColumnTemplate.Map,
+            "product"  => ProductColumnTemplate.Map,
+            _ => throw new Exception($"No mapping template for entity: {entityType}")
+        };
+
+        // 3. Escoger validador correcto
+        IExcelRowValidator validator = entityType.ToLower() switch
+        {
+            "customer" => new CustomerRowValidator(),
+            "product"  => new ProductRowValidator(),
+            _ => throw new Exception($"No validator for entity: {entityType}")
+        };
+
+
+        var preview = new BulkPreviewResultDto();
+        int rowNumber = 2;
+
+        foreach (var raw in rawRows)
+        {
+            var mappedRow = new Dictionary<string, string>();
+
+            // 3.1 Mapear columnas
+            foreach (var kv in raw)
+            {
+                if (mapping.TryGetValue(kv.Key, out var propName))
+                    mappedRow[propName] = kv.Value;
+            }
+
+            // 4. Validar fila
+            var validation = validator.Validate(mappedRow, rowNumber);
+
+            if (validation.IsValid)
+                preview.ValidRows.Add(validation);
+            else
+                preview.InvalidRows.Add(validation);
+
+            rowNumber++;
+        }
+
+        _logger.LogInformation(
+            "Preview generated: {Valid} valid rows, {Invalid} invalid rows",
+            preview.TotalValid, preview.TotalInvalid
+        );
+
+        return preview;
     }
 }

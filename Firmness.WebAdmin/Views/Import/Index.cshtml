@@ -1,0 +1,41 @@
+﻿@model Firmness.Web.ViewModels.Import.PreviewViewModel
+
+<h2>Preview de datos corregidos con IA (@Model.EntityType)</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            @foreach (var h in Model.CorrectedHeaders)
+            {
+                <th>@h</th>
+            }
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var row in Model.Rows)
+        {
+            <tr>
+                @foreach (var h in Model.CorrectedHeaders)
+                {
+                    <td>@row[h]</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button id="btnConfirm" class="btn btn-success mt-3">Confirmar Importación</button>
+
+<script>
+document.getElementById("btnConfirm").addEventListener("click", async () => {
+    const response = await fetch("/Import/Confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model)))
+    });
+
+    const result = await response.json();
+    alert(result.message);
+});
+</script>
