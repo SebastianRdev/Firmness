@@ -6,37 +6,50 @@ using Firmness.Application.Common;
 public interface ICategoryService
 {
     /// <summary>
-    /// It obtains all the categories of the system.
+    /// Retrieves all categories in the system.
     /// </summary>
+    /// <returns>A result containing a collection of category DTOs.</returns>
     Task<ResultOft<IEnumerable<CategoryDto>>> GetAllAsync();
 
     /// <summary>
-    /// You get a category by your ID.
+    /// Retrieves a category by its unique identifier.
     /// </summary>
+    /// <param name="id">The unique identifier of the category.</param>
+    /// <returns>A result containing the category DTO if found.</returns>
     Task<ResultOft<CategoryDto>> GetByIdAsync(int id);
 
     /// <summary>
-    /// Create a new category.
+    /// Creates a new category.
     /// </summary>
+    /// <param name="createDto">The data transfer object containing category creation details.</param>
+    /// <returns>A result containing the created category DTO.</returns>
     Task<ResultOft<CategoryDto>> CreateAsync(CreateCategoryDto createDto);
 
     /// <summary>
-    /// Update an existing category.
+    /// Updates an existing category.
     /// </summary>
+    /// <param name="updateDto">The data transfer object containing category update details.</param>
+    /// <returns>A result containing the updated category DTO.</returns>
     Task<ResultOft<CategoryDto>> UpdateAsync(UpdateCategoryDto updateDto);
 
     /// <summary>
-    /// Delete a category.
+    /// Deletes a category by its unique identifier.
     /// </summary>
+    /// <param name="id">The unique identifier of the category to delete.</param>
+    /// <returns>A result indicating the success or failure of the operation.</returns>
     Task<Result> DeleteAsync(int id);
 
     /// <summary>
-    /// Search for categories by term.
+    /// Searches for categories matching a given search term.
     /// </summary>
+    /// <param name="searchTerm">The term to search for.</param>
+    /// <returns>A result containing a collection of matching category DTOs.</returns>
     Task<ResultOft<IEnumerable<CategoryDto>>> SearchAsync(string searchTerm);
 
     /// <summary>
-    /// Check if a category exists.
+    /// Checks if a category exists by its unique identifier.
     /// </summary>
+    /// <param name="id">The unique identifier of the category.</param>
+    /// <returns>True if the category exists; otherwise, false.</returns>
     Task<bool> ExistsAsync(int id);
 }

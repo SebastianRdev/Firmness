@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Firmness.Infrastructure.Services;
 
+/// <summary>
+/// Service responsible for handling data import processes, including Excel preview and confirmation.
+/// </summary>
 public class ImportService : IImportService
 {
     private readonly IExcelService _excelService;
@@ -16,6 +19,13 @@ public class ImportService : IImportService
     private readonly IGenericRepository<Product> _productRepo;
     private readonly ILogger<ImportService> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ImportService"/> class.
+    /// </summary>
+    /// <param name="excelService">The Excel service.</param>
+    /// <param name="userManager">The user manager.</param>
+    /// <param name="productRepo">The product repository.</param>
+    /// <param name="logger">The logger instance.</param>
     public ImportService(
         IExcelService excelService,
         UserManager<ApplicationUser> userManager,
@@ -28,6 +38,12 @@ public class ImportService : IImportService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Processes an Excel file to generate a preview of the import.
+    /// </summary>
+    /// <param name="file">The uploaded Excel file.</param>
+    /// <param name="entityType">The type of entity to import.</param>
+    /// <returns>A result containing the preview data.</returns>
     public async Task<ResultOft<BulkPreviewResultDto>> ProcessExcelPreviewAsync(IFormFile file, string entityType)
     {
         try
@@ -71,6 +87,11 @@ public class ImportService : IImportService
         }
     }
 
+    /// <summary>
+    /// Confirms the import of data based on the preview results.
+    /// </summary>
+    /// <param name="previewModel">The preview data containing valid rows to import.</param>
+    /// <returns>A result summary of the import operation.</returns>
     public async Task<ResultOft<BulkInsertResultDto>> ConfirmImportAsync(BulkPreviewResultDto previewModel)
     {
         try

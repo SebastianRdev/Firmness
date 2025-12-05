@@ -3,17 +3,24 @@ namespace Firmness.Application.Interfaces;
 public interface IEmailService
 {
     /// <summary>
-    /// Sends an email with optional attachment
+    /// Sends an email with an optional attachment.
     /// </summary>
-    /// <param name="to">Recipient email address</param>
-    /// <param name="subject">Email subject</param>
-    /// <param name="body">Email body (HTML supported)</param>
-    /// <param name="attachmentPath">Optional path to file attachment</param>
-    /// <param name="attachmentName">Optional custom name for the attachment</param>
+    /// <param name="to">Recipient email address.</param>
+    /// <param name="subject">Email subject.</param>
+    /// <param name="body">Email body (HTML supported).</param>
+    /// <param name="attachmentPath">Optional path to file attachment.</param>
+    /// <param name="attachmentName">Optional custom name for the attachment.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     Task SendEmailAsync(string to, string subject, string body, string? attachmentPath = null, string? attachmentName = null);
     
     /// <summary>
-    /// Sends an email to multiple recipients
+    /// Sends an email to multiple recipients.
     /// </summary>
+    /// <param name="recipients">List of recipient email addresses.</param>
+    /// <param name="subject">Email subject.</param>
+    /// <param name="body">Email body (HTML supported).</param>
+    /// <param name="attachmentPath">Optional path to file attachment.</param>
+    /// <param name="attachmentName">Optional custom name for the attachment.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     Task SendEmailToMultipleAsync(List<string> recipients, string subject, string body, string? attachmentPath = null, string? attachmentName = null);
 }

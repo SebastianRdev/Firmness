@@ -7,15 +7,28 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
+/// <summary>
+/// Service responsible for generating PDF receipts for sales.
+/// </summary>
 public class ReceiptPdfService : IReceiptPdfService
 {
     private readonly ILogger<ReceiptPdfService> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ReceiptPdfService"/> class.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
     public ReceiptPdfService(ILogger<ReceiptPdfService> logger)
     {
         _logger = logger;
     }
 
+    /// <summary>
+    /// Generates a PDF receipt for a sale and saves it to the specified path.
+    /// </summary>
+    /// <param name="sale">The sale entity containing details for the receipt.</param>
+    /// <param name="outputPath">The file path where the PDF will be saved.</param>
+    /// <returns>True if the PDF was generated successfully, false otherwise.</returns>
     public async Task<bool> GeneratePdfAsync(Sale sale, string outputPath)
     {
         try

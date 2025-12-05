@@ -89,6 +89,11 @@ public class CustomerService : ICustomerService
     }
 
 
+    /// <summary>
+    /// Retrieves a customer by their unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the customer.</param>
+    /// <returns>A result containing the customer DTO if found, or an error message.</returns>
     public async Task<ResultOft<CustomerDto>> GetByIdAsync(Guid id)
     {
         try
@@ -118,6 +123,11 @@ public class CustomerService : ICustomerService
         }
     }
     
+    /// <summary>
+    /// Creates a new customer.
+    /// </summary>
+    /// <param name="createDto">The customer creation data transfer object.</param>
+    /// <returns>A result containing the created customer DTO if successful, or an error message.</returns>
     public async Task<ResultOft<CustomerDto>> CreateAsync(CreateCustomerDto createDto)
     {
         try
@@ -154,6 +164,11 @@ public class CustomerService : ICustomerService
         }
     }
 
+    /// <summary>
+    /// Updates an existing customer's information.
+    /// </summary>
+    /// <param name="updateDto">The customer update data transfer object.</param>
+    /// <returns>A result containing the updated customer DTO if successful, or an error message.</returns>
     public async Task<ResultOft<CustomerDto>> UpdateAsync(UpdateCustomerDto updateDto)
     {
         try
@@ -198,6 +213,11 @@ public class CustomerService : ICustomerService
         }
     }
 
+    /// <summary>
+    /// Deletes a customer by their unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the customer to delete.</param>
+    /// <returns>A result indicating success or failure.</returns>
     public async Task<Result> DeleteAsync(Guid id)
     {
         try
@@ -232,6 +252,11 @@ public class CustomerService : ICustomerService
     }
 
 
+    /// <summary>
+    /// Searches for customers matching the given search term.
+    /// </summary>
+    /// <param name="searchTerm">The term to search for (e.g., username or full name).</param>
+    /// <returns>A result containing a collection of matching customer DTOs.</returns>
     public async Task<ResultOft<IEnumerable<CustomerDto>>> SearchAsync(string searchTerm)
     {
         try
@@ -265,6 +290,11 @@ public class CustomerService : ICustomerService
         }
     }
 
+    /// <summary>
+    /// Checks if a customer exists by their unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the customer.</param>
+    /// <returns>True if the customer exists, false otherwise.</returns>
     public async Task<bool> ExistsAsync(Guid id)
     {
         try
@@ -280,7 +310,11 @@ public class CustomerService : ICustomerService
         }
     }
     
-    // Obtener roles de un usuario específico
+    /// <summary>
+    /// Retrieves the roles assigned to a specific user.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <returns>A collection of role names.</returns>
     public async Task<IEnumerable<string>> GetUserRolesAsync(Guid userId)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
@@ -288,13 +322,20 @@ public class CustomerService : ICustomerService
         return await _userManager.GetRolesAsync(user);
     }
 
-    // Obtener todos los roles disponibles
+    /// <summary>
+    /// Retrieves all available roles in the system.
+    /// </summary>
+    /// <returns>A collection of all role names.</returns>
     public async Task<IEnumerable<string>> GetAllRolesAsync()
     {
         return new List<string> { "Admin", "Customer" };  // Roles predeterminados o puedes obtenerlos dinámicamente si es necesario.
     }
 
-    // Actualizar el rol de un usuario
+    /// <summary>
+    /// Updates the role of a specific user.
+    /// </summary>
+    /// <param name="userId">The unique identifier of the user.</param>
+    /// <param name="newRole">The new role to assign to the user.</param>
     public async Task UpdateUserRoleAsync(Guid userId, string newRole)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
@@ -321,6 +362,12 @@ public class CustomerService : ICustomerService
         return customers;
     }
 
+    /// <summary>
+    /// Imports customers from an Excel file.
+    /// </summary>
+    /// <param name="file">The Excel file containing customer data.</param>
+    /// <param name="entityType">The type of entity being imported (e.g., "customer").</param>
+    /// <returns>A result indicating success or failure of the import operation.</returns>
     public async Task<Result> ImportFromExcelAsync(IFormFile file, string entityType)
     {
         try
@@ -420,6 +467,11 @@ public class CustomerService : ICustomerService
 
 
     
+    /// <summary>
+    /// Extracts headers from an Excel file.
+    /// </summary>
+    /// <param name="file">The uploaded Excel file.</param>
+    /// <returns>A result containing the extracted headers.</returns>
     public async Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(IFormFile file)
     {
         try

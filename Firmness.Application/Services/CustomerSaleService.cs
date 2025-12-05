@@ -15,6 +15,9 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
+/// <summary>
+/// Service responsible for handling customer sales, including receipt generation and email notifications.
+/// </summary>
 public class CustomerSaleService : ICustomerSaleService
 {
     private readonly IGenericRepository<Customer> _customerRepository;
@@ -27,6 +30,18 @@ public class CustomerSaleService : ICustomerSaleService
     private readonly EmailSettings _emailSettings;
     private readonly ILogger<CustomerSaleService> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CustomerSaleService"/> class.
+    /// </summary>
+    /// <param name="customerRepository">The customer repository.</param>
+    /// <param name="productRepository">The product repository.</param>
+    /// <param name="saleRepository">The sale repository.</param>
+    /// <param name="receiptRepository">The receipt repository.</param>
+    /// <param name="pdfService">The service for generating PDF receipts.</param>
+    /// <param name="emailService">The service for sending emails.</param>
+    /// <param name="environment">The web host environment.</param>
+    /// <param name="emailSettings">The email settings configuration.</param>
+    /// <param name="logger">The logger instance.</param>
     public CustomerSaleService(
         IGenericRepository<Customer> customerRepository,
         IGenericRepository<Product> productRepository,
@@ -49,6 +64,11 @@ public class CustomerSaleService : ICustomerSaleService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Creates a new sale, generates a receipt, updates inventory, and sends a confirmation email.
+    /// </summary>
+    /// <param name="createDto">The sale creation data transfer object.</param>
+    /// <returns>A result containing the sale response DTO if successful, or an error message.</returns>
     public async Task<ResultOft<SaleResponseDto>> CreateSaleWithReceiptAsync(CreateSaleDto createDto)
     {
         try
@@ -189,6 +209,11 @@ public class CustomerSaleService : ICustomerSaleService
         }
     }
 
+    /// <summary>
+    /// Retrieves a sale by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the sale.</param>
+    /// <returns>A result containing the sale response DTO if found, or an error message.</returns>
     public async Task<ResultOft<SaleResponseDto>> GetSaleByIdAsync(int id)
     {
         try
@@ -232,6 +257,11 @@ public class CustomerSaleService : ICustomerSaleService
         }
     }
 
+    /// <summary>
+    /// Validates if there is sufficient stock for the requested products.
+    /// </summary>
+    /// <param name="saleDetails">The list of sale details containing product IDs and quantities.</param>
+    /// <returns>A result indicating success if stock is sufficient, or failure with an error message.</returns>
     private async Task<Result> ValidateInventoryAsync(List<CreateSaleDetailDto> saleDetails)
     {
         foreach (var detail in saleDetails)
@@ -252,12 +282,23 @@ public class CustomerSaleService : ICustomerSaleService
         return Result.Success();
     }
 
+    /// <summary>
+    /// Generates a unique receipt number based on the current date and sale ID.
+    /// </summary>
+    /// <param name="saleId">The unique identifier of the sale.</param>
+    /// <returns>A formatted receipt number string.</returns>
     private string GenerateReceiptNumber(int saleId)
     {
         var date = DateTime.Now;
         return $"REC-{date:yyyyMMdd}-{saleId:D6}";
     }
 
+    /// <summary>
+    /// Generates the HTML body for the sale confirmation email.
+    /// </summary>
+    /// <param name="sale">The sale entity.</param>
+    /// <param name="customer">The customer entity.</param>
+    /// <returns>A string containing the HTML email body.</returns>
     private string GenerateEmailBody(Sale sale, Customer customer)
     {
         return $@"

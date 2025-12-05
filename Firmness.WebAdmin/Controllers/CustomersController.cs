@@ -8,6 +8,9 @@ using Firmness.Application.DTOs.Customers;
 using Firmness.WebAdmin.ApiClients;
 using Firmness.WebAdmin.Models.Customers;
 
+/// <summary>
+/// Controller for managing customers in the Web Admin interface.
+/// </summary>
 [Authorize(Roles = "Admin")]
 public class CustomersController : Controller
 {
@@ -15,6 +18,12 @@ public class CustomersController : Controller
     private readonly IMapper _mapper;
     private readonly ILogger<CustomersController> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CustomersController"/> class.
+    /// </summary>
+    /// <param name="customerApiClient">The customer API client.</param>
+    /// <param name="mapper">The object mapper.</param>
+    /// <param name="logger">The logger instance.</param>
     public CustomersController(
         ICustomerApiClient customerApiClient,
         IMapper mapper,
@@ -25,6 +34,12 @@ public class CustomersController : Controller
         _logger = logger;
     }
     
+    /// <summary>
+    /// Displays a paginated list of customers.
+    /// </summary>
+    /// <param name="page">The page number.</param>
+    /// <param name="pageSize">The number of items per page.</param>
+    /// <returns>The index view with the list of customers.</returns>
     // GET: /Customers?page=1
     public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
     {
@@ -44,6 +59,10 @@ public class CustomersController : Controller
         return View(viewModels);
     }
 
+    /// <summary>
+    /// Displays the view for creating a new customer.
+    /// </summary>
+    /// <returns>The create view.</returns>
     // GET: /Customers/Create
     [HttpGet]
     public IActionResult Create()
@@ -51,6 +70,11 @@ public class CustomersController : Controller
         return View();
     }
 
+    /// <summary>
+    /// Handles the creation of a new customer.
+    /// </summary>
+    /// <param name="model">The create customer view model.</param>
+    /// <returns>Redirects to the index view on success, or returns the create view with errors.</returns>
     // POST: /Customers/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -74,6 +98,11 @@ public class CustomersController : Controller
         return RedirectToAction(nameof(Index));
     }
     
+    /// <summary>
+    /// Displays the view for editing an existing customer.
+    /// </summary>
+    /// <param name="id">The ID of the customer to edit.</param>
+    /// <returns>The edit view with the customer data.</returns>
     // GET: /Customers/Edit/5
     public async Task<IActionResult> Edit(Guid id)
     {
@@ -88,6 +117,12 @@ public class CustomersController : Controller
         return View(viewModel);
     }
 
+    /// <summary>
+    /// Handles the update of an existing customer.
+    /// </summary>
+    /// <param name="id">The ID of the customer to update.</param>
+    /// <param name="model">The edit customer view model.</param>
+    /// <returns>Redirects to the index view on success, or returns the edit view with errors.</returns>
     // POST: /Customers/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -111,6 +146,11 @@ public class CustomersController : Controller
         return RedirectToAction(nameof(Index));
     }
 
+    /// <summary>
+    /// Retrieves customer details for deletion confirmation via AJAX.
+    /// </summary>
+    /// <param name="id">The ID of the customer to delete.</param>
+    /// <returns>A JSON result containing the customer data or an error message.</returns>
     // GET: /Customers/Delete/5
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -124,6 +164,11 @@ public class CustomersController : Controller
         return Json(new { success = true, customer = result.Data });
     }
 
+    /// <summary>
+    /// Confirms the deletion of a customer.
+    /// </summary>
+    /// <param name="id">The ID of the customer to delete.</param>
+    /// <returns>A JSON result indicating success or failure.</returns>
     // POST: /Customers/Delete/5
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -139,6 +184,12 @@ public class CustomersController : Controller
         return Json(new { success = true });
     }
 
+    /// <summary>
+    /// Searches for customers based on a search term.
+    /// </summary>
+    /// <param name="term">The search term.</param>
+    /// <param name="page">The page number for pagination.</param>
+    /// <returns>The index view with the search results.</returns>
     // GET: /Customers/Search?term=cemento&page=1
     public async Task<IActionResult> Search(string term, int page = 1)
     {
@@ -155,6 +206,12 @@ public class CustomersController : Controller
         return View("Index", _mapper.Map<List<CustomerViewModel>>(result.Data));
     }
     
+    /// <summary>
+    /// Handles the Excel file upload and extracts headers for import.
+    /// </summary>
+    /// <param name="file">The uploaded Excel file.</param>
+    /// <param name="entityType">The type of entity to import.</param>
+    /// <returns>A JSON result containing extracted headers.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ImportExcel(IFormFile file, string entityType)
@@ -220,6 +277,11 @@ public class CustomersController : Controller
         }
     }
 
+    /// <summary>
+    /// Uses AI to correct column headers based on a template.
+    /// </summary>
+    /// <param name="request">The request containing original and correct headers.</param>
+    /// <returns>A JSON result with corrected headers.</returns>
     [HttpPost]
     public async Task<IActionResult> CorrectHeadersWithAI([FromBody] CorrectHeadersRequest request)
     {
@@ -275,6 +337,13 @@ public class CustomersController : Controller
         }
     }
 
+    /// <summary>
+    /// Processes the bulk insert of data using corrected headers.
+    /// </summary>
+    /// <param name="file">The Excel file containing data.</param>
+    /// <param name="entityType">The type of entity to insert.</param>
+    /// <param name="correctedHeaders">The list of corrected headers.</param>
+    /// <returns>A JSON result with the number of inserted and failed rows.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ProcessBulkInsert(IFormFile file, string entityType, List<string> correctedHeaders)

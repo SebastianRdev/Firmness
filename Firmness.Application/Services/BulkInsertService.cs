@@ -5,12 +5,21 @@ using Firmness.Domain.Entities;
 
 namespace Firmness.Application.Services;
 
+/// <summary>
+/// Service responsible for bulk inserting entities into the database.
+/// </summary>
 public class BulkInsertService : IBulkInsertService
 {
     private readonly IGenericRepository<Customer> _customerRepo;
     private readonly IGenericRepository<Product> _productRepo;
     private readonly IGenericRepository<Category> _categoryRepo;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="BulkInsertService"/> class.
+    /// </summary>
+    /// <param name="customerRepo">The customer repository.</param>
+    /// <param name="productRepo">The product repository.</param>
+    /// <param name="categoryRepo">The category repository.</param>
     public BulkInsertService(
         IGenericRepository<Customer> customerRepo,
         IGenericRepository<Product> productRepo,
@@ -21,6 +30,12 @@ public class BulkInsertService : IBulkInsertService
         _categoryRepo = categoryRepo;
     }
 
+    /// <summary>
+    /// Inserts a list of valid rows into the database based on the entity type.
+    /// </summary>
+    /// <param name="entityType">The type of entity to insert (e.g., "customer", "product", "category").</param>
+    /// <param name="validRows">The list of valid rows to insert.</param>
+    /// <returns>A result summary of the bulk insert operation.</returns>
     public async Task<BulkInsertResultDto> InsertAsync(
         string entityType,
         List<RowValidationResultDto> validRows)

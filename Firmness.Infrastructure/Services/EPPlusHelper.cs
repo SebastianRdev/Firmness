@@ -2,8 +2,16 @@ using OfficeOpenXml;
 
 namespace Firmness.Infrastructure.Services;
 
+/// <summary>
+/// Helper class for EPPlus Excel operations.
+/// </summary>
 public static class EPPlusHelper
 {
+    /// <summary>
+    /// Reads headers from the first row of an Excel worksheet.
+    /// </summary>
+    /// <param name="sheet">The Excel worksheet.</param>
+    /// <returns>A list of header names.</returns>
     public static List<string> ReadHeaders(ExcelWorksheet sheet)
     {
         var headers = new List<string>();
@@ -19,6 +27,12 @@ public static class EPPlusHelper
         return headers;
     }
 
+    /// <summary>
+    /// Reads rows from an Excel worksheet using corrected headers.
+    /// </summary>
+    /// <param name="sheet">The Excel worksheet.</param>
+    /// <param name="correctedHeaders">The list of corrected header names.</param>
+    /// <returns>A list of dictionaries representing the rows.</returns>
     public static List<Dictionary<string, string>> ReadRows(
         ExcelWorksheet sheet,
         List<string> correctedHeaders)

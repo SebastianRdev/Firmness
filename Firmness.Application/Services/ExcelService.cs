@@ -9,11 +9,19 @@ using Firmness.Application.Common;
 using Firmness.Application.DTOs.Excel;
 using OfficeOpenXml;
 
+/// <summary>
+/// Service responsible for handling Excel file operations, including reading, header extraction, and preview generation.
+/// </summary>
 public class ExcelService : IExcelService
 {
     private readonly IGeminiService _geminiClient;
     private readonly ILogger<ExcelService> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ExcelService"/> class.
+    /// </summary>
+    /// <param name="geminiClient">The service for AI-powered column correction.</param>
+    /// <param name="logger">The logger instance.</param>
     public ExcelService(
         IGeminiService geminiClient,
         ILogger<ExcelService> logger)
@@ -22,6 +30,11 @@ public class ExcelService : IExcelService
         _logger = logger;
     }
 
+    /// <summary>
+    /// Reads the headers from an Excel file.
+    /// </summary>
+    /// <param name="file">The uploaded Excel file.</param>
+    /// <returns>A list of header names found in the first row.</returns>
     public async Task<List<string>> GetHeadersAsync(IFormFile file)
     {
         try
@@ -48,6 +61,12 @@ public class ExcelService : IExcelService
         }
     }
 
+    /// <summary>
+    /// Reads rows from an Excel file into a list of dictionaries.
+    /// </summary>
+    /// <param name="file">The uploaded Excel file.</param>
+    /// <param name="startRow">The row number to start reading from (default is 2).</param>
+    /// <returns>A list of dictionaries where keys are column names (e.g., "col1", "col2") and values are cell contents.</returns>
     public async Task<List<Dictionary<string, string>>> ReadRowsAsync(IFormFile file, int startRow = 2)
     {
         using var stream = file.OpenReadStream();
@@ -72,6 +91,12 @@ public class ExcelService : IExcelService
         return list;
     }
 
+    /// <summary>
+    /// Extracts headers from an Excel file and validates them against the expected template for the entity type.
+    /// </summary>
+    /// <param name="file">The uploaded Excel file.</param>
+    /// <param name="entityType">The type of entity to validate headers against.</param>
+    /// <returns>A result containing the extracted headers and potential corrections.</returns>
     public async Task<ResultOft<ExcelHeadersResponseDto>> ExtractHeadersFromExcelAsync(
         IFormFile file, 
         string entityType)
@@ -103,7 +128,7 @@ public class ExcelService : IExcelService
                 return ResultOft<ExcelHeadersResponseDto>.Failure("Worksheet is empty");
             }
 
-            // Leer headers del Excel
+            // Read headers from Excel
             var realHeaders = new List<string>();
             for (int col = 1; col <= ws.Dimension.End.Column; col++)
             {
@@ -114,7 +139,7 @@ public class ExcelService : IExcelService
             _logger.LogInformation("Read {Count} headers from Excel: {Headers}", 
                 realHeaders.Count, string.Join(", ", realHeaders));
 
-            // Buscar plantilla
+            // Find template
             if (!ColumnTemplates.Templates.ContainsKey(entityType))
             {
                 _logger.LogWarning("No template found for entity type: {EntityType}", entityType);
@@ -141,13 +166,19 @@ public class ExcelService : IExcelService
         }
     }
 
+    /// <summary>
+    /// Corrects column names using AI to match the expected template.
+    /// </summary>
+    /// <param name="realColumns">The actual column names found in the file.</param>
+    /// <param name="correctColumns">The expected correct column names.</param>
+    /// <returns>A result containing the corrected headers.</returns>
     public async Task<ResultOft<ExcelHeadersResponseDto>> CorrectColumnNamesAsync(
         List<string> realColumns,
         List<string> correctColumns)
     {
         try
         {
-            // Llamar a Gemini para obtener la corrección
+            // Call Gemini to get correction
             var correction = await _geminiClient.CorrectColumnNamesAsync(realColumns, correctColumns);
 
             if (correction == null)
@@ -162,6 +193,13 @@ public class ExcelService : IExcelService
         }
     }
 
+    /// <summary>
+    /// Generates a preview of the bulk insert operation by validating rows against the corrected headers.
+    /// </summary>
+    /// <param name="fileStream">The stream of the Excel file.</param>
+    /// <param name="entityType">The type of entity being imported.</param>
+    /// <param name="correctedHeaders">The list of corrected headers to use for mapping.</param>
+    /// <returns>A result containing valid and invalid rows for preview.</returns>
     public async Task<BulkPreviewResultDto> GeneratePreviewAsync(
         Stream fileStream,
         string entityType,
@@ -175,10 +213,10 @@ public class ExcelService : IExcelService
 
         _logger.LogInformation("Reading preview rows for entity {EntityType}", entityType);
 
-        // 1. Leer filas con los headers corregidos
+        // 1. Read rows with corrected headers
         var rawRows = EPPlusHelper.ReadRows(sheet, correctedHeaders);
 
-        // 2. Mapear headers corregidos → propiedades reales
+        // 2. Map corrected headers -> real properties
         var mapping = entityType.ToLower() switch
         {
             "customer" => CustomerColumnTemplate.Map,
@@ -186,7 +224,7 @@ public class ExcelService : IExcelService
             _ => throw new Exception($"No mapping template for entity: {entityType}")
         };
 
-        // 3. Escoger validador correcto
+        // 3. Choose correct validator
         IExcelRowValidator validator = entityType.ToLower() switch
         {
             "customer" => new CustomerRowValidator(),
@@ -202,14 +240,14 @@ public class ExcelService : IExcelService
         {
             var mappedRow = new Dictionary<string, string>();
 
-            // 3.1 Mapear columnas
+            // 3.1 Map columns
             foreach (var kv in raw)
             {
                 if (mapping.TryGetValue(kv.Key, out var propName))
                     mappedRow[propName] = kv.Value;
             }
 
-            // 4. Validar fila
+            // 4. Validate row
             var validation = validator.Validate(mappedRow, rowNumber);
 
             if (validation.IsValid)

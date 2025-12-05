@@ -2,15 +2,26 @@ namespace Firmness.Domain.Entities;
 
 using Microsoft.AspNetCore.Identity;
 
+/// <summary>
+/// Represents a role in the application, extending IdentityRole.
+/// </summary>
 public class ApplicationRole : IdentityRole
 {
-    // Optional field: add properties if necessary
+    /// <summary>
+    /// Gets or sets the description of the role.
+    /// </summary>
     public string? Description { get; set; }
 
-    // Empty constructor (necessary for EF)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ApplicationRole"/> class.
+    /// </summary>
     public ApplicationRole() : base() { }
 
-    // Constructor that allows you to initialize the role directly with name and description
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ApplicationRole"/> class with a specified name and description.
+    /// </summary>
+    /// <param name="roleName">The name of the role.</param>
+    /// <param name="description">The description of the role.</param>
     public ApplicationRole(string roleName, string? description = null) : base(roleName)
     {
         Description = description;
