@@ -17,6 +17,7 @@ using System.Text;
 using Firmness.Application.Configuration;
 using Firmness.Infrastructure.Services.Identity;
 using Firmness.Infrastructure.Services.Email;
+using Google.GenAI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,7 +47,6 @@ QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 // ==========================================
 // 4. VERIFY GEMINI API KEY (Development only)
 // ==========================================
-/*
 if (builder.Environment.IsDevelopment())
 {
     var apiKey = builder.Configuration["GEMINI_API_KEY"] 
@@ -61,7 +61,6 @@ if (builder.Environment.IsDevelopment())
         Console.WriteLine($"✅ GEMINI_API_KEY loaded: {apiKey[..10]}...{apiKey[^4..]}");
     }
 }
-*/
 
 // ==========================================
 // 5. DATABASE CONNECTION STRING
@@ -141,6 +140,10 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 // ==========================================
 // 10. APPLICATION SERVICES
 // ==========================================
+// ==========================================
+// 11.1 REGISTER GEMINI SERVICE
+// ==========================================
+builder.Services.AddScoped<IGeminiService, GeminiService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
@@ -151,7 +154,7 @@ builder.Services.AddScoped<IReceiptPdfService, ReceiptPdfService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 // ==========================================
-// 10.1 EMAIL CONFIGURATION
+// 11.1 EMAIL CONFIGURATION
 // ==========================================
 builder.Services.Configure<EmailSettings>(options =>
 {
@@ -166,14 +169,21 @@ builder.Services.Configure<EmailSettings>(options =>
 });
 
 // ==========================================
-// 11. GEMINI AI SERVICE (HttpClient configurado)
-// ⚠️ IMPORTANTE: Solo una vez, no duplicado
+// 11.2 GEMINI .NET OFFICIAL CLIENT
 // ==========================================
-builder.Services.AddHttpClient<IGeminiService, GeminiApiClient>((serviceProvider, client) =>
+builder.Services.AddSingleton(sp =>
 {
-    client.Timeout = TimeSpan.FromSeconds(30);
-    client.DefaultRequestHeaders.Add("User-Agent", "FirmnessApp/1.0");
+    var apiKey = builder.Configuration["GEMINI_API_KEY"]
+                 ?? Environment.GetEnvironmentVariable("GEMINI_API_KEY");
+                 //?? Environment.GetEnvironmentVariable("GOOGLE_API_KEY");  fallback
+
+    // Si apiKey viene null/empty, construimos el cliente sin parámetros
+    // (el SDK leerá la variable de entorno interna).
+    return string.IsNullOrWhiteSpace(apiKey)
+        ? new Google.GenAI.Client()
+        : new Google.GenAI.Client(apiKey: apiKey);
 });
+
 
 // ==========================================
 // 12. CONTROLLERS
@@ -263,7 +273,7 @@ if (app.Environment.IsDevelopment())
 // Disable HTTPS redirection in development to avoid CORS preflight issues
 // app.UseHttpsRedirection();
 app.UseCors("AllowAll");
-app.UseAuthentication(); // ✅ Agregar esto si usas Identity
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
@@ -287,7 +297,6 @@ using (var scope = app.Services.CreateScope())
     }
     
     // Optional: Test Gemini Service
-    /*
     try
     {
         var geminiService = services.GetRequiredService<IGeminiService>();
@@ -297,7 +306,6 @@ using (var scope = app.Services.CreateScope())
     {
         Console.WriteLine($"⚠️ Gemini Service registration issue: {ex.Message}");
     }
-    */
 }
 
 // Después de builder.Build() y antes de app.Run()
