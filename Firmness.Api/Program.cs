@@ -178,7 +178,6 @@ builder.Services.AddSingleton(sp =>
 {
     var apiKey = builder.Configuration["GEMINI_API_KEY"]
                  ?? Environment.GetEnvironmentVariable("GEMINI_API_KEY");
-                 //?? Environment.GetEnvironmentVariable("GOOGLE_API_KEY");  fallback
 
     // Si apiKey viene null/empty, construimos el cliente sin parámetros
     // (el SDK leerá la variable de entorno interna).

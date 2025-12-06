@@ -1,5 +1,4 @@
 namespace Firmness.Infrastructure.Repositories;
-namespace Firmness.Infrastructure.Repositories;
 
 using Firmness.Domain.Interfaces;
 using Firmness.Infrastructure.Data;

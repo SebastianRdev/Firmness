@@ -16,7 +16,12 @@
   <component name="ChangeListManager">
     <list default="true" id="aa718861-3f03-42ed-8f2e-7c9249f445db" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Firmness/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Firmness/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Firmness.Api/Firmness.Api.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/Firmness.Api.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Api/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Api/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.Infrastructure/Repositories/GenericRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.Infrastructure/Repositories/GenericRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/CategoriesController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/CategoriesController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/CustomersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/CustomersController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/ProductsController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Firmness.WebAdmin/Controllers/ProductsController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -273,6 +278,7 @@
       <workItem from="1764579091360" duration="2113000" />
       <workItem from="1764617256091" duration="145000" />
       <workItem from="1764617415477" duration="3712000" />
+      <workItem from="1764974222211" duration="1592000" />
     </task>
     <servers />
   </component>

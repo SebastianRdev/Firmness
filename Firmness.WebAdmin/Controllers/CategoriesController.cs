@@ -1,3 +1,7 @@
+using Firmness.Application.DTOs.Categories;
+using Firmness.WebAdmin.ApiClients;
+using Firmness.WebAdmin.Models.Categories;
+
 namespace Firmness.WebAdmin.Controllers;
 
 using AutoMapper;

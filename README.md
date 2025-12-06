@@ -40,7 +40,7 @@ Firmness is a comprehensive web application designed for managing sales, invento
     ```bash
     cd Firmness
     ```
-3.  Update the connection string in `appsettings.json` to point to your database.
+3.  Update the connection string in `.env` to point to your database.
 4.  Apply database migrations:
     ```bash
     dotnet ef database update --project Firmness.Infrastructure --startup-project Firmness.WebAdmin

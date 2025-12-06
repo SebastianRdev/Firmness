@@ -1,21 +1,25 @@
 ﻿@model IEnumerable<Firmness.WebAdmin.Models.Customers.CustomerViewModel>
 
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+
 @{
-ViewData["Title"] = "Customer Management";
-var searchTerm = ViewData["SearchTerm"] as string;
-var customersList = Model.ToList();
+    ViewData["Title"] = "Customer Management";
+    var searchTerm = ViewData["SearchTerm"] as string;
+    var customersList = Model.ToList();
+    var apiBaseUrl = Configuration["ApiSettings:PublicBaseUrl"] ?? "https://localhost:5264";
 
-// Pagination
-int currentPage = ViewData["CurrentPage"] as int? ?? 1;
-int pageSize = 10;
-int totalCustomers = customersList.Count;
-int totalPages = (int)Math.Ceiling(totalCustomers / (double)pageSize);
+    // Pagination
+    int currentPage = ViewData["CurrentPage"] as int? ?? 1;
+    int pageSize = 10;
+    int totalCustomers = customersList.Count;
+    int totalPages = (int)Math.Ceiling(totalCustomers / (double)pageSize);
 
-var pagedCustomers = customersList
-.Skip((currentPage - 1) * pageSize)
-.Take(pageSize)
-.ToList();
+    var pagedCustomers = customersList
+    .Skip((currentPage - 1) * pageSize)
+    .Take(pageSize)
+    .ToList();
 }
+
 
 @Html.AntiForgeryToken()
 
@@ -249,7 +253,7 @@ var pagedCustomers = customersList
 
             try {
                 // PASO 1: Llamar a /api/excel/preview
-                const apiBaseUrl = 'https://localhost:5264'; // HTTPS
+                const apiBaseUrl = '@apiBaseUrl';
                 const previewResponse = await fetch(`${apiBaseUrl}/api/excel/preview?entityType=Customer`, {
                     method: 'POST',
                     body: formData

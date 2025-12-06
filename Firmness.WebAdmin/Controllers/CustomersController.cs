@@ -1,4 +1,8 @@
-﻿namespace Firmness.WebAdmin.Controllers;
+﻿using Firmness.Application.DTOs.Customers;
+using Firmness.WebAdmin.ApiClients;
+using Firmness.WebAdmin.Models.Customers;
+
+namespace Firmness.WebAdmin.Controllers;
 
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
