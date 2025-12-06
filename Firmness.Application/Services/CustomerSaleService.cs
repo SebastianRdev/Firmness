@@ -190,6 +190,7 @@ public class CustomerSaleService : ICustomerSaleService
                 TaxAmount = sale.TaxAmount,
                 GrandTotal = sale.GrandTotal,
                 ReceiptFileName = receipt.FileName,
+                ReceiptUrl = $"/receipts/{receipt.FileName}",
                 SaleDetails = sale.SaleDetails.Select(d => new SaleDetailDto
                 {
                     Id = d.Id,

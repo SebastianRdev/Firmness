@@ -66,19 +66,37 @@ const Checkout = () => {
     };
 
     if (success) {
+        const apiBaseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:8081';
+        const pdfUrl = saleInfo?.receiptUrl ? `${apiBaseUrl}${saleInfo.receiptUrl}` : null;
+
         return (
             <Result
                 status="success"
                 title="¡Compra Realizada Exitosamente!"
-                subTitle={`Tu comprobante ha sido enviado a ${user?.email}. Recibirás un correo con el PDF adjunto en unos momentos.`}
+                subTitle={pdfUrl
+                    ? `Tu comprobante está listo. Puedes descargarlo usando el botón de abajo.`
+                    : `Tu comprobante ha sido generado. Número de venta: #${saleInfo?.id}`
+                }
                 extra={[
+                    pdfUrl && (
+                        <Button
+                            type="primary"
+                            key="download"
+                            icon={<span style={{ marginRight: 8 }}>📄</span>}
+                            href={pdfUrl}
+                            target="_blank"
+                            download
+                        >
+                            Descargar Comprobante PDF
+                        </Button>
+                    ),
                     <Button type="primary" key="products" onClick={() => navigate('/products')}>
                         Seguir Comprando
                     </Button>,
                     <Button key="home" onClick={() => navigate('/')}>
                         Ir al Inicio
                     </Button>,
-                ]}
+                ].filter(Boolean)}
             />
         );
     }

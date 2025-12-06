@@ -51,6 +51,11 @@ public class SaleResponseDto
     public string? ReceiptFileName { get; set; }
 
     /// <summary>
+    /// Gets or sets the URL to download the receipt PDF.
+    /// </summary>
+    public string? ReceiptUrl { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of sale details (line items).
     /// </summary>
     public List<SaleDetailDto> SaleDetails { get; set; } = new();

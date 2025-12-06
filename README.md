@@ -26,29 +26,51 @@ Firmness is a comprehensive web application designed for managing sales, invento
 
 ### Prerequisites
 
-*   .NET 8 SDK
-*   SQL Server (LocalDB or full instance)
-*   Node.js (for React frontend if applicable)
+* .NET 8 SDK
+* SQL Server (LocalDB o instancia completa)
+* Node.js (para el frontend en React, si aplica)
+* Docker y Docker Compose (para levantar todo el entorno con contenedores)
 
-### Installation
+### Configuration
 
-1.  Clone the repository:
-    ```bash
-    git clone https://github.com/SebastianRdev/Firmness.git
-    ```
-2.  Navigate to the project directory:
-    ```bash
-    cd Firmness
-    ```
-3.  Update the connection string in `.env` to point to your database.
-4.  Apply database migrations:
-    ```bash
-    dotnet ef database update --project Firmness.Infrastructure --startup-project Firmness.WebAdmin
-    ```
-5.  Run the application:
-    ```bash
-    dotnet run --project Firmness.WebAdmin
-    ```
+Antes de correr la aplicación, debes crear un archivo `.env` en la raíz del proyecto y en `Firmness.Api`. Puedes ver `.env.example` como referencia para ver los valores requeridos.
+
+Luego edita `.env` con las credenciales de tu base de datos y cualquier otra configuración necesaria.
+
+### Running the Project
+
+#### Local (sin Docker)
+
+1. Aplica las migraciones a la base de datos:
+
+```bash
+dotnet ef database update --project Firmness.Infrastructure --startup-project Firmness.Api
+```
+
+2. Ejecuta la aplicación:
+
+```bash
+dotnet run --project Firmness.WebAdmin
+```
+
+#### Con Docker
+
+Puedes levantar todo el entorno usando el script `start.sh` incluido en el proyecto:
+
+```bash
+./start.sh
+```
+
+Este script hace lo siguiente:
+
+* Construye y levanta los contenedores definidos en `docker-compose.yml` (`API`, `WebAdmin`, `Customer App`).
+* Muestra en consola las URLs para acceder a cada servicio:
+
+```
+📱 Customer App:   http://localhost:8083
+💻 WebAdmin:       http://localhost:8082
+🔌 API Swagger:    http://localhost:8081/index.html
+```
 
 ## Screenshots
 

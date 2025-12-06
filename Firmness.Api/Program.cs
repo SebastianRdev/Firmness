@@ -274,6 +274,7 @@ if (app.Environment.IsDevelopment())
 
 // Disable HTTPS redirection in development to avoid CORS preflight issues
 // app.UseHttpsRedirection();
+app.UseStaticFiles(); // Enable serving static files from wwwroot
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();

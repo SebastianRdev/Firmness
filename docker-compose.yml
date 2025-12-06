@@ -13,8 +13,18 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USERNAME=${SMTP_USERNAME}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_SENDER_EMAIL=${SMTP_SENDER_EMAIL}
+      - SMTP_SENDER_NAME=${SMTP_SENDER_NAME:-Firmness}
+      - SMTP_ENABLE_SSL=${SMTP_ENABLE_SSL:-true}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
     ports:
       - "8081:8080"
+    volumes:
+      - ./Firmness.Api/wwwroot/receipts:/app/wwwroot/receipts
     networks:
       - firmness-network
 
