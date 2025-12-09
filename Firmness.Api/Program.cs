@@ -1,4 +1,6 @@
 using System.Net;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
@@ -19,6 +21,7 @@ using Firmness.Application.Configuration;
 using Firmness.Infrastructure.Services.Identity;
 using Firmness.Infrastructure.Services.Email;
 using Google.GenAI;
+using Firmness.Application.Validators.Customers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -142,7 +145,12 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 // 10. APPLICATION SERVICES
 // ==========================================
 // ==========================================
-// 11.1 REGISTER GEMINI SERVICE
+// 11.1 REGISTER IDENTITY SERVICE (Infrastructure)
+// ==========================================
+builder.Services.AddScoped<IIdentityService, Firmness.Infrastructure.Services.Identity.IdentityService>();
+
+// ==========================================
+// 11.2 REGISTER GEMINI SERVICE
 // ==========================================
 builder.Services.AddScoped<IGeminiService, GeminiService>();
 builder.Services.AddScoped<IProductService, ProductService>();
@@ -207,7 +215,7 @@ builder.Services.AddControllers()
 // ==========================================
 // 12.1 FLUENTVALIDATION
 // ==========================================
-builder.Services.AddValidatorsFromAssemblyContaining<Firmness.Application.Validators.Customers.CreateCustomerDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateCustomerDtoValidator>();
 builder.Services.AddFluentValidationAutoValidation();
 
 // ==========================================

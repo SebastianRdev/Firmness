@@ -1,36 +1,27 @@
 namespace Firmness.Application.Services.Customers;
 
 using Firmness.Application.Interfaces;
-using Firmness.Domain.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 /// <summary>
-/// Service for handling Customer role management operations
+/// Service for handling Customer role  management operations using IIdentityService abstraction
 /// </summary>
 public class CustomerRoleManagementService : ICustomerRoleManagementService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IIdentityService _identityService;
     private readonly ILogger<CustomerRoleManagementService> _logger;
 
     public CustomerRoleManagementService(
-        UserManager<ApplicationUser> userManager,
+        IIdentityService identityService,
         ILogger<CustomerRoleManagementService> logger)
     {
-        _userManager = userManager;
+        _identityService = identityService;
         _logger = logger;
     }
 
     public async Task<IEnumerable<string>> GetUserRolesAsync(Guid userId)
     {
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null)
-        {
-            _logger.LogWarning("Attempt to get roles for non-existent user {UserId}", userId);
-            throw new Exception("User not found");
-        }
-        
-        return await _userManager.GetRolesAsync(user);
+        return await _identityService.GetUserRolesAsync(userId);
     }
 
     public async Task<IEnumerable<string>> GetAllRolesAsync()
@@ -41,16 +32,13 @@ public class CustomerRoleManagementService : ICustomerRoleManagementService
 
     public async Task UpdateUserRoleAsync(Guid userId, string newRole)
     {
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null)
+        var result = await _identityService.AssignRoleAsync(userId, newRole);
+        
+        if (!result.IsSuccess)
         {
-            _logger.LogWarning("Attempt to update role for non-existent user {UserId}", userId);
-            throw new Exception("User not found");
+            _logger.LogWarning("Failed to update role for user {UserId}: {Error}", userId, result.ErrorMessage);
+            throw new Exception(result.ErrorMessage);
         }
-
-        var currentRoles = await _userManager.GetRolesAsync(user);
-        await _userManager.RemoveFromRolesAsync(user, currentRoles.ToArray());
-        await _userManager.AddToRoleAsync(user, newRole);
         
         _logger.LogInformation("User {UserId} role changed to {NewRole}", userId, newRole);
     }

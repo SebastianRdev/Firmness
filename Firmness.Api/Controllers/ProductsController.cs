@@ -11,7 +11,7 @@ using Firmness.Application.Common;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
-public class ProductsController : ControllerBase
+public class ProductsController : BaseApiController
 {
     private readonly IProductService _productService;
     private readonly ILogger<ProductsController> _logger;
@@ -156,45 +156,4 @@ public class ProductsController : ControllerBase
         return MapResultToActionResult(result);
     }
 
-    // ========== HELPERS (undocumented, are private) ==========
-
-    private IActionResult MapResultToActionResult<T>(ResultOft<T> result)
-    {
-        if (result.IsSuccess)
-            return Ok(result.Data);
-
-        return MapFailure(result);
-    }
-
-    private IActionResult MapFailure<T>(ResultOft<T> result)
-    {
-        var error = new { error = result.ErrorMessage };
-    
-        // Si el mensaje indica "not found", devuelve 404
-        if (result.ErrorMessage.Contains("not found", StringComparison.OrdinalIgnoreCase))
-        {
-            _logger.LogWarning("NotFound: {Message}", result.ErrorMessage);
-            return NotFound(error);
-        }
-    
-        // Si el mensaje indica duplicado, devuelve 409 Conflict
-        if (result.ErrorMessage.Contains("already exists", StringComparison.OrdinalIgnoreCase))
-        {
-            _logger.LogWarning("Conflict: {Message}", result.ErrorMessage);
-            return Conflict(error);
-        }
-    
-        // Por defecto 400 BadRequest
-        _logger.LogWarning("BadRequest: {Message}", result.ErrorMessage);
-        return BadRequest(error);
-    }
-
-    private IActionResult MapFailure(Result result)
-    {
-        var message = result.ErrorMessage ?? "An error occurred";
-        if (message.Contains("not found", StringComparison.OrdinalIgnoreCase))
-            return NotFound(new { error = message });
-
-        return BadRequest(new { error = message });
-    }
 }
