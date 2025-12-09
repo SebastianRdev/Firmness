@@ -147,7 +147,15 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IGeminiService, GeminiService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+// ✅ REFACTORED: Customer services separated by responsibility
+builder.Services.AddScoped<ICustomerCrudService, Firmness.Application.Services.Customers.CustomerCrudService>();
+builder.Services.AddScoped<ICustomerRoleManagementService, Firmness.Application.Services.Customers.CustomerRoleManagementService>();
+builder.Services.AddScoped<ICustomerImportService, Firmness.Application.Services.Customers.CustomerImportService>();
+
+// Keep legacy ICustomerService temporarily for backward compatibility
 builder.Services.AddScoped<ICustomerService, CustomerService>();
+
 builder.Services.AddScoped<IExcelService, ExcelService>();
 builder.Services.AddScoped<ICustomerSaleService, CustomerSaleService>();
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
@@ -195,6 +203,12 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
+
+// ==========================================
+// 12.1 FLUENTVALIDATION
+// ==========================================
+builder.Services.AddValidatorsFromAssemblyContaining<Firmness.Application.Validators.Customers.CreateCustomerDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
 
 // ==========================================
 // 13. SWAGGER

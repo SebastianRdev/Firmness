@@ -17,15 +17,21 @@ using OfficeOpenXml;
 public class CustomersController : ControllerBase
 {
     private readonly IExcelService _excelService;
-    private readonly ICustomerService _customerService;
+    private readonly ICustomerCrudService _customerCrudService;
+    private readonly ICustomerRoleManagementService _customerRoleService;
+    private readonly ICustomerImportService _customerImportService;
     private readonly ILogger<CustomersController> _logger;
 
     public CustomersController(
-        ICustomerService customerService,
+        ICustomerCrudService customerCrudService,
+        ICustomerRoleManagementService customerRoleService,
+        ICustomerImportService customerImportService,
         IExcelService excelService,
         ILogger<CustomersController> logger)
     {
-        _customerService = customerService;
+        _customerCrudService = customerCrudService;
+        _customerRoleService = customerRoleService;
+        _customerImportService = customerImportService;
         _excelService = excelService;
         _logger = logger;
     }    
@@ -41,7 +47,7 @@ public class CustomersController : ControllerBase
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetAll(int page = 1, int pageSize = 10)
     {
-        var result = await _customerService.GetAllAsync(page, pageSize);
+        var result = await _customerCrudService.GetAllAsync(page, pageSize);
         return MapResultToActionResult(result);
     }
     /// <summary>
@@ -56,7 +62,7 @@ public class CustomersController : ControllerBase
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById(Guid id)
     {
-        var result = await _customerService.GetByIdAsync(id);
+        var result = await _customerCrudService.GetByIdAsync(id);
         return MapResultToActionResult(result);
     }
 
@@ -68,7 +74,7 @@ public class CustomersController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _customerService.CreateAsync(createDto);
+        var result = await _customerCrudService.CreateAsync(createDto);
 
         if (!result.IsSuccess)
             return MapFailure(result);
@@ -94,7 +100,7 @@ public class CustomersController : ControllerBase
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
-        var result = await _customerService.UpdateAsync(updateDto);
+        var result = await _customerCrudService.UpdateAsync(updateDto);
         return MapResultToActionResult(result);
     }
 
@@ -109,7 +115,7 @@ public class CustomersController : ControllerBase
     [ProducesResponseType(typeof(object), StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var result = await _customerService.DeleteAsync(id);
+        var result = await _customerCrudService.DeleteAsync(id);
 
         if (!result.IsSuccess)
             return MapFailure(result);
@@ -129,7 +135,7 @@ public class CustomersController : ControllerBase
     [ProducesResponseType(typeof(object), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Search([FromQuery] string term)
     {
-        var result = await _customerService.SearchAsync(term);
+        var result = await _customerCrudService.SearchAsync(term);
         return MapResultToActionResult(result);
     }
     
@@ -139,7 +145,7 @@ public class CustomersController : ControllerBase
     {
         try
         {
-            var roles = await _customerService.GetUserRolesAsync(id);
+            var roles = await _customerRoleService.GetUserRolesAsync(id);
             return Ok(roles);
         }
         catch (Exception ex)
@@ -154,7 +160,7 @@ public class CustomersController : ControllerBase
     {
         try
         {
-            var roles = await _customerService.GetAllRolesAsync();
+            var roles = await _customerRoleService.GetAllRolesAsync();
             return Ok(roles);
         }
         catch (Exception ex)
@@ -169,7 +175,7 @@ public class CustomersController : ControllerBase
     {
         try
         {
-            await _customerService.UpdateUserRoleAsync(id, role);
+            await _customerRoleService.UpdateUserRoleAsync(id, role);
             return Ok(new { message = "Role updated successfully" });
         }
         catch (Exception ex)
@@ -258,7 +264,7 @@ public class CustomersController : ControllerBase
             return BadRequest(new { error = "Entity type is required" });
 
         // Aquí el CustomerService ya debería manejar la importación completa
-        var result = await _customerService.ImportFromExcelAsync(file, entityType);
+        var result = await _customerImportService.ImportFromExcelAsync(file, entityType);
 
         if (!result.IsSuccess)
             return BadRequest(new { error = result.ErrorMessage });

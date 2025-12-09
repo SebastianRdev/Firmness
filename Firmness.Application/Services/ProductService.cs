@@ -271,11 +271,10 @@ public class ProductService : IProductService
                 return ResultOft<IEnumerable<ProductDto>>.Failure("The search term must be at least 2 characters long");
             }
 
-            var products = await _productRepository.GetAllAsync();
-            
-            var filtered = products.Where(p => 
-                p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                p.Code.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+            // ✅ OPTIMIZED: Filter in database using FindAsync instead of loading all products
+            var filtered = await _productRepository.FindAsync(
+                p => p.Name.Contains(searchTerm) || p.Code.Contains(searchTerm),
+                p => p.Category
             );
 
             var dtos = _mapper.Map<IEnumerable<ProductDto>>(filtered);
