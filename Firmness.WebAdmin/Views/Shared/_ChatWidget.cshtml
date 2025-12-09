@@ -1,0 +1,155 @@
+<div id="agent-chat-container" class="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-4">
+    
+    <!-- Chat Window (Hidden by default) -->
+    <div id="agent-chat-window" class="hidden w-96 h-[500px] bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 flex flex-col overflow-hidden transition-all duration-300 transform scale-95 opacity-0 origin-bottom-right">
+        <!-- Header -->
+        <div class="bg-primary p-4 flex justify-between items-center text-white">
+            <div class="flex items-center space-x-2">
+                <span class="material-symbols-outlined text-xl">smart_toy</span>
+                <span class="font-semibold">Firmness AI Agent</span>
+            </div>
+            <button onclick="toggleAgentChat()" class="hover:bg-white/20 p-1 rounded-full text-white/80 hover:text-white transition">
+                <span class="material-symbols-outlined text-lg">close</span>
+            </button>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="agent-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50 dark:bg-gray-900/50">
+            <!-- Initial Message -->
+            <div class="flex flex-col space-y-1 items-start">
+                <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 rounded-2xl rounded-tl-none shadow-sm max-w-[85%]">
+                    <p class="text-sm text-gray-800 dark:text-gray-200">Hi! ask me anything about your sales or inventory.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
+            <form id="agent-form" onsubmit="sendAgentMessage(event)" class="relative flex items-center">
+                <input type="text" id="agent-input" placeholder="Ask a question..." 
+                       class="w-full pl-4 pr-12 py-3 rounded-xl bg-gray-100 dark:bg-gray-900 border-none focus:ring-2 focus:ring-primary/50 text-sm"
+                       autocomplete="off" />
+                <button type="submit" 
+                        class="absolute right-2 p-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition flex items-center justify-center shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span class="material-symbols-outlined text-lg">send</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toggle Button -->
+    <button onclick="toggleAgentChat()" 
+            class="group h-14 w-14 bg-primary rounded-full shadow-lg shadow-blue-500/30 flex items-center justify-center hover:scale-105 transition-transform duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 active:scale-95">
+        <span class="material-symbols-outlined text-3xl text-white group-hover:rotate-12 transition-transform duration-300">smart_toy</span>
+    </button>
+</div>
+
+<script>
+    const chatWindow = document.getElementById('agent-chat-window');
+    const msgContainer = document.getElementById('agent-messages');
+    const input = document.getElementById('agent-input');
+    let isOpen = false;
+
+    function toggleAgentChat() {
+        isOpen = !isOpen;
+        if (isOpen) {
+            chatWindow.classList.remove('hidden');
+            // Small delay to allow display:block to apply before transition
+            setTimeout(() => {
+                chatWindow.classList.remove('scale-95', 'opacity-0');
+                chatWindow.classList.add('scale-100', 'opacity-100');
+                input.focus();
+            }, 10);
+        } else {
+            chatWindow.classList.remove('scale-100', 'opacity-100');
+            chatWindow.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                chatWindow.classList.add('hidden');
+            }, 300);
+        }
+    }
+
+    async function sendAgentMessage(e) {
+        e.preventDefault();
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        // User Message
+        appendMessage(msg, 'user');
+        input.value = '';
+        input.disabled = true;
+
+        // Loading state
+        const loadingId = appendLoading();
+        scrollToBottom();
+
+        try {
+            const response = await fetch('/Agent/Ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg })
+            });
+            
+            const data = await response.json();
+            
+            removeMessage(loadingId);
+            
+            if (response.ok) {
+                appendMessage(data.response, 'bot');
+            } else {
+                appendMessage('Error: ' + (data.message || 'Something went wrong'), 'bot');
+            }
+        } catch (err) {
+            removeMessage(loadingId);
+            appendMessage('Network error. Please try again.', 'bot');
+        } finally {
+            input.disabled = false;
+            input.focus();
+            scrollToBottom();
+        }
+    }
+
+    function appendMessage(text, sender) {
+        const div = document.createElement('div');
+        div.className = sender === 'user' 
+            ? 'flex flex-col space-y-1 items-end' 
+            : 'flex flex-col space-y-1 items-start';
+            
+        const bubble = document.createElement('div');
+        const isUser = sender === 'user';
+        
+        bubble.className = isUser
+            ? 'bg-primary text-white p-3 rounded-2xl rounded-tr-none shadow-md max-w-[85%] text-sm'
+            : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 rounded-2xl rounded-tl-none shadow-sm max-w-[85%] text-sm text-gray-800 dark:text-gray-200';
+            
+        bubble.innerText = text;
+        div.appendChild(bubble);
+        msgContainer.appendChild(div);
+        return div;
+    }
+
+    function appendLoading() {
+        const id = 'loading-' + Date.now();
+        const div = document.createElement('div');
+        div.id = id;
+        div.className = 'flex flex-col space-y-1 items-start';
+        div.innerHTML = `
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 rounded-2xl rounded-tl-none shadow-sm flex space-x-1 items-center h-10 w-16 justify-center">
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+            </div>
+        `;
+        msgContainer.appendChild(div);
+        return id;
+    }
+
+    function removeMessage(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    function scrollToBottom() {
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    }
+</script>

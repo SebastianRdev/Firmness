@@ -35,9 +35,16 @@ const Products = () => {
     const fetchCategories = async () => {
         try {
             const data = await categoryService.getAll();
-            setCategories(data);
+            console.log('Categories response:', data); // Debugging
+            if (Array.isArray(data)) {
+                setCategories(data);
+            } else {
+                console.error('Categories data is not an array:', data);
+                setCategories([]);
+            }
         } catch (err) {
             console.error('Failed to load categories', err);
+            setCategories([]);
         }
     };
 

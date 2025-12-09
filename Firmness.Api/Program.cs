@@ -169,7 +169,9 @@ builder.Services.AddScoped<ICustomerSaleService, CustomerSaleService>();
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 builder.Services.AddScoped<IReceiptPdfService, ReceiptPdfService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+
 builder.Services.AddScoped<IImportService, ImportService>();
+builder.Services.AddScoped<ISqlAgentService, Firmness.Infrastructure.Services.AI.SqlAgentService>();
 
 
 // ==========================================

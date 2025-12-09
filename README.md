@@ -27,8 +27,8 @@ Firmness is a comprehensive web application designed for managing sales, invento
 ### Prerequisites
 
 * .NET 8 SDK
-* SQL Server (LocalDB o instancia completa)
-* Node.js (para el frontend en React, si aplica)
+* PostgreSQL (LocalDB o instancia completa)
+* Node.js (para el frontend en React)
 * Docker y Docker Compose (para levantar todo el entorno con contenedores)
 
 ### Configuration

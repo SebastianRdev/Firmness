@@ -118,6 +118,21 @@ builder.Services.AddHttpClient<ICustomerApiClient, CustomerApiClient>(client =>
     return handler;
 });
 
+// ==========================================
+// AI SERVICES
+// ==========================================
+builder.Services.AddSingleton(sp =>
+{
+    var apiKey = builder.Configuration["GEMINI_API_KEY"]
+                 ?? Environment.GetEnvironmentVariable("GEMINI_API_KEY");
+
+    return string.IsNullOrWhiteSpace(apiKey)
+        ? new Google.GenAI.Client()
+        : new Google.GenAI.Client(apiKey: apiKey);
+});
+
+builder.Services.AddScoped<ISqlAgentService, Firmness.Infrastructure.Services.AI.SqlAgentService>();
+
 var app = builder.Build();
 
 // ==========================================
